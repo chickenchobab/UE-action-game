@@ -52,7 +52,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
+void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation)
 {
 	//DrawDebugSphere(GetWorld(), ImpactPoint, 10, 10, FColor::Red, true, 5);
 
@@ -74,7 +74,7 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint)
 		);
 	}
 
-	DirectionalHitReact(ImpactPoint);
+	DirectionalHitReact(ImpactPoint, HitterLocation);
 }
 
 
@@ -90,16 +90,18 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 }
 
 
-void AEnemy::DirectionalHitReact(const FVector& ImpactPoint)
+void AEnemy::DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation)
 {
 	const FVector Forward = GetActorForwardVector();
-	const FVector ImpactPointParallel(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
-	const FVector ToHit = (ImpactPointParallel - GetActorLocation()).GetSafeNormal();
+	// const FVector ImpactPointParallel(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
+	const FVector HitterLocationParallel(HitterLocation.X, HitterLocation.Y, GetActorLocation().Z);
+	// const FVector ToHit = (ImpactPointParallel - GetActorLocation()).GetSafeNormal();
+	const FVector ToHitter = (HitterLocationParallel - GetActorLocation()).GetSafeNormal();
 
-	double Theta = FMath::Acos(FVector::DotProduct(Forward, ToHit));
+	double Theta = FMath::Acos(FVector::DotProduct(Forward, ToHitter));
 	Theta = FMath::RadiansToDegrees(Theta);
 
-	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHit);
+	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHitter);
 	if (CrossProduct.Z < 0)
 	{
 		Theta *= -1;

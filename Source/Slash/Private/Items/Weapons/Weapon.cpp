@@ -35,6 +35,7 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOw
 {
   SetOwner(NewOwner);
   SetInstigator(NewInstigator);
+
 	AttachMeshToSocket(InParent, InSocketName);
   ItemState = EItemState::EIS_Equipped;
   if (EquipSound)
@@ -93,11 +94,11 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
     true /* Add <this> to actors to ignore */
   );
 
-  if (BoxHit.GetActor())
+  if (BoxHit.GetActor() && GetOwner())
   {
     if (IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor()))
     {
-      HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
+      HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint, GetOwner()->GetActorLocation());
     }
     ActorsToIgnore.AddUnique(BoxHit.GetActor());
 

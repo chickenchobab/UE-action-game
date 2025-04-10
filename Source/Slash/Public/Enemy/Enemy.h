@@ -27,7 +27,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	virtual void GetHit_Implementation(const FVector& ImpactPoint) override;
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 protected:
@@ -50,7 +50,7 @@ protected:
 	void PlayHitReactMontage(const FName& SectionName);
 
 private:
-	void DirectionalHitReact(const FVector& ImpactPoint);
+	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
 
 	
 };
