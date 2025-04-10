@@ -1,0 +1,11 @@
+/.vs
+/.vscode
+/Assets
+/Binaries
+/Content
+/DerivedDataCache
+/Intermediate
+/Saved
+Slash.code-workspace
+Slash.uproject
+Slash.sln
