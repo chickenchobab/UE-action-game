@@ -51,14 +51,21 @@ protected:
 	UPROPERTY(EditAnywhere, Category = VisualEffects)
 	UParticleSystem* HitParticles;
 
+	UPROPERTY(BlueprintReadWrite)
+	EDeathPose DeathPose = EDeathPose::EDP_Alive;
+
+	UPROPERTY()
+	AActor* CombatTarget;
+
+	UPROPERTY(EditAnywhere)
+	double CombatRadius = 500.f;
+
 	void PlayHitReactMontage(const FName& SectionName);
 
 	void Die();
 
-	UPROPERTY(BlueprintReadWrite)
-	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
-	private:
+private:
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
 
 };
