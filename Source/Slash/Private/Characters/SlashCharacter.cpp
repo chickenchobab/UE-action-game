@@ -92,7 +92,6 @@ void ASlashCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collisio
 	{
 		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
 		EquippedWeapon->ActorsToIgnore.Empty();
-		UE_LOG(LogTemp, Warning, TEXT("Hello"));
 	}
 }
 
@@ -220,20 +219,8 @@ void ASlashCharacter::PlayAttackMontage()
 	if (AnimInstance && AttackMontage)
 	{
 		AnimInstance->Montage_Play(AttackMontage);
-		const int32 Selection = FMath::RandRange(0, 1);
-		FName SectionName = FName();
-
-		switch (Selection)
-		{
-		case 0:
-			SectionName = FName("Attack1");
-			break;
-		case 1:
-			SectionName = FName("Attack2");
-			break;
-		default:
-			break;
-		}
+		const int32 Selection = FMath::RandRange(1, 2);
+		FName SectionName = FName("Attack" + FString::FromInt(Selection));
 
 		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 	}

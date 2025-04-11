@@ -56,6 +56,16 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, const FVector& Hi
 {
 	//DrawDebugSphere(GetWorld(), ImpactPoint, 10, 10, FColor::Red, true, 5);
 
+	if (Attributes && Attributes->IsAlive())
+	{
+		DirectionalHitReact(ImpactPoint, HitterLocation);
+	}
+	else
+	{
+		Die();
+	}
+
+
 	if (HitSound)
   {
     UGameplayStatics::PlaySoundAtLocation(
@@ -73,8 +83,6 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, const FVector& Hi
 			ImpactPoint
 		);
 	}
-
-	DirectionalHitReact(ImpactPoint, HitterLocation);
 }
 
 
@@ -142,5 +150,20 @@ void AEnemy::PlayHitReactMontage(const FName& SectionName)
 	{
 		AnimInstance->Montage_Play(HitReactMontage);
 		AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
+	}
+}
+
+void AEnemy::Die()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && DeathMontage)
+	{
+		AnimInstance->Montage_Play(DeathMontage);
+
+		const int32 Selection = FMath::RandRange(1, 6);
+		FName SectionName = FName("Death" + FString::FromInt(Selection));
+		DeathPose = static_cast<EDeathPose>(static_cast<uint8>(EDeathPose::EDP_Alive) + Selection);
+		
+		AnimInstance->Montage_JumpToSection(SectionName, DeathMontage);
 	}
 }

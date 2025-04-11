@@ -96,13 +96,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
   if (BoxHit.GetActor() && GetOwner())
   {
-    if (IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor()))
-    {
-      HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint, GetOwner()->GetActorLocation());
-    }
-    ActorsToIgnore.AddUnique(BoxHit.GetActor());
-
-    CreateFields(BoxHit.ImpactPoint);
+    UE_LOG(LogTemp, Warning, TEXT("Actor : %s"), *BoxHit.GetActor()->GetName());
     UGameplayStatics::ApplyDamage(
       BoxHit.GetActor(),
       Damage,
@@ -110,5 +104,14 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
       this,
       UDamageType::StaticClass()
     );
+
+
+    if (IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor()))
+    {
+      HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint, GetOwner()->GetActorLocation());
+    }
+    ActorsToIgnore.AddUnique(BoxHit.GetActor());
+
+    CreateFields(BoxHit.ImpactPoint);
   }
 }
