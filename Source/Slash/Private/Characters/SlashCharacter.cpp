@@ -97,7 +97,6 @@ void ASlashCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collisio
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
-	
 	if (Controller != nullptr && ActionState == EActionState::EAS_Unoccupied)
 	{
 		FVector2d MovementVector = Value.Get<FVector2d>();
@@ -134,9 +133,13 @@ void ASlashCharacter::EkeyPressed(const FInputActionValue& Value)
 		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
 		OverlappingWeapon->SetOwner(this);
 		OverlappingWeapon->SetInstigator(this);
+
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 		EquippedWeapon = OverlappingWeapon;
 		OverlappingItem = nullptr;
+
+		// To prevent collision until swing
+		SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision); 
 	}
 	else if (EquippedWeapon)
 	{
