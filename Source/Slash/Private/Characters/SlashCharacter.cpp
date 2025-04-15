@@ -239,5 +239,3 @@ void ASlashCharacter::PlayEquipMontage(const FName &SectionName)
 	}
 }
 
-
-

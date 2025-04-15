@@ -69,5 +69,4 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	UNiagaraComponent* EmbersEffect;
-
 };

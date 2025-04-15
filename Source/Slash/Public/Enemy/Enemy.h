@@ -11,6 +11,7 @@
 class UAnimMontage;
 class UAttributeComponent;
 class UHealthBarComponent;
+class AAIController;
 
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHitInterface
@@ -18,13 +19,11 @@ class SLASH_API AEnemy : public ACharacter, public IHitInterface
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AEnemy();
-	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+  virtual void Tick(float DeltaTime) override;
+  virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:
@@ -39,11 +38,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UHealthBarComponent* HealthBarComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* HitReactMontage;
+	UFUNCTION()
+	void PawnSeen(APawn* SeenPawn);
+
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* DeathMontage;
+	UAnimMontage* HitReactMontage;
 
 	UPROPERTY(EditAnywhere, Category = Sounds)
 	USoundBase* HitSound;
@@ -51,8 +51,25 @@ protected:
 	UPROPERTY(EditAnywhere, Category = VisualEffects)
 	UParticleSystem* HitParticles;
 
+	void PlayHitReactMontage(const FName& SectionName);
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* DeathMontage;
+
 	UPROPERTY(BlueprintReadWrite)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
+
+	void Die();
+
+
+	bool InTargetRange(AActor* Target, double Radius);
+
+	void CheckCombatTarget();
+	void CheckPatrolTarget();
+
+	/** 
+	 * Combat
+	 */
 
 	UPROPERTY()
 	AActor* CombatTarget;
@@ -60,15 +77,37 @@ protected:
 	UPROPERTY(EditAnywhere)
 	double CombatRadius = 500.f;
 
-	void PlayHitReactMontage(const FName& SectionName);
+	/**
+	 * Navigation
+	 */
 
-	void Die();
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	AAIController* EnemyController;
+
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation", BlueprintReadWrite)
+	AActor* PatrolTarget;
+	
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	TArray<AActor*> PatrolTargets;
+	
+	UPROPERTY(EditAnywhere, Category = "AI Navigation")
+	double PatrolRadius = 200.f;
+
+	UPROPERTY(EditAnywhere, Category = "AI Navigation")
+	float WaitMin = 5.f;
+	UPROPERTY(EditAnywhere, Category = "AI Navigation")
+	float WaitMax = 10.f;
+
+	FTimerHandle PatrolTimer;
+
+	void PatrolTimerFinished();
+	
+	AActor* ChoosePatrolTarget();
+
+	void MoveToTarget(AActor* Target);
 
 
 private:
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
 
 };
-
-
-
