@@ -8,6 +8,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
 
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,7 +22,6 @@
 // Sets default values
 AEnemy::AEnemy()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
@@ -31,8 +31,27 @@ AEnemy::AEnemy()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
+
 	HealthBarComponent = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
 	HealthBarComponent->SetupAttachment(GetRootComponent());
+
+	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
+	AIPerception->OnPerceptionUpdated.AddDynamic(this, &AEnemy::PerceptionUpdated);
+
+	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
+	if (SightConfig)
+	{
+		SightConfig->SightRadius = 4000.f;
+		SightConfig->LoseSightRadius = 4200.f;
+		SightConfig->PeripheralVisionAngleDegrees = 45.f;
+
+		SightConfig->DetectionByAffiliation.bDetectEnemies = true;
+		SightConfig->DetectionByAffiliation.bDetectNeutrals = true;
+		SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
+
+		AIPerception->ConfigureSense(*SightConfig);
+		AIPerception->SetDominantSense(SightConfig->GetSenseImplementation());
+	}
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationPitch = false;
@@ -61,8 +80,14 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CheckCombatTarget();
-	CheckPatrolTarget();
+	if (EnemyState > EEnemyState::EES_Patrolling)
+	{
+		CheckCombatTarget();
+	}
+	else
+	{
+		CheckPatrolTarget();
+	}
 }
 
 // Called to bind functionality to input
@@ -76,15 +101,6 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, const FVector& Hi
 	if (HealthBarComponent)
 	{
 		HealthBarComponent->SetVisibility(true);
-	}
-
-	if (Attributes && Attributes->IsAlive())
-	{
-		DirectionalHitReact(ImpactPoint, HitterLocation);
-	}
-	else
-	{
-		Die();
 	}
 
 	if (HitSound)
@@ -104,6 +120,15 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, const FVector& Hi
 			ImpactPoint
 		);
 	}
+
+	if (Attributes && Attributes->IsAlive())
+	{
+		DirectionalHitReact(ImpactPoint, HitterLocation);
+	}
+	else
+	{
+		Die();
+	}
 }
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -119,9 +144,39 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	return DamageAmount;
 }
 
-void AEnemy::PawnSeen(APawn* SeenPawn)
+
+APawn* AEnemy::FindPlayer(const TArray<AActor*>& UpdatedActors)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Found"));
+	for (AActor* UpdatedActor : UpdatedActors)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Updated Actor : %s"), *UpdatedActor->GetActorNameOrLabel());
+		if (UpdatedActor->ActorHasTag(FName("SlashCharacter")))
+		{
+			return Cast<APawn>(UpdatedActor);
+		}
+	}
+	return nullptr;
+}
+
+void AEnemy::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Found Pawn"));
+
+	if (EnemyState == EEnemyState::EES_Chasing) return;
+
+	APawn* SeenPawn = FindPlayer(UpdatedActors);
+	if (!SeenPawn) return;
+
+	GetWorldTimerManager().ClearTimer(PatrolTimer);
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	CombatTarget = SeenPawn;
+
+	if (EnemyState != EEnemyState::EES_Attacking)
+	{
+		EnemyState = EEnemyState::EES_Chasing;
+		MoveToTarget(CombatTarget);
+		UE_LOG(LogTemp, Warning, TEXT("Found pawn, Start chasing"));
+	}
 }
 
 
@@ -218,7 +273,28 @@ void AEnemy::CheckCombatTarget()
     {
       HealthBarComponent->SetVisibility(false);
     }
+		EnemyState = EEnemyState::EES_Patrolling;
+		GetCharacterMovement()->MaxWalkSpeed = 125.f;
+		MoveToTarget(PatrolTarget);
+		UE_LOG(LogTemp, Warning, TEXT("Lose Interest"));
   }
+	// 어그로 유지가 안되는 상황 해결: how?
+	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing)
+	{
+		EnemyState = EEnemyState::EES_Chasing;
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		MoveToTarget(CombatTarget);
+		UE_LOG(LogTemp, Warning, TEXT("Chase Player"));
+	}
+	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
+	{
+		EnemyState = EEnemyState::EES_Attacking;
+		UE_LOG(LogTemp, Warning, TEXT("Attack Player"));
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Else"));
+	}
 }
 
 void AEnemy::CheckPatrolTarget()
@@ -226,8 +302,8 @@ void AEnemy::CheckPatrolTarget()
 	if (InTargetRange(PatrolTarget, PatrolRadius))
 	{
 		PatrolTarget = ChoosePatrolTarget();
-		float Delay = FMath::RandRange(WaitMin, WaitMax);
-		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, Delay);
+		float WaitTime = FMath::RandRange(WaitMin, WaitMax);
+		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime);
 	}
 }
 
@@ -257,8 +333,6 @@ AActor* AEnemy::ChoosePatrolTarget()
 void AEnemy::MoveToTarget(AActor* Target)
 {
 	if (!EnemyController || !Target) return;
-
-	UE_LOG(LogTemp, Warning, TEXT("Moving"));
 
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);

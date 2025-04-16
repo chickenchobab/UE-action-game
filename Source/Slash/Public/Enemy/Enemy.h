@@ -12,6 +12,8 @@ class UAnimMontage;
 class UAttributeComponent;
 class UHealthBarComponent;
 class AAIController;
+class UAIPerceptionComponent;
+class UAISenseConfig_Sight;
 
 UCLASS()
 class SLASH_API AEnemy : public ACharacter, public IHitInterface
@@ -38,8 +40,14 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UHealthBarComponent* HealthBarComponent;
 
+	UPROPERTY(VisibleAnywhere)
+	UAIPerceptionComponent* AIPerception;
+
+	UPROPERTY(VisibleAnywhere)
+	UAISenseConfig_Sight* SightConfig;
+
 	UFUNCTION()
-	void PawnSeen(APawn* SeenPawn);
+	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
@@ -77,6 +85,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	double CombatRadius = 500.f;
 
+	UPROPERTY()
+	double AttackRadius = 150.f;
+
 	/**
 	 * Navigation
 	 */
@@ -98,6 +109,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float WaitMax = 10.f;
 
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+
 	FTimerHandle PatrolTimer;
 
 	void PatrolTimerFinished();
@@ -110,4 +123,5 @@ protected:
 private:
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
 
+	APawn* FindPlayer(const TArray<AActor*>& UpdatedActors);
 };

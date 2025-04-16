@@ -97,7 +97,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* DodgeAction;
 
-private:
+	/**
+	 * Components
+	 */
 
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoom;
@@ -108,6 +110,10 @@ private:
 	UGroomComponent* Hair;
 	UPROPERTY(VisibleAnywhere, Category = Hair)
 	UGroomComponent* Eyebrows;
+
+	/**
+	 * Items
+	 */
 
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;

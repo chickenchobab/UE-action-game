@@ -48,6 +48,8 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
 	Eyebrows->SetupAttachment(GetMesh());
 	Eyebrows->AttachmentName = FString("head");
+
+	// StimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("StimuliSource"));
 }
 
 // Called when the game starts or when spawned
@@ -62,6 +64,8 @@ void ASlashCharacter::BeginPlay()
 			Subsystem->AddMappingContext(SlashCharacterContext, 0);
 		}
 	}
+
+	Tags.Add(FName("SlashCharacter"));
 }
 
 // Called every frame
