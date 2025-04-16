@@ -20,6 +20,9 @@
 #include "Animation/AnimMontage.h"
 #include "Components/BoxComponent.h"
 
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
+
 // Sets default values
 ASlashCharacter::ASlashCharacter()
 {
