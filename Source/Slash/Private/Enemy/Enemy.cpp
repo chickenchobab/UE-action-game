@@ -36,7 +36,6 @@ AEnemy::AEnemy()
 	HealthBarComponent->SetupAttachment(GetRootComponent());
 
 	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
-	AIPerception->OnPerceptionUpdated.AddDynamic(this, &AEnemy::PerceptionUpdated);
 
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
 	if (SightConfig)
@@ -73,6 +72,8 @@ void AEnemy::BeginPlay()
 	EnemyController = Cast<AAIController>(GetController());
 	// Should move first so that a turnabout occurs.
 	MoveToTarget(PatrolTarget = ChoosePatrolTarget());
+
+	AIPerception->OnPerceptionUpdated.AddDynamic(this, &AEnemy::PerceptionUpdated);
 }
 
 // Called every frame
@@ -140,6 +141,9 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	}
 
 	CombatTarget = EventInstigator->GetPawn();
+	EnemyState = EEnemyState::EES_Chasing;
+	GetCharacterMovement()->MaxWalkSpeed = 300.f;
+	MoveToTarget(CombatTarget);
 
 	return DamageAmount;
 }

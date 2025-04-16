@@ -20,6 +20,9 @@
 #include "Animation/AnimMontage.h"
 #include "Components/BoxComponent.h"
 
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
+
 // Sets default values
 ASlashCharacter::ASlashCharacter()
 {
@@ -48,8 +51,6 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
 	Eyebrows->SetupAttachment(GetMesh());
 	Eyebrows->AttachmentName = FString("head");
-
-	// StimuliSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("StimuliSource"));
 }
 
 // Called when the game starts or when spawned
