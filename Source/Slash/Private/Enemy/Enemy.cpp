@@ -30,8 +30,6 @@ AEnemy::AEnemy()
 	GetMesh()->SetGenerateOverlapEvents(true);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
-	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
-
 	HealthBarComponent = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
 	HealthBarComponent->SetupAttachment(GetRootComponent());
 
@@ -176,60 +174,11 @@ void AEnemy::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 }
 
 
-void AEnemy::DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation)
+void AEnemy::PlayAttackMontage()
 {
-	const FVector Forward = GetActorForwardVector();
-	// const FVector ImpactPointParallel(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
-	const FVector HitterLocationParallel(HitterLocation.X, HitterLocation.Y, GetActorLocation().Z);
-	// const FVector ToHit = (ImpactPointParallel - GetActorLocation()).GetSafeNormal();
-	const FVector ToHitter = (HitterLocationParallel - GetActorLocation()).GetSafeNormal();
-
-	double Theta = FMath::Acos(FVector::DotProduct(Forward, ToHitter));
-	Theta = FMath::RadiansToDegrees(Theta);
-
-	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHitter);
-	if (CrossProduct.Z < 0)
-	{
-		Theta *= -1;
-	}
-
-	FName Section("FromBack");
-
-	if (Theta >= -45.f && Theta < 45.f)
-	{
-		Section = FName("FromFront");
-	}
-	else if (Theta >= -135.f && Theta < -45.f)
-	{
-		Section = FName("FromLeft");
-	}
-	else if (Theta >= 45.f && Theta < 135.f)
-	{
-		Section = FName("FromRight");
-	}
-
-	// if (GEngine)
-	// {
-	// 	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Black, FString::Printf(TEXT("Theta : %f"), Theta));
-	// }
-	// UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + Forward * 60.f, 5.f, FColor::Purple, 5.f);
-	// UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.f, 5.f, FColor::Orange, 5.f);
-
-	if (HitReactMontage)
-	{
-		PlayHitReactMontage(Section);
-	}
+	
 }
 
-void AEnemy::PlayHitReactMontage(const FName& SectionName)
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && HitReactMontage)
-	{
-		AnimInstance->Montage_Play(HitReactMontage);
-		AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
-	}
-}
 
 void AEnemy::Die()
 {

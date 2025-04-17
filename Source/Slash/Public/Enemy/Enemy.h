@@ -3,20 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "Characters/BaseCharacter.h"
 #include "Interfaces/HitInterface.h"
 #include "Characters/CharacterTypes.h"
 #include "Enemy.generated.h"
 
-class UAnimMontage;
-class UAttributeComponent;
 class UHealthBarComponent;
 class AAIController;
 class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
 
 UCLASS()
-class SLASH_API AEnemy : public ACharacter, public IHitInterface
+class SLASH_API AEnemy : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -35,9 +33,6 @@ public:
 protected:
 
 	UPROPERTY(VisibleAnywhere)
-	UAttributeComponent* Attributes;
-
-	UPROPERTY(VisibleAnywhere)
 	UHealthBarComponent* HealthBarComponent;
 
 	UPROPERTY(VisibleAnywhere)
@@ -50,24 +45,13 @@ protected:
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* HitReactMontage;
+	virtual void PlayAttackMontage() override;
 
-	UPROPERTY(EditAnywhere, Category = Sounds)
-	USoundBase* HitSound;
-
-	UPROPERTY(EditAnywhere, Category = VisualEffects)
-	UParticleSystem* HitParticles;
-
-	void PlayHitReactMontage(const FName& SectionName);
-
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* DeathMontage;
 
 	UPROPERTY(BlueprintReadWrite)
 	EDeathPose DeathPose = EDeathPose::EDP_Alive;
 
-	void Die();
+	virtual void Die() override;
 
 
 	bool InTargetRange(AActor* Target, double Radius);
@@ -121,7 +105,7 @@ protected:
 
 
 private:
-	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
+	
 
 	APawn* FindPlayer(const TArray<AActor*>& UpdatedActors);
 };

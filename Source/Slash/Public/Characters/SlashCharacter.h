@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "Characters/BaseCharacter.h"
 #include "Characters/CharacterTypes.h"
 #include "SlashCharacter.generated.h"
 
@@ -14,30 +14,24 @@ class USpringArmComponent;
 class UCameraComponent;
 class UGroomComponent;
 class AItem;
-class AWeapon;
 class UAnimMontage;
 
 UCLASS()
-class SLASH_API ASlashCharacter : public ACharacter
+class SLASH_API ASlashCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ASlashCharacter();
 
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
-
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void Attack() override;
 
 	/*
 	Callbacks for input
@@ -47,17 +41,16 @@ protected:
 	void Look(const FInputActionValue& Value);
 	// void Jump() override;
 	void EkeyPressed(const FInputActionValue& Value);
-	void Attack(const FInputActionValue& Value);
+	void LeftMouseClicked(const FInputActionValue& Value);
 	void Dodge(const FInputActionValue& Value);
 
 	/**
 	 * Play montage functions  
 	*/ 
 		
-	void PlayAttackMontage();
-	UFUNCTION(BlueprintCallable)
-	void AttackEnd();
-	bool CanAttack();
+	virtual void PlayAttackMontage() override;
+	virtual bool CanAttack() override;
+	virtual void AttackEnd() override;
 
 	void PlayEquipMontage(const FName &SectionName);
 	bool CanDisarm();
@@ -117,15 +110,11 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
-	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
-	AWeapon* EquippedWeapon;
 
 	/*
 		Animation Montages
 	*/
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages, meta = (AllowPrivateAccess = "true"))
-	UAnimMontage* AttackMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* EquipMontage;
 
@@ -134,6 +123,7 @@ public:
 	
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 };
+
 
 
 

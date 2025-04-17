@@ -86,17 +86,17 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EkeyAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EkeyPressed);
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Attack);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::LeftMouseClicked);
 		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Dodge);
 	}
 }
 
-void ASlashCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+void ASlashCharacter::Attack()
 {
-	if (EquippedWeapon && EquippedWeapon->GetWeaponBox())
+	if (CanAttack())
 	{
-		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		EquippedWeapon->ActorsToIgnore.Empty();
+		ActionState = EActionState::EAS_Attacking;
+		PlayAttackMontage();
 	}
 }
 
@@ -163,13 +163,9 @@ void ASlashCharacter::EkeyPressed(const FInputActionValue& Value)
 	}
 }
 
-void ASlashCharacter::Attack(const FInputActionValue& Value)
+void ASlashCharacter::LeftMouseClicked(const FInputActionValue& Value)
 {
-	if (CanAttack())
-	{
-		ActionState = EActionState::EAS_Attacking;
-		PlayAttackMontage();
-	}
+	Attack();
 }
 
 void ASlashCharacter::Dodge(const FInputActionValue& Value)
