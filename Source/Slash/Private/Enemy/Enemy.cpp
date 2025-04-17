@@ -80,7 +80,7 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (EnemyState > EEnemyState::EES_Patrolling)
+	if (CombatTarget)
 	{
 		CheckCombatTarget();
 	}
@@ -169,16 +169,10 @@ void AEnemy::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 	APawn* SeenPawn = FindPlayer(UpdatedActors);
 	if (!SeenPawn) return;
 
-	GetWorldTimerManager().ClearTimer(PatrolTimer);
-	GetCharacterMovement()->MaxWalkSpeed = 300.f;
-	CombatTarget = SeenPawn;
+	UE_LOG(LogTemp, Warning, TEXT("Found pawn"));
 
-	if (EnemyState != EEnemyState::EES_Attacking)
-	{
-		EnemyState = EEnemyState::EES_Chasing;
-		MoveToTarget(CombatTarget);
-		UE_LOG(LogTemp, Warning, TEXT("Found pawn, Start chasing"));
-	}
+	GetWorldTimerManager().ClearTimer(PatrolTimer);
+	CombatTarget = SeenPawn;
 }
 
 
@@ -280,7 +274,6 @@ void AEnemy::CheckCombatTarget()
 		MoveToTarget(PatrolTarget);
 		UE_LOG(LogTemp, Warning, TEXT("Lose Interest"));
   }
-	// 어그로 유지가 안되는 상황 해결: how?
 	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing)
 	{
 		EnemyState = EEnemyState::EES_Chasing;
