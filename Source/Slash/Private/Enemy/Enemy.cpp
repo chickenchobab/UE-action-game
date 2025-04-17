@@ -36,7 +36,6 @@ AEnemy::AEnemy()
 	HealthBarComponent->SetupAttachment(GetRootComponent());
 
 	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
-
 	SightConfig = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("SightConfig"));
 	if (SightConfig)
 	{
@@ -96,6 +95,7 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
+
 
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation)
 {
@@ -164,8 +164,6 @@ APawn* AEnemy::FindPlayer(const TArray<AActor*>& UpdatedActors)
 
 void AEnemy::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Found Pawn"));
-
 	if (EnemyState == EEnemyState::EES_Chasing) return;
 
 	APawn* SeenPawn = FindPlayer(UpdatedActors);
@@ -294,10 +292,6 @@ void AEnemy::CheckCombatTarget()
 	{
 		EnemyState = EEnemyState::EES_Attacking;
 		UE_LOG(LogTemp, Warning, TEXT("Attack Player"));
-	}
-	else 
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Else"));
 	}
 }
 
