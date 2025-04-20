@@ -12,6 +12,7 @@ class UHealthBarComponent;
 class AAIController;
 class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
+class AWeapon;
 
 UCLASS()
 class SLASH_API AEnemy : public ABaseCharacter
@@ -22,6 +23,7 @@ public:
 	AEnemy();
   virtual void Tick(float DeltaTime) override;
   virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void Destroyed() override;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -66,11 +68,14 @@ protected:
 	UPROPERTY()
 	AActor* CombatTarget;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Combat)
 	double CombatRadius = 500.f;
 
 	UPROPERTY()
 	double AttackRadius = 150.f;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	TSubclassOf<AWeapon> WeaponClass;
 
 	/**
 	 * Navigation

@@ -18,6 +18,8 @@
 
 #include "Components/AttributeComponent.h"
 #include "HUD/HealthBarComponent.h"
+#include "Items/Weapons/Weapon.h"
+
 
 // Sets default values
 AEnemy::AEnemy()
@@ -71,6 +73,13 @@ void AEnemy::BeginPlay()
 	MoveToTarget(PatrolTarget = ChoosePatrolTarget());
 
 	AIPerception->OnPerceptionUpdated.AddDynamic(this, &AEnemy::PerceptionUpdated);
+
+	if (UWorld* World = GetWorld())
+	{
+		AWeapon* DefaultWeapon = World->SpawnActor<AWeapon>(WeaponClass);
+		DefaultWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+		EquippedWeapon = DefaultWeapon;
+	}
 }
 
 // Called every frame
@@ -94,6 +103,13 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void AEnemy::Destroyed()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->Destroy();
+	}
+}
 
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation)
 {

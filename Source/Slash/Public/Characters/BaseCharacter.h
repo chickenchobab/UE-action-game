@@ -27,6 +27,12 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(VisibleAnywhere)
+	UAttributeComponent* Attributes;
+
+	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
+	AWeapon* EquippedWeapon;
+
 	virtual void Attack();
 	virtual void Die();
 
@@ -44,13 +50,6 @@ protected:
 	virtual void AttackEnd();
 	
 	virtual bool CanAttack();
-
-
-	UPROPERTY(VisibleAnywhere)
-	UAttributeComponent* Attributes;
-
-	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
-	AWeapon* EquippedWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;
