@@ -93,6 +93,8 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void ASlashCharacter::Attack()
 {
+	Super::Attack();
+
 	if (CanAttack())
 	{
 		ActionState = EActionState::EAS_Attacking;
@@ -219,6 +221,8 @@ void ASlashCharacter::FinishArming()
 
 void ASlashCharacter::PlayAttackMontage()
 {
+	Super::PlayAttackMontage();
+	
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && AttackMontage)
 	{

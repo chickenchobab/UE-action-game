@@ -162,6 +162,27 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	return DamageAmount;
 }
 
+void AEnemy::Attack()
+{
+	Super::Attack();
+	PlayAttackMontage();
+}
+
+void AEnemy::PlayAttackMontage()
+{
+	Super::PlayAttackMontage();
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && AttackMontage)
+	{
+		AnimInstance->Montage_Play(AttackMontage);
+		const int32 Selection = FMath::RandRange(1, 3);
+		FName SectionName = FName("Attack" + FString::FromInt(Selection));
+
+		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+	}
+}
+
 
 APawn* AEnemy::FindPlayer(const TArray<AActor*>& UpdatedActors)
 {
@@ -187,12 +208,6 @@ void AEnemy::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 
 	GetWorldTimerManager().ClearTimer(PatrolTimer);
 	CombatTarget = SeenPawn;
-}
-
-
-void AEnemy::PlayAttackMontage()
-{
-	
 }
 
 
@@ -250,6 +265,7 @@ void AEnemy::CheckCombatTarget()
 	{
 		EnemyState = EEnemyState::EES_Attacking;
 		UE_LOG(LogTemp, Warning, TEXT("Attack Player"));
+		Attack();
 	}
 }
 
@@ -292,6 +308,6 @@ void AEnemy::MoveToTarget(AActor* Target)
 
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
-	MoveRequest.SetAcceptanceRadius(15.f);
+	MoveRequest.SetAcceptanceRadius(50.f);
 	EnemyController->MoveTo(MoveRequest);
 }

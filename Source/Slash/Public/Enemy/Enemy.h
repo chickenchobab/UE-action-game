@@ -46,6 +46,7 @@ protected:
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
+	virtual void Attack() override;
 
 	virtual void PlayAttackMontage() override;
 
@@ -72,7 +73,7 @@ protected:
 	double CombatRadius = 500.f;
 
 	UPROPERTY()
-	double AttackRadius = 150.f;
+	double AttackRadius = 130.f;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	TSubclassOf<AWeapon> WeaponClass;
