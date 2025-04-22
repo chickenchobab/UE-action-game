@@ -124,8 +124,16 @@ void AEnemy::Attack()
 {
 	Super::Attack();
 
+	EnemyState = EEnemyState::EES_Engaged;
 	PlayAttackMontage();
 }
+
+void AEnemy::AttackEnd()
+{
+	EnemyState = EEnemyState::EES_None;
+	CheckCombatTarget();
+}
+
 
 int32 AEnemy::PlayDeathMontage()
 {
@@ -189,18 +197,19 @@ void AEnemy::CheckCombatTarget()
   {
 		ClearAttackTimer();
     LoseInterest();
+		// if not engaged
     StartPatrolling();
 		UE_LOG(LogTemp, Warning, TEXT("Lose Interest"));
   }
 	else if (!IsTargetInRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing)
 	{
 		ClearAttackTimer();
+		// if not engaged
 		ChaseTarget();
 		UE_LOG(LogTemp, Warning, TEXT("Chase Player"));
 	}
 	else if (IsTargetInRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
 	{
-		ClearAttackTimer();
 		StartAttackTimer();
 		UE_LOG(LogTemp, Warning, TEXT("Attack Player"));
 	}

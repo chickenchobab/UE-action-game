@@ -28,9 +28,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
 public:
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation) override;
-  virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
 
 protected:
 
@@ -47,6 +47,8 @@ protected:
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
 	virtual void Attack() override;
+
+	virtual void AttackEnd() override;
 
 	virtual int32 PlayDeathMontage() override;
 
@@ -123,7 +125,7 @@ private:
 	void HideHealthBar();
 	
 	void HandleDamage(float DamageAmount);
-	
+
 	void GainInterest(AActor* NewTarget);
 	void LoseInterest();
 	void StartPatrolling();
