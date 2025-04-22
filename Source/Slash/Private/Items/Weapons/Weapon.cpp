@@ -38,6 +38,7 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOw
 
 	AttachMeshToSocket(InParent, InSocketName);
   ItemState = EItemState::EIS_Equipped;
+  ResetActorsToIgnore();
 
   if (bPlayEquipSound && EquipSound)
   {
@@ -114,4 +115,18 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
     CreateFields(BoxHit.ImpactPoint);
   }
+}
+
+void AWeapon::ResetActorsToIgnore()
+{
+	ActorsToIgnore.Empty();
+  if (GetOwner())
+  {
+    ActorsToIgnore.Add(GetOwner());
+  }
+}
+
+void AWeapon::SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+{
+  WeaponBox->SetCollisionEnabled(CollisionEnabled);
 }

@@ -24,7 +24,7 @@ public:
 
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 
-	TArray<AActor*> ActorsToIgnore;
+	
 	
 protected:
 	virtual void BeginPlay() override;
@@ -45,6 +45,8 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* WeaponBox;
 
+	TArray<AActor*> ActorsToIgnore;
+
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* BoxTraceStart;
 	UPROPERTY(VisibleAnywhere)
@@ -54,5 +56,7 @@ private:
 	float Damage = 20.f;
 
 public:
-	FORCEINLINE UBoxComponent* GetWeaponBox() const { return WeaponBox; }
+	void SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+
+	void ResetActorsToIgnore();
 };

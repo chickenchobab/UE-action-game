@@ -110,9 +110,6 @@ void ASlashCharacter::Move(const FInputActionValue& Value)
 
 		FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// const FVector ForwardDirection = GetActorForwardVector();
-		// const FVector RightDirection = GetActorRightVector();
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
@@ -138,8 +135,6 @@ void ASlashCharacter::EkeyPressed(const FInputActionValue& Value)
 	if (AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem))
 	{
 		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this, true);
-		OverlappingWeapon->SetOwner(this);
-		OverlappingWeapon->SetInstigator(this);
 
 		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 		EquippedWeapon = OverlappingWeapon;
@@ -221,11 +216,6 @@ void ASlashCharacter::FinishArming()
  
 void ASlashCharacter::PlayEquipMontage(const FName &SectionName)
 {
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && EquipMontage)
-	{
-		AnimInstance->Montage_Play(EquipMontage);
-		AnimInstance->Montage_JumpToSection(SectionName, EquipMontage);
-	}
+	PlayMontageSection(EquipMontage, SectionName);
 }
 

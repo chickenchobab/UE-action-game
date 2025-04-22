@@ -20,7 +20,7 @@
 #include "HUD/HealthBarComponent.h"
 #include "Items/Weapons/Weapon.h"
 
-// Sets default values
+
 AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -87,6 +87,7 @@ void AEnemy::Tick(float DeltaTime)
 	}
 }
 
+
 void AEnemy::Destroyed()
 {
 	if (EquippedWeapon)
@@ -117,6 +118,7 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 	ChaseTarget();
 	return DamageAmount;
 }
+
 
 void AEnemy::Attack()
 {
@@ -276,6 +278,7 @@ void AEnemy::LoseInterest()
   HideHealthBar();
 }
 
+
 void AEnemy::StartPatrolling()
 {
 	EnemyState = EEnemyState::EES_Patrolling;
@@ -298,6 +301,7 @@ if (Attributes && HealthBarComponent)
 		HealthBarComponent->SetHealthPercent(Attributes->GetHealthPercent());
 	}
 }
+
 
 void AEnemy::StartAttackTimer()
 {

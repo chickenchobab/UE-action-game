@@ -32,10 +32,10 @@ void ABaseCharacter::Tick(float DeltaTime)
 
 void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
-	if (EquippedWeapon && EquippedWeapon->GetWeaponBox())
+	if (EquippedWeapon)
 	{
-		EquippedWeapon->GetWeaponBox()->SetCollisionEnabled(CollisionEnabled);
-		EquippedWeapon->ActorsToIgnore.Empty();
+		EquippedWeapon->SetWeaponBoxCollisionEnabled(CollisionEnabled);
+		EquippedWeapon->ResetActorsToIgnore();
 	}
 }
 
