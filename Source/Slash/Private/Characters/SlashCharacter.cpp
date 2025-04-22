@@ -218,21 +218,6 @@ void ASlashCharacter::FinishArming()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }
-
-void ASlashCharacter::PlayAttackMontage()
-{
-	Super::PlayAttackMontage();
-	
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && AttackMontage)
-	{
-		AnimInstance->Montage_Play(AttackMontage);
-		const int32 Selection = FMath::RandRange(1, 2);
-		FName SectionName = FName("Attack" + FString::FromInt(Selection));
-
-		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
-	}
-}
  
 void ASlashCharacter::PlayEquipMontage(const FName &SectionName)
 {

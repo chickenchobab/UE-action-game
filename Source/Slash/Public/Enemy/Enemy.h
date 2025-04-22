@@ -13,6 +13,7 @@ class AAIController;
 class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
 class AWeapon;
+class UAnimMontage;
 
 UCLASS()
 class SLASH_API AEnemy : public ABaseCharacter
@@ -22,7 +23,6 @@ class SLASH_API AEnemy : public ABaseCharacter
 public:
 	AEnemy();
   virtual void Tick(float DeltaTime) override;
-  virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void Destroyed() override;
 	
 protected:
@@ -48,35 +48,44 @@ protected:
 
 	virtual void Attack() override;
 
-	virtual void PlayAttackMontage() override;
+	virtual int32 PlayDeathMontage() override;
 
+	UPROPERTY(BlueprintReadOnly)
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
 	UPROPERTY(BlueprintReadWrite)
-	EDeathPose DeathPose = EDeathPose::EDP_Alive;
+	EDeathPose DeathPose;
 
 	virtual void Die() override;
 
+	bool IsTargetInRange(AActor* Target, double Radius);
 
-	bool InTargetRange(AActor* Target, double Radius);
-
-	void CheckCombatTarget();
-	void CheckPatrolTarget();
+  void CheckCombatTarget();
+  void CheckPatrolTarget();
 
 	/** 
 	 * Combat
 	 */
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float PatrollingSpeed = 125.f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float ChasingSpeed = 300.f;
+
 	UPROPERTY()
 	AActor* CombatTarget;
 
-	UPROPERTY(EditAnywhere, Category = Combat)
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	double CombatRadius = 500.f;
 
-	UPROPERTY()
 	double AttackRadius = 130.f;
 
-	UPROPERTY(EditAnywhere, Category = Combat)
+	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<AWeapon> WeaponClass;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float DeathLifeSpan = 5.f;
+
 
 	/**
 	 * Navigation
@@ -99,19 +108,30 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float WaitMax = 10.f;
 
-	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
-
-	FTimerHandle PatrolTimer;
-
+	
 	void PatrolTimerFinished();
 	
 	AActor* ChoosePatrolTarget();
-
-	void MoveToTarget(AActor* Target);
-
-
-private:
 	
-
+	void MoveToTarget(AActor* Target);
+	
+	
+private:
 	APawn* FindPlayer(const TArray<AActor*>& UpdatedActors);
+	
+	void ShowHealthBar();
+	void HideHealthBar();
+	
+	void LoseInterest();
+	void StartPatrolling();
+	void ChaseTarget();
+	
+	FTimerHandle AttackTimer;
+	FTimerHandle PatrolTimer;
+	
+	float AttackTime = 2.f;
+
+	void StartAttackTimer();
+	void ClearAttackTimer();
+	void ClearPatrolTimer();
 };
