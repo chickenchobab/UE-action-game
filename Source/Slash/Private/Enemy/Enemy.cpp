@@ -52,7 +52,6 @@ AEnemy::AEnemy()
 	bUseControllerRotationRoll = false;
 }
 
-// Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
@@ -60,7 +59,7 @@ void AEnemy::BeginPlay()
 	HideHealthBar();
 	EnemyController = Cast<AAIController>(GetController());
 	// Should move first so that a turnabout occurs.
-	MoveToTarget(PatrolTarget = ChoosePatrolTarget());
+	MoveToTarget(CurrentPatrolTarget = ChoosePatrolTarget());
 
 	AIPerception->OnPerceptionUpdated.AddDynamic(this, &AEnemy::PerceptionUpdated);
 
@@ -72,7 +71,6 @@ void AEnemy::BeginPlay()
 	}
 }
 
-// Called every frame
 void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -99,7 +97,6 @@ void AEnemy::Destroyed()
 
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation)
 {
-	ShowHealthBar();
 	PlayHitSound(ImpactPoint);
 	SpawnHitParticles(ImpactPoint);
 
@@ -115,15 +112,9 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, const FVector& Hi
 
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (Attributes && HealthBarComponent)
-	{
-		Attributes->ReceiveDamage(DamageAmount);
-		HealthBarComponent->SetHealthPercent(Attributes->GetHealthPercent());
-	}
-
-	CombatTarget = EventInstigator->GetPawn();
+	HandleDamage(DamageAmount);
+	GainInterest(EventInstigator->GetPawn());
 	ChaseTarget();
-
 	return DamageAmount;
 }
 
@@ -169,7 +160,7 @@ void AEnemy::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 	UE_LOG(LogTemp, Warning, TEXT("Found pawn"));
 
 	GetWorldTimerManager().ClearTimer(PatrolTimer);
-	CombatTarget = SeenPawn;
+	GainInterest(SeenPawn);
 }
 
 
@@ -212,38 +203,11 @@ void AEnemy::CheckCombatTarget()
 	}
 }
 
-void AEnemy::LoseInterest()
-{
-  CombatTarget = nullptr;
-  HideHealthBar();
-}
-
-void AEnemy::StartPatrolling()
-{
-	EnemyState = EEnemyState::EES_Patrolling;
-	GetCharacterMovement()->MaxWalkSpeed = PatrollingSpeed;
-	MoveToTarget(PatrolTarget);
-}
-
-void AEnemy::ChaseTarget()
-{
-	EnemyState = EEnemyState::EES_Chasing;
-	GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
-	MoveToTarget(CombatTarget);
-}
-
-
-void AEnemy::StartAttackTimer()
-{
-	EnemyState = EEnemyState::EES_Attacking;
-	GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemy::Attack, AttackTime);
-}
-
 void AEnemy::CheckPatrolTarget()
 {
-	if (IsTargetInRange(PatrolTarget, PatrolRadius))
+	if (IsTargetInRange(CurrentPatrolTarget, PatrolRadius))
 	{
-		PatrolTarget = ChoosePatrolTarget();
+		CurrentPatrolTarget = ChoosePatrolTarget();
 		float WaitTime = FMath::RandRange(WaitMin, WaitMax);
 		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemy::PatrolTimerFinished, WaitTime);
 	}
@@ -251,7 +215,7 @@ void AEnemy::CheckPatrolTarget()
 
 void AEnemy::PatrolTimerFinished()
 {
-	MoveToTarget(PatrolTarget);
+	MoveToTarget(CurrentPatrolTarget);
 }
 
 AActor* AEnemy::ChoosePatrolTarget()
@@ -259,7 +223,7 @@ AActor* AEnemy::ChoosePatrolTarget()
 	TArray<AActor*> ValidTargets;
 	for (AActor* Target : PatrolTargets)
 	{
-		if (Target == PatrolTarget) continue;
+		if (Target == CurrentPatrolTarget) continue;
 		ValidTargets.AddUnique(Target);
 	}
 
@@ -297,6 +261,48 @@ void AEnemy::HideHealthBar()
 	{
 		HealthBarComponent->SetVisibility(false);
 	}
+}
+
+
+void AEnemy::GainInterest(AActor* NewTarget)
+{
+  CombatTarget = NewTarget;
+  ShowHealthBar();
+}
+
+void AEnemy::LoseInterest()
+{
+  CombatTarget = nullptr;
+  HideHealthBar();
+}
+
+void AEnemy::StartPatrolling()
+{
+	EnemyState = EEnemyState::EES_Patrolling;
+	GetCharacterMovement()->MaxWalkSpeed = PatrollingSpeed;
+	MoveToTarget(CurrentPatrolTarget);
+}
+
+void AEnemy::ChaseTarget()
+{
+	EnemyState = EEnemyState::EES_Chasing;
+	GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
+	MoveToTarget(CombatTarget);
+}
+
+void AEnemy::HandleDamage(float DamageAmount)
+{
+if (Attributes && HealthBarComponent)
+	{
+		Attributes->ReceiveDamage(DamageAmount);
+		HealthBarComponent->SetHealthPercent(Attributes->GetHealthPercent());
+	}
+}
+
+void AEnemy::StartAttackTimer()
+{
+	EnemyState = EEnemyState::EES_Attacking;
+	GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemy::Attack, AttackTime);
 }
 
 void AEnemy::ClearPatrolTimer()

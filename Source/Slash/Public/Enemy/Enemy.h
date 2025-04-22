@@ -30,7 +30,7 @@ protected:
 
 public:
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation) override;
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+  virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
 
 protected:
 
@@ -95,7 +95,7 @@ protected:
 	AAIController* EnemyController;
 
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation", BlueprintReadWrite)
-	AActor* PatrolTarget;
+	AActor* CurrentPatrolTarget;
 	
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
 	TArray<AActor*> PatrolTargets;
@@ -122,6 +122,9 @@ private:
 	void ShowHealthBar();
 	void HideHealthBar();
 	
+	void HandleDamage(float DamageAmount);
+	
+	void GainInterest(AActor* NewTarget);
 	void LoseInterest();
 	void StartPatrolling();
 	void ChaseTarget();
