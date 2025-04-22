@@ -173,6 +173,7 @@ void AEnemy::Die()
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SetLifeSpan(DeathLifeSpan);
 	HideHealthBar();
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 }
 
 
