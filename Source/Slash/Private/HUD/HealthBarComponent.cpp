@@ -5,12 +5,6 @@
 #include "HUD/HealthBar.h"
 #include "Components/ProgressBar.h"
 
-UHealthBarComponent::UHealthBarComponent()
-{
-	
-}
-
-
 void UHealthBarComponent::SetHealthPercent(float Percent)
 {
   if (!HealthBarWidget)

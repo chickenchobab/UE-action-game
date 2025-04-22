@@ -15,7 +15,6 @@ class SLASH_API UHealthBarComponent : public UWidgetComponent
 	GENERATED_BODY()
 
 public:
-	UHealthBarComponent();
 	void SetHealthPercent(float Percent);
 
 private:

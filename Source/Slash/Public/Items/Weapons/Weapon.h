@@ -20,7 +20,7 @@ class SLASH_API AWeapon : public AItem
 public:
 	AWeapon();
 
-	void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator);
+	void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound = false);
 
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 

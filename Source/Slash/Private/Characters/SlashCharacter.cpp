@@ -137,7 +137,7 @@ void ASlashCharacter::EkeyPressed(const FInputActionValue& Value)
 {
 	if (AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem))
 	{
-		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this, true);
 		OverlappingWeapon->SetOwner(this);
 		OverlappingWeapon->SetInstigator(this);
 
