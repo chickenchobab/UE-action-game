@@ -105,6 +105,8 @@ void AEnemy::BeginPlay()
 	HideHealthBar();
 	MoveToTarget(PatrolTarget = ChoosePatrolTarget()); // Should move first so that a turnabout occurs.
 	SpawnDefaultWeapon();
+
+	Tags.Add(FName("Enemy"));
 }
 
 void AEnemy::Attack()

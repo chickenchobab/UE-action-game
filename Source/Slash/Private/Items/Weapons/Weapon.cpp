@@ -73,7 +73,6 @@ void AWeapon::SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnab
 void AWeapon::ResetActorsToIgnore()
 {
 	ActorsToIgnore.Empty();
-  ActorsToIgnore.Add(this);
   if (GetOwner())
   {
     ActorsToIgnore.Add(GetOwner());
@@ -86,7 +85,7 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
   BoxTrace(BoxHit);
 
-  if (BoxHit.GetActor())
+  if (GetOwner() && BoxHit.GetActor() && !IsOnSameSide(BoxHit.GetActor()))
   {
     UE_LOG(LogTemp, Warning, TEXT("Actor : %s"), *BoxHit.GetActor()->GetName());
     UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
@@ -122,5 +121,12 @@ void AWeapon::ExecuteGetHit(FHitResult &BoxHit)
   {
     HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint, GetOwner()->GetActorLocation());
   }
+}
+
+
+bool AWeapon::IsOnSameSide(AActor* OtherActor)
+{
+  if (GetOwner()->Tags.IsEmpty() || OtherActor->Tags.IsEmpty()) return false;
+  return GetOwner()->Tags[0] == OtherActor->Tags[0];
 }
 
