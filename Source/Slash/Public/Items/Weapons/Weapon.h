@@ -21,42 +21,41 @@ public:
 	AWeapon();
 
 	void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound = false);
-
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
-
-	
+	void SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+	void ResetActorsToIgnore();
 	
 protected:
 	virtual void BeginPlay() override;
-
-	virtual void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
-	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 	
 	UFUNCTION()
-	void OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	UFUNCTION(BlueprintImplementableEvent)
+  void OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
+	
+  UFUNCTION(BlueprintImplementableEvent)
 	void CreateFields(const FVector& FieldLocation);
-
+	
 private:
-	UPROPERTY(EditAnywhere)
-	USoundBase *EquipSound;
+	void BoxTrace(FHitResult& BoxHit);
+  void ExecuteGetHit(FHitResult &BoxHit);
 
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* WeaponBox;
-
-	TArray<AActor*> ActorsToIgnore;
-
+	
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* BoxTraceStart;
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* BoxTraceEnd;
+	
+	TArray<AActor*> ActorsToIgnore;
 
-	UPROPERTY(EditAnywhere)
+	bool bShowDebugBox = false;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	FVector BoxTraceExtent = FVector(5.f);
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	USoundBase *EquipSound;
+	
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float Damage = 20.f;
-
-public:
-	void SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
-
-	void ResetActorsToIgnore();
 };

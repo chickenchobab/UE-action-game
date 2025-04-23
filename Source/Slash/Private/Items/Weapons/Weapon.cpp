@@ -16,6 +16,7 @@ AWeapon::AWeapon()
   WeaponBox->SetupAttachment(GetRootComponent());
   WeaponBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
   WeaponBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+  // Just to overlap with character mesh, not the capsule.
   WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
   BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
@@ -36,9 +37,13 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOw
   SetOwner(NewOwner);
   SetInstigator(NewInstigator);
 
-	AttachMeshToSocket(InParent, InSocketName);
   ItemState = EItemState::EIS_Equipped;
+	AttachMeshToSocket(InParent, InSocketName);
   ResetActorsToIgnore();
+  if (Sphere)
+  {
+    Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+  }
 
   if (bPlayEquipSound && EquipSound)
   {
@@ -47,10 +52,6 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOw
       EquipSound,
       GetActorLocation()
     );
-  }
-  if (Sphere)
-  {
-    Sphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
   }
   if (EmbersEffect)
   {
@@ -64,69 +65,62 @@ void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocke
   ItemMesh->AttachToComponent(InParent, TransformRules, InSocketName);
 }
 
-void AWeapon::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AWeapon::SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
-  Super::OnSphereBeginOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
-}
-
-void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-  Super::OnSphereEndOverlap(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
-}
-
-void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	const FVector Start = BoxTraceStart->GetComponentLocation();
-  const FVector End = BoxTraceEnd->GetComponentLocation();
-
-  FHitResult BoxHit;
-
-  UKismetSystemLibrary::BoxTraceSingle(
-    this,
-    Start,
-    End,
-    FVector(5.f, 5.f, 5.f),
-    BoxTraceStart->GetComponentRotation(),
-    ETraceTypeQuery::TraceTypeQuery1,
-    false,
-    ActorsToIgnore,
-    EDrawDebugTrace::None,
-    BoxHit,
-    true /* Add <this> to actors to ignore */
-  );
-
-  if (BoxHit.GetActor() && GetOwner())
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Actor : %s"), *BoxHit.GetActor()->GetName());
-    UGameplayStatics::ApplyDamage(
-      BoxHit.GetActor(),
-      Damage,
-      GetInstigator()->GetController(),
-      this,
-      UDamageType::StaticClass()
-    );
-
-
-    if (IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor()))
-    {
-      HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint, GetOwner()->GetActorLocation());
-    }
-    ActorsToIgnore.AddUnique(BoxHit.GetActor()); // Ignore multiple collision during one swing.
-
-    CreateFields(BoxHit.ImpactPoint);
-  }
+  WeaponBox->SetCollisionEnabled(CollisionEnabled);
 }
 
 void AWeapon::ResetActorsToIgnore()
 {
 	ActorsToIgnore.Empty();
+  ActorsToIgnore.Add(this);
   if (GetOwner())
   {
     ActorsToIgnore.Add(GetOwner());
   }
 }
 
-void AWeapon::SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-  WeaponBox->SetCollisionEnabled(CollisionEnabled);
+  FHitResult BoxHit;
+
+  BoxTrace(BoxHit);
+
+  if (BoxHit.GetActor())
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Actor : %s"), *BoxHit.GetActor()->GetName());
+    UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+    ExecuteGetHit(BoxHit);
+    ActorsToIgnore.AddUnique(BoxHit.GetActor()); // Ignore multiple collision during one swing.
+    CreateFields(BoxHit.ImpactPoint);
+  }
 }
+
+void AWeapon::BoxTrace(FHitResult& BoxHit)
+{
+  const FVector Start = BoxTraceStart->GetComponentLocation();
+  const FVector End = BoxTraceEnd->GetComponentLocation();
+
+  UKismetSystemLibrary::BoxTraceSingle(
+    this,
+    Start,
+    End,
+    BoxTraceExtent,
+    BoxTraceStart->GetComponentRotation(),
+    UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility),
+    false,
+    ActorsToIgnore,
+    bShowDebugBox ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None,
+    BoxHit,
+    true /* Add <this> to actors to ignore */
+  );
+}
+
+void AWeapon::ExecuteGetHit(FHitResult &BoxHit)
+{
+  if (IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor()))
+  {
+    HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint, GetOwner()->GetActorLocation());
+  }
+}
+

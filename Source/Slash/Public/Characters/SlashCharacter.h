@@ -29,11 +29,19 @@ public:
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 
 protected:
+	// <AActor>
 	virtual void BeginPlay() override;
+	// <\AActor>
 
+	// <ABaseCharacter>
 	virtual void Attack() override;
 	virtual bool CanAttack() override;
 	virtual void AttackEnd() override;
+	// <\ABaseCharacter>
+
+	// <IHitInterface>
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation) override;
+	// <\IHitInterface>
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -93,6 +101,7 @@ private:
 	void Disarm();
 	void Arm(); 
 };
+
 
 
 
