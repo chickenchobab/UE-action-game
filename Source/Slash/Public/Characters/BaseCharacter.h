@@ -18,43 +18,36 @@ class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
 
 public:
 	ABaseCharacter();
-	
 	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
-
+	
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void Attack();
+	virtual void Die();
+	UFUNCTION(BlueprintCallable)
+	virtual void AttackEnd();
+	virtual bool CanAttack();
+	virtual void HandleDamage(float DamageAmount);
+	virtual int32 PlayDeathMontage();
+
+	void SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+	
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+	
+	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
+	int32 PlayAttackMontage();
+	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
+
+	void PlayHitSound(const FVector& ImpactPoint);
+	void SpawnHitParticles(const FVector& ImpactPoint);
 
 	UPROPERTY(VisibleAnywhere)
 	UAttributeComponent* Attributes;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
 	AWeapon* EquippedWeapon;
-
-	virtual void Attack();
-	virtual void Die();
-
-	/**
-	 * Play montage functions  
-	*/ 
-	
-	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
-	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
-
-	int32 PlayAttackMontage();
-	virtual int32 PlayDeathMontage();
-	void PlayHitReactMontage(const FName& SectionName);
-	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
-
-	void PlayHitSound(const FVector& ImpactPoint);
-	void SpawnHitParticles(const FVector& ImpactPoint);
-
-	UFUNCTION(BlueprintCallable)
-	virtual void AttackEnd();
-	
-	virtual bool CanAttack();
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;
@@ -65,14 +58,16 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TArray<FName> AttackMontageSections;
-
 	UPROPERTY(EditAnywhere)
 	TArray<FName> DeathMontageSections;
 
 private:
+	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
+
 	UPROPERTY(EditAnywhere, Category = Sounds)
 	USoundBase* HitSound;
 
 	UPROPERTY(EditAnywhere, Category = VisualEffects)
 	UParticleSystem* HitParticles;
 };
+

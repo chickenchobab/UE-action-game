@@ -23,11 +23,10 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 
-// Sets default values
+
 ASlashCharacter::ASlashCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -53,29 +52,6 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows->AttachmentName = FString("head");
 }
 
-// Called when the game starts or when spawned
-void ASlashCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(SlashCharacterContext, 0);
-		}
-	}
-
-	Tags.Add(FName("SlashCharacter"));
-}
-
-// Called every frame
-void ASlashCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-// Called to bind functionality to input
 void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -91,6 +67,22 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	}
 }
 
+void ASlashCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(SlashCharacterContext, 0);
+		}
+	}
+
+	Tags.Add(FName("SlashCharacter"));
+}
+
+
 void ASlashCharacter::Attack()
 {
 	Super::Attack();
@@ -100,6 +92,17 @@ void ASlashCharacter::Attack()
 		ActionState = EActionState::EAS_Attacking;
 		PlayAttackMontage();
 	}
+}
+
+bool ASlashCharacter::CanAttack()
+{
+	return ActionState == EActionState::EAS_Unoccupied && 
+		CharacterState != ECharacterState::ECS_Unequipped;
+}
+
+void ASlashCharacter::AttackEnd()
+{
+	ActionState = EActionState::EAS_Unoccupied;
 }
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
@@ -134,28 +137,17 @@ void ASlashCharacter::EkeyPressed(const FInputActionValue& Value)
 {
 	if (AWeapon* OverlappingWeapon = Cast<AWeapon>(OverlappingItem))
 	{
-		OverlappingWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this, true);
-
-		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
-		EquippedWeapon = OverlappingWeapon;
-		OverlappingItem = nullptr;
-
-		// To prevent collision until swing
-		SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision); 
+		EquipWeapon(OverlappingWeapon);
 	}
 	else if (EquippedWeapon)
 	{
 		if (CanDisarm())
 		{
-			PlayEquipMontage(FName("Disarm"));
-			CharacterState = ECharacterState::ECS_Unequipped;
-			ActionState = EActionState::EAS_EquippingWeapon;
+			Disarm();
 		}
 		else if (CanArm())
 		{
-			PlayEquipMontage(FName("Arm"));
-			CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
-			ActionState = EActionState::EAS_EquippingWeapon;
+			Arm();
 		}
 	}
 }
@@ -170,10 +162,10 @@ void ASlashCharacter::Dodge(const FInputActionValue& Value)
 	
 }
 
-bool ASlashCharacter::CanAttack()
+
+void ASlashCharacter::PlayEquipMontage(const FName &SectionName)
 {
-	return ActionState == EActionState::EAS_Unoccupied && 
-		CharacterState != ECharacterState::ECS_Unequipped;
+	PlayMontageSection(EquipMontage, SectionName);
 }
 
 bool ASlashCharacter::CanDisarm()
@@ -188,12 +180,7 @@ bool ASlashCharacter::CanArm()
 		CharacterState == ECharacterState::ECS_Unequipped;
 }
 
-void ASlashCharacter::AttackEnd()
-{
-	ActionState = EActionState::EAS_Unoccupied;
-}
-
-void ASlashCharacter::Disarm()
+void ASlashCharacter::AttachWeaponToBack()
 {
 	if (EquippedWeapon)
 	{
@@ -201,7 +188,7 @@ void ASlashCharacter::Disarm()
 	}
 }
 
-void ASlashCharacter::Arm()
+void ASlashCharacter::AttachWeaponToHand()
 {
 	if (EquippedWeapon)
 	{
@@ -214,8 +201,28 @@ void ASlashCharacter::FinishArming()
 	ActionState = EActionState::EAS_Unoccupied;
 }
  
-void ASlashCharacter::PlayEquipMontage(const FName &SectionName)
+
+
+void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
 {
-	PlayMontageSection(EquipMontage, SectionName);
+	Weapon->Equip(GetMesh(), FName("RightHandSocket"), this, this, true);
+	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	EquippedWeapon = Weapon;
+	OverlappingItem = nullptr;
+	// To prevent collision until swing
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision); 
 }
 
+void ASlashCharacter::Disarm()
+{
+	PlayEquipMontage(FName("Disarm"));
+	CharacterState = ECharacterState::ECS_Unequipped;
+	ActionState = EActionState::EAS_EquippingWeapon;
+}
+
+void ASlashCharacter::Arm()
+{
+	PlayEquipMontage(FName("Arm"));
+	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
+	ActionState = EActionState::EAS_EquippingWeapon;
+}

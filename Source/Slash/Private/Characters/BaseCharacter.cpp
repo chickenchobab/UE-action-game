@@ -2,41 +2,30 @@
 
 
 #include "Characters/BaseCharacter.h"
+#include "Components/CapsuleComponent.h"
 #include "Items/Weapons/Weapon.h"
 #include "Components/BoxComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-// Sets default values
 ABaseCharacter::ABaseCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	Attributes = CreateDefaultSubobject<UAttributeComponent>(TEXT("Attributes"));
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
-// Called when the game starts or when spawned
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-}
-
-void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
-{
-	if (EquippedWeapon)
-	{
-		EquippedWeapon->SetWeaponBoxCollisionEnabled(CollisionEnabled);
-		EquippedWeapon->ResetActorsToIgnore();
-	}
 }
 
 void ABaseCharacter::Attack()
@@ -46,7 +35,41 @@ void ABaseCharacter::Attack()
 
 void ABaseCharacter::Die()
 {
+
+}
+
+void ABaseCharacter::AttackEnd()
+{
 	
+}
+
+bool ABaseCharacter::CanAttack()
+{
+	return true;
+}
+
+void ABaseCharacter::HandleDamage(float DamageAmount)
+{
+	
+}
+
+int32 ABaseCharacter::PlayDeathMontage()
+{
+	return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+}
+
+void ABaseCharacter::SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+{
+	GetCapsuleComponent()->SetCollisionEnabled(CollisionEnabled);
+}
+
+void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->SetWeaponBoxCollisionEnabled(CollisionEnabled);
+		EquippedWeapon->ResetActorsToIgnore();
+	}
 }
 
 void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
@@ -59,29 +82,43 @@ void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& Sect
 	}
 }
 
-
-int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
-{
-	if (!Montage) return -1;
-	if (SectionNames.Num() <= 0) return -1;
-
-	int32 MaxSectionIndex = SectionNames.Num() - 1;
-	int32 Selection = FMath::RandRange(0, MaxSectionIndex);
-
-	PlayMontageSection(Montage, SectionNames[Selection]);
-
-	return Selection;
-}
-
-
 int32 ABaseCharacter::PlayAttackMontage()
 {
 	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
 }
 
-int32 ABaseCharacter::PlayDeathMontage()
+void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation)
 {
-	return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+	const FVector Forward = GetActorForwardVector();
+	// const FVector ImpactPointParallel(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
+	const FVector HitterLocationParallel(HitterLocation.X, HitterLocation.Y, GetActorLocation().Z);
+	// const FVector ToHit = (ImpactPointParallel - GetActorLocation()).GetSafeNormal();
+	const FVector ToHitter = (HitterLocationParallel - GetActorLocation()).GetSafeNormal();
+
+	double Theta = FMath::Acos(FVector::DotProduct(Forward, ToHitter));
+	Theta = FMath::RadiansToDegrees(Theta);
+
+	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHitter);
+	if (CrossProduct.Z < 0)
+	{
+		Theta *= -1;
+	}
+
+	FName Section("FromBack");
+	if (Theta >= -45.f && Theta < 45.f)
+	{
+		Section = FName("FromFront");
+	}
+	else if (Theta >= -135.f && Theta < -45.f)
+	{
+		Section = FName("FromLeft");
+	}
+	else if (Theta >= 45.f && Theta < 135.f)
+	{
+		Section = FName("FromRight");
+	}
+
+	PlayMontageSection(HitReactMontage, Section);
 }
 
 void ABaseCharacter::PlayHitSound(const FVector& ImpactPoint)
@@ -108,67 +145,15 @@ void ABaseCharacter::SpawnHitParticles(const FVector& ImpactPoint)
 	}
 }
 
-void ABaseCharacter::AttackEnd()
+int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
 {
-	
-}
+	if (!Montage) return -1;
+	if (SectionNames.Num() <= 0) return -1;
 
-bool ABaseCharacter::CanAttack()
-{
-	return false;
-}
+	int32 MaxSectionIndex = SectionNames.Num() - 1;
+	int32 Selection = FMath::RandRange(0, MaxSectionIndex);
 
-void ABaseCharacter::PlayHitReactMontage(const FName& SectionName)
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && HitReactMontage)
-	{
-		AnimInstance->Montage_Play(HitReactMontage);
-		AnimInstance->Montage_JumpToSection(SectionName, HitReactMontage);
-	}
-}
+	PlayMontageSection(Montage, SectionNames[Selection]);
 
-void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation)
-{
-	const FVector Forward = GetActorForwardVector();
-	// const FVector ImpactPointParallel(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
-	const FVector HitterLocationParallel(HitterLocation.X, HitterLocation.Y, GetActorLocation().Z);
-	// const FVector ToHit = (ImpactPointParallel - GetActorLocation()).GetSafeNormal();
-	const FVector ToHitter = (HitterLocationParallel - GetActorLocation()).GetSafeNormal();
-
-	double Theta = FMath::Acos(FVector::DotProduct(Forward, ToHitter));
-	Theta = FMath::RadiansToDegrees(Theta);
-
-	const FVector CrossProduct = FVector::CrossProduct(Forward, ToHitter);
-	if (CrossProduct.Z < 0)
-	{
-		Theta *= -1;
-	}
-
-	FName Section("FromBack");
-
-	if (Theta >= -45.f && Theta < 45.f)
-	{
-		Section = FName("FromFront");
-	}
-	else if (Theta >= -135.f && Theta < -45.f)
-	{
-		Section = FName("FromLeft");
-	}
-	else if (Theta >= 45.f && Theta < 135.f)
-	{
-		Section = FName("FromRight");
-	}
-
-	// if (GEngine)
-	// {
-	// 	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Black, FString::Printf(TEXT("Theta : %f"), Theta));
-	// }
-	// UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + Forward * 60.f, 5.f, FColor::Purple, 5.f);
-	// UKismetSystemLibrary::DrawDebugArrow(this, GetActorLocation(), GetActorLocation() + ToHit * 60.f, 5.f, FColor::Orange, 5.f);
-
-	if (HitReactMontage)
-	{
-		PlayHitReactMontage(Section);
-	}
+	return Selection;
 }

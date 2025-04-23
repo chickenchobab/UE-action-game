@@ -23,19 +23,17 @@ class SLASH_API ASlashCharacter : public ABaseCharacter
 
 public:
 	ASlashCharacter();
-
-	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
+	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void Attack() override;
-
-	/*
-	Callbacks for input
-	*/
+	virtual bool CanAttack() override;
+	virtual void AttackEnd() override;
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -44,38 +42,24 @@ protected:
 	void LeftMouseClicked(const FInputActionValue& Value);
 	void Dodge(const FInputActionValue& Value);
 
-	/**
-	 * Play montage functions  
-	*/ 
-		
-	virtual bool CanAttack() override;
-	virtual void AttackEnd() override;
-
 	void PlayEquipMontage(const FName &SectionName);
 	bool CanDisarm();
 	bool CanArm();
 	UFUNCTION(BlueprintCallable)
-	void Disarm();
+	void AttachWeaponToBack();
 	UFUNCTION(BlueprintCallable)
-	void Arm();
+	void AttachWeaponToHand();
 	UFUNCTION(BlueprintCallable)
 	void FinishArming();
-
-
-	/**
-	 * Character states
-	 */
 
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
 	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
-	/** Mapping Context */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* SlashCharacterContext;
 
-	/** Input Actions */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -89,38 +73,25 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* DodgeAction;
 
-	/**
-	 * Components
-	 */
-
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* CameraBoom;
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* ViewCamera;
-
 	UPROPERTY(VisibleAnywhere, Category = Hair)
 	UGroomComponent* Hair;
 	UPROPERTY(VisibleAnywhere, Category = Hair)
 	UGroomComponent* Eyebrows;
 
-	/**
-	 * Items
-	 */
-
 	UPROPERTY(VisibleInstanceOnly)
 	AItem* OverlappingItem;
-
-	/*
-		Animation Montages
-	*/
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* EquipMontage;
 
-public:
-	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
-	
-	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
+private:
+	void EquipWeapon(AWeapon* Weapon);
+	void Disarm();
+	void Arm(); 
 };
 
 
