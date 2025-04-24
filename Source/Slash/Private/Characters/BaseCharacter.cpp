@@ -8,6 +8,7 @@
 #include "Components/AttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
 
+
 ABaseCharacter::ABaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -16,16 +17,31 @@ ABaseCharacter::ABaseCharacter()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
-void ABaseCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation)
+{
+	PlayHitSound(ImpactPoint);
+	SpawnHitParticles(ImpactPoint);
+
+	if (IsAlive())
+	{
+		DirectionalHitReact(ImpactPoint, HitterLocation);
+	}
+	else
+	{
+		Die();
+	}
+}
+
+
+void ABaseCharacter::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void ABaseCharacter::Attack()
@@ -38,7 +54,7 @@ void ABaseCharacter::Die()
 
 }
 
-void ABaseCharacter::AttackEnd()
+void ABaseCharacter::OnAttackEnded()
 {
 	
 }
@@ -57,6 +73,13 @@ int32 ABaseCharacter::PlayDeathMontage()
 {
 	return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
 }
+
+
+bool ABaseCharacter::IsAlive()
+{
+	return Attributes && Attributes->IsAlive();
+}
+
 
 void ABaseCharacter::SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {

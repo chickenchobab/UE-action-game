@@ -71,6 +71,15 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	}
 }
 
+
+void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation)
+{
+	Super::GetHit_Implementation(ImpactPoint, HitterLocation);
+
+	ActionState = EActionState::EAS_HitReacting;
+}
+
+
 void ASlashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -104,16 +113,9 @@ bool ASlashCharacter::CanAttack()
 		CharacterState != ECharacterState::ECS_Unequipped;
 }
 
-void ASlashCharacter::AttackEnd()
+void ASlashCharacter::OnAttackEnded()
 {
 	ActionState = EActionState::EAS_Unoccupied;
-}
-
-
-void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation)
-{
-	PlayHitSound(ImpactPoint);
-	SpawnHitParticles(ImpactPoint);
 }
 
 
@@ -208,11 +210,15 @@ void ASlashCharacter::AttachWeaponToHand()
 	}
 }
 
-void ASlashCharacter::FinishArming()
+void ASlashCharacter::OnEquipEnded()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }
- 
+
+void ASlashCharacter::OnHitReactEnded()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+}
 
 
 void ASlashCharacter::EquipWeapon(AWeapon* Weapon)

@@ -25,6 +25,8 @@ public:
 	ASlashCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation) override;
+
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 
@@ -36,12 +38,8 @@ protected:
 	// <ABaseCharacter>
 	virtual void Attack() override;
 	virtual bool CanAttack() override;
-	virtual void AttackEnd() override;
+	virtual void OnAttackEnded() override;
 	// <\ABaseCharacter>
-
-	// <IHitInterface>
-	virtual void GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation) override;
-	// <\IHitInterface>
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -58,7 +56,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void AttachWeaponToHand();
 	UFUNCTION(BlueprintCallable)
-	void FinishArming();
+	void OnEquipEnded();
+	UFUNCTION(BlueprintCallable)
+	void OnHitReactEnded();
 
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
@@ -101,6 +101,7 @@ private:
 	void Disarm();
 	void Arm(); 
 };
+
 
 
 

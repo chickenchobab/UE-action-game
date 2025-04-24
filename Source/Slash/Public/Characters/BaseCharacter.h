@@ -19,6 +19,7 @@ class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
 public:
 	ABaseCharacter();
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation) override;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -26,10 +27,12 @@ protected:
 	virtual void Attack();
 	virtual void Die();
 	UFUNCTION(BlueprintCallable)
-	virtual void AttackEnd();
+	virtual void OnAttackEnded();
 	virtual bool CanAttack();
 	virtual void HandleDamage(float DamageAmount);
 	virtual int32 PlayDeathMontage();
+
+	bool IsAlive();
 
 	void SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	
@@ -70,4 +73,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = VisualEffects)
 	UParticleSystem* HitParticles;
 };
+
 

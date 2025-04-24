@@ -28,11 +28,6 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
 	virtual void Destroyed() override;
 	// <\AActor>
-	
-	// <IHitInterface>
-	virtual void GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation) override;
-	// <\IHitInterface>
-
 
 protected:
 
@@ -43,7 +38,7 @@ protected:
 	// <ABaseCharacter>
 	virtual void Attack() override;
 	virtual void Die() override;
-	virtual void AttackEnd() override;
+	virtual void OnAttackEnded() override;
 	virtual bool CanAttack() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	virtual int32 PlayDeathMontage() override;
@@ -131,7 +126,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	double CombatRadius = 500.f;
 	
-	double AttackRadius = 130.f;
+	double AttackRadius = 200.f;
 
 	float AttackTime = 2.f;
 
