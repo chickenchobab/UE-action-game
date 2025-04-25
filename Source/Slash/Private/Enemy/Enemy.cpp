@@ -67,12 +67,6 @@ void AEnemy::Tick(float DeltaTime)
 float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	HandleDamage(DamageAmount);
-	if (IsAlive())
-	{
-		ClearPatrolTimer();
-		GainInterest(EventInstigator->GetPawn());
-		ChaseTarget();
-	}
 	return DamageAmount;
 }
 
@@ -83,6 +77,20 @@ void AEnemy::Destroyed()
 		EquippedWeapon->Destroy();
 	}
 }
+
+
+void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
+{
+	Super::GetHit_Implementation(ImpactPoint, Hitter);
+	if (IsAlive())
+	{
+		ClearPatrolTimer();
+		GainInterest(Hitter);
+		ChaseTarget();
+	}
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 
 void AEnemy::BeginPlay()
 {

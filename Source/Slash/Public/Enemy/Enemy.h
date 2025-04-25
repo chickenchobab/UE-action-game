@@ -24,10 +24,12 @@ public:
 	AEnemy();
 
 	// <AActor>
-  virtual void Tick(float DeltaTime) override;\
+  virtual void Tick(float DeltaTime) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
 	virtual void Destroyed() override;
 	// <\AActor>
+
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 
 protected:
 
@@ -49,6 +51,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	EDeathPose DeathPose;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	AActor* CombatTarget;
 	
 private:
 
@@ -117,16 +122,13 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UHealthBarComponent* HealthBarComponent;
 
-	UPROPERTY()
-	AActor* CombatTarget;
-
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float ChasingSpeed = 300.f;
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	double CombatRadius = 500.f;
 	
-	double AttackRadius = 200.f;
+	double AttackRadius = 250.f;
 
 	float AttackTime = 2.f;
 

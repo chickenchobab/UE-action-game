@@ -23,14 +23,14 @@ void ABaseCharacter::Tick(float DeltaTime)
 
 }
 
-void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, const FVector& HitterLocation)
+void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
 	PlayHitSound(ImpactPoint);
 	SpawnHitParticles(ImpactPoint);
 
 	if (IsAlive())
 	{
-		DirectionalHitReact(ImpactPoint, HitterLocation);
+		DirectionalHitReact(ImpactPoint, Hitter->GetActorLocation());
 	}
 	else
 	{
