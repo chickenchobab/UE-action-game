@@ -228,8 +228,6 @@ void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
 	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 	EquippedWeapon = Weapon;
 	OverlappingItem = nullptr;
-	// To prevent collision until swing
-	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision); 
 }
 
 void ASlashCharacter::Disarm()
