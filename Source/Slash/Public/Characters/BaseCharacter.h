@@ -41,6 +41,7 @@ protected:
 	
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	int32 PlayAttackMontage();
+	void StopAttackMontage();
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
 
 	void PlayHitSound(const FVector& ImpactPoint);

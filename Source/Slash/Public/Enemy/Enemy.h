@@ -46,6 +46,11 @@ protected:
 	virtual int32 PlayDeathMontage() override;
 	// <\ABaseCharacter>
 
+	UFUNCTION(BlueprintCallable)
+	FVector GetTranslationWarpTarget();
+	UFUNCTION(BlueprintCallable)
+	FVector GetRotationWarpTarget();
+
 	UPROPERTY(BlueprintReadOnly)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
@@ -54,6 +59,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	AActor* CombatTarget;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float WarpTargetDistance = 75.f;
 	
 private:
 

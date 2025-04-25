@@ -11,7 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Animation/AnimMontage.h"
-// #include "DrawDebugHelpers.h"
+#include "DrawDebugHelpers.h"
 
 #include "Components/AttributeComponent.h"
 #include "HUD/HealthBarComponent.h"
@@ -82,12 +82,23 @@ void AEnemy::Destroyed()
 void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
+
 	if (IsAlive())
 	{
-		ClearPatrolTimer();
 		GainInterest(Hitter);
-		ChaseTarget();
+		if (IsTargetInRange(CombatTarget, AttackRadius))
+		{
+			EnemyState = EEnemyState::EES_Attacking;
+		}
+		else
+		{
+			ChaseTarget();
+		}
 	}
+
+	ClearPatrolTimer();
+	ClearAttackTimer();
+	StopAttackMontage();
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -153,6 +164,32 @@ int32 AEnemy::PlayDeathMontage()
 
 	DeathPose = Pose;
 	return Selection;
+}
+
+
+FVector AEnemy::GetTranslationWarpTarget()
+{
+	if (CombatTarget == nullptr) return FVector();
+
+	const FVector CombatTargetLocation = CombatTarget->GetActorLocation();
+	const FVector Location = GetActorLocation();
+
+	FVector TargetToMe = (Location - CombatTargetLocation).GetSafeNormal();
+	TargetToMe *= WarpTargetDistance;
+
+	DrawDebugSphere(GetWorld(), CombatTargetLocation + TargetToMe, 10, 10, FColor::Blue, true, 5);
+	
+	return CombatTargetLocation + TargetToMe;
+}
+
+
+FVector AEnemy::GetRotationWarpTarget()
+{
+	if (CombatTarget)
+	{
+		return CombatTarget->GetActorLocation();
+	}
+	return FVector();
 }
 
 
