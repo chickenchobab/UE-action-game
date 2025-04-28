@@ -82,12 +82,13 @@ void AWeapon::ResetActorsToIgnore()
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
   FHitResult BoxHit;
+  UE_LOG(LogTemp, Warning, TEXT("On overlap"));
 
   BoxTrace(BoxHit);
 
   if (GetOwner() && BoxHit.GetActor() && !IsOnSameSide(BoxHit.GetActor()))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Actor : %s"), *BoxHit.GetActor()->GetName());
+    UE_LOG(LogTemp, Warning, TEXT("Hit Actor : %s"), *BoxHit.GetActor()->GetName());
     UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
     ExecuteGetHit(BoxHit);
     ActorsToIgnore.AddUnique(BoxHit.GetActor()); // Ignore multiple collision during one swing.
@@ -102,8 +103,8 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
 
   UKismetSystemLibrary::BoxTraceSingle(
     this,
-    Start,
     End,
+    Start,
     BoxTraceExtent,
     BoxTraceStart->GetComponentRotation(),
     UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility),

@@ -138,7 +138,8 @@ private:
 	
 	double AttackRadius = 250.f;
 
-	float AttackTime = 2.f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float AttackTime = 1.f;
 
 	FTimerHandle AttackTimer;
 

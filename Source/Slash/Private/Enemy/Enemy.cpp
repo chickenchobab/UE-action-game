@@ -52,7 +52,7 @@ void AEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (EnemyState == EEnemyState::EES_Dead) return;
+	if (!IsAlive()) return;
 
 	if (CombatTarget)
 	{
@@ -83,23 +83,23 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
 
+	ClearPatrolTimer();
+	ClearAttackTimer();
+	StopAttackMontage();
+	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	if (IsAlive())
 	{
 		GainInterest(Hitter);
 		if (IsTargetInRange(CombatTarget, AttackRadius))
 		{
-			EnemyState = EEnemyState::EES_Attacking;
+			StartAttacking();
 		}
 		else
 		{
 			ChaseTarget();
 		}
 	}
-
-	ClearPatrolTimer();
-	ClearAttackTimer();
-	StopAttackMontage();
-	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 
@@ -245,7 +245,6 @@ APawn* AEnemy::FindPlayer(const TArray<AActor*>& UpdatedActors)
 {
 	for (AActor* UpdatedActor : UpdatedActors)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Updated Actor : %s"), *UpdatedActor->GetActorNameOrLabel());
 		if (UpdatedActor->ActorHasTag(FName("SlashCharacter")))
 		{
 			return Cast<APawn>(UpdatedActor);
@@ -356,7 +355,7 @@ if (UWorld* World = GetWorld())
 
 void AEnemy::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-	if (EnemyState == EEnemyState::EES_Chasing) return;
+	if (EnemyState != EEnemyState::EES_None && EnemyState != EEnemyState::EES_Patrolling) return;
 
 	APawn* SeenPawn = FindPlayer(UpdatedActors);
 	if (!SeenPawn) return;
@@ -364,6 +363,9 @@ void AEnemy::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 	UE_LOG(LogTemp, Warning, TEXT("Found pawn"));
 
 	GetWorldTimerManager().ClearTimer(PatrolTimer);
-	GainInterest(SeenPawn);
-}
 
+	// This function is called less frequently than frame.
+	ClearPatrolTimer();
+	GainInterest(SeenPawn);
+	ChaseTarget();
+}
