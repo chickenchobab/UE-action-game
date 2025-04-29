@@ -80,7 +80,6 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-
 void ASlashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -93,7 +92,7 @@ void ASlashCharacter::BeginPlay()
 		}
 	}
 
-	Tags.Add(FName("SlashCharacter"));
+	Tags.Add(FName("Ally"));
 }
 
 

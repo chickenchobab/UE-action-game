@@ -37,7 +37,7 @@ protected:
 private:
 	void BoxTrace(FHitResult& BoxHit);
   void ExecuteGetHit(FHitResult &BoxHit);
-	bool IsOnSameSide(AActor* OtherActor);
+	bool IsOwnerOpposite(AActor* OtherActor);
 
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* WeaponBox;

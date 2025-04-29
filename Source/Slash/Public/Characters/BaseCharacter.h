@@ -20,6 +20,8 @@ public:
 	ABaseCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
+	bool IsAlive();
+	bool IsOpposite(AActor* OtherActor);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -31,8 +33,6 @@ protected:
 	virtual bool CanAttack();
 	virtual void HandleDamage(float DamageAmount);
 	virtual int32 PlayDeathMontage();
-
-	bool IsAlive();
 
 	void SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	

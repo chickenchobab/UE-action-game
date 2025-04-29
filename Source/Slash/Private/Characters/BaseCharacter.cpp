@@ -38,6 +38,18 @@ void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* H
 	}
 }
 
+bool ABaseCharacter::IsAlive()
+{
+	return Attributes && Attributes->IsAlive();
+}
+
+
+bool ABaseCharacter::IsOpposite(AActor* OtherActor)
+{
+	if (Tags.IsEmpty() || OtherActor->Tags.IsEmpty()) return false;
+  return Tags[0] != OtherActor->Tags[0];
+}
+
 
 void ABaseCharacter::BeginPlay()
 {
@@ -75,12 +87,6 @@ int32 ABaseCharacter::PlayDeathMontage()
 }
 
 
-bool ABaseCharacter::IsAlive()
-{
-	return Attributes && Attributes->IsAlive();
-}
-
-
 void ABaseCharacter::SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
 	GetCapsuleComponent()->SetCollisionEnabled(CollisionEnabled);
@@ -109,7 +115,6 @@ int32 ABaseCharacter::PlayAttackMontage()
 {
 	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
 }
-
 
 void ABaseCharacter::StopAttackMontage()
 {

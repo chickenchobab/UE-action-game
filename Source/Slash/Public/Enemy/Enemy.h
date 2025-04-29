@@ -68,7 +68,7 @@ private:
 	void CheckCombatTarget();
 	void CheckPatrolTarget();
 	void MoveToTarget(AActor* Target);
-	APawn* FindPlayer(const TArray<AActor*>& UpdatedActors);
+	APawn* FindCombatTarget(const TArray<AActor*>& UpdatedActors);
 	bool IsTargetInRange(AActor* Target, double Radius);
 	void PatrolTimerFinished();
 	AActor* ChoosePatrolTarget();
@@ -134,9 +134,9 @@ private:
 	float ChasingSpeed = 300.f;
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	double CombatRadius = 500.f;
+	double CombatRadius = 700.f;
 	
-	double AttackRadius = 250.f;
+	double AttackRadius = 400.f;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float AttackTime = 1.f;

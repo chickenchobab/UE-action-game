@@ -81,17 +81,34 @@ void AWeapon::ResetActorsToIgnore()
 
 void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+  if (!IsOwnerOpposite(OtherActor)) 
+  { 
+    UE_LOG(LogTemp, Warning, TEXT("Box overlap : Not enemy(%s)->%s"), *OtherActor->GetName(), *OtherComp->GetName());
+    return;
+  }
+  else
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Box overlap : Enemy(%s)->%s"), *OtherActor->GetName(), *OtherComp->GetName());
+  }
+  
   FHitResult BoxHit;
-  UE_LOG(LogTemp, Warning, TEXT("On overlap"));
-
   BoxTrace(BoxHit);
 
-  if (GetOwner() && BoxHit.GetActor() && !IsOnSameSide(BoxHit.GetActor()))
+  if (!BoxHit.GetActor())
   {
-    UE_LOG(LogTemp, Warning, TEXT("Hit Actor : %s"), *BoxHit.GetActor()->GetName());
+    UE_LOG(LogTemp, Warning, TEXT("No hit actor"));
+  }
+
+  if (GetOwner() && BoxHit.GetActor())
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Hit Actor(%s)->%s"), *BoxHit.GetActor()->GetName(), *BoxHit.GetComponent()->GetName());
+    if (!IsOwnerOpposite(BoxHit.GetActor()))
+    {
+      UE_LOG(LogTemp, Warning, TEXT("No damage to ally"));
+      return;
+    }
     UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
     ExecuteGetHit(BoxHit);
-    ActorsToIgnore.AddUnique(BoxHit.GetActor()); // Ignore multiple collision during one swing.
     CreateFields(BoxHit.ImpactPoint);
   }
 }
@@ -101,6 +118,7 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
   const FVector Start = BoxTraceStart->GetComponentLocation();
   const FVector End = BoxTraceEnd->GetComponentLocation();
 
+  bShowDebugBox = true;
   UKismetSystemLibrary::BoxTraceSingle(
     this,
     End,
@@ -114,6 +132,8 @@ void AWeapon::BoxTrace(FHitResult& BoxHit)
     BoxHit,
     true /* Add <this> to actors to ignore */
   );
+
+  ActorsToIgnore.AddUnique(BoxHit.GetActor()); // Ignore multiple collision during one swing.
 }
 
 void AWeapon::ExecuteGetHit(FHitResult &BoxHit)
@@ -125,9 +145,11 @@ void AWeapon::ExecuteGetHit(FHitResult &BoxHit)
 }
 
 
-bool AWeapon::IsOnSameSide(AActor* OtherActor)
+bool AWeapon::IsOwnerOpposite(AActor* OtherActor)
 {
-  if (GetOwner()->Tags.IsEmpty() || OtherActor->Tags.IsEmpty()) return false;
-  return GetOwner()->Tags[0] == OtherActor->Tags[0];
+  if (ABaseCharacter* OwnerCharacter = Cast<ABaseCharacter>(GetOwner()))
+  {
+    return OwnerCharacter->IsOpposite(OtherActor);
+  }
+  return false;
 }
-

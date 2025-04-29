@@ -176,8 +176,6 @@ FVector AEnemy::GetTranslationWarpTarget()
 
 	FVector TargetToMe = (Location - CombatTargetLocation).GetSafeNormal();
 	TargetToMe *= WarpTargetDistance;
-
-	DrawDebugSphere(GetWorld(), CombatTargetLocation + TargetToMe, 10, 10, FColor::Blue, true, 5);
 	
 	return CombatTargetLocation + TargetToMe;
 }
@@ -241,11 +239,11 @@ void AEnemy::MoveToTarget(AActor* Target)
 	EnemyController->MoveTo(MoveRequest);
 }
 
-APawn* AEnemy::FindPlayer(const TArray<AActor*>& UpdatedActors)
+APawn* AEnemy::FindCombatTarget(const TArray<AActor*>& UpdatedActors)
 {
 	for (AActor* UpdatedActor : UpdatedActors)
 	{
-		if (UpdatedActor->ActorHasTag(FName("SlashCharacter")))
+		if (IsOpposite(UpdatedActor))
 		{
 			return Cast<APawn>(UpdatedActor);
 		}
@@ -355,14 +353,20 @@ if (UWorld* World = GetWorld())
 
 void AEnemy::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
-	if (EnemyState != EEnemyState::EES_None && EnemyState != EEnemyState::EES_Patrolling) return;
+	if (EnemyState != EEnemyState::EES_None && EnemyState != EEnemyState::EES_Patrolling)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Actor perceived but not proper enemy state"));
+		return;
+	}
 
-	APawn* SeenPawn = FindPlayer(UpdatedActors);
-	if (!SeenPawn) return;
+	APawn* SeenPawn = FindCombatTarget(UpdatedActors);
+	if (!SeenPawn)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Actor perceived but No enemy"));
+		return;
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Found pawn"));
-
-	GetWorldTimerManager().ClearTimer(PatrolTimer);
 
 	// This function is called less frequently than frame.
 	ClearPatrolTimer();
