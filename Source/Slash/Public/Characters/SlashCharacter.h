@@ -37,6 +37,7 @@ protected:
 	virtual void Attack() override;
 	virtual bool CanAttack() override;
 	virtual void OnAttackEnded() override;
+	virtual void HandleDamage(float DamageAmount) override;
 	// <\ABaseCharacter>
 
 	void Move(const FInputActionValue& Value);

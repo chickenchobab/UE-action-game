@@ -147,6 +147,8 @@ bool AEnemy::CanAttack()
 
 void AEnemy::HandleDamage(float DamageAmount)
 {
+	Super::HandleDamage(DamageAmount);
+	
 	if (Attributes && HealthBarComponent)
 	{
 		Attributes->ReceiveDamage(DamageAmount);

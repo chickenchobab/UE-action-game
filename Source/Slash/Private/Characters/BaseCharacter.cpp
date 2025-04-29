@@ -78,7 +78,10 @@ bool ABaseCharacter::CanAttack()
 
 void ABaseCharacter::HandleDamage(float DamageAmount)
 {
-	
+	if (Attributes)
+	{
+		Attributes->ReceiveDamage(DamageAmount);
+	}
 }
 
 int32 ABaseCharacter::PlayDeathMontage()

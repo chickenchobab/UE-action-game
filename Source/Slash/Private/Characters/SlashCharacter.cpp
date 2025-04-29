@@ -118,6 +118,12 @@ void ASlashCharacter::OnAttackEnded()
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
+void ASlashCharacter::HandleDamage(float DamageAmount)
+{
+	Super::HandleDamage(DamageAmount);
+}
+
+
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
