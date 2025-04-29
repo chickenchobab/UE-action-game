@@ -15,6 +15,7 @@ class UCameraComponent;
 class UGroomComponent;
 class AItem;
 class UAnimMontage;
+class USlashOverlay;
 
 UCLASS()
 class SLASH_API ASlashCharacter : public ABaseCharacter
@@ -24,14 +25,20 @@ class SLASH_API ASlashCharacter : public ABaseCharacter
 public:
 	ASlashCharacter();
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+  virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
+	virtual void Jump() override;
+
+  // <IHitInterface>
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
+	// <\IHitInterface>
+
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 
 protected:
 	// <AActor>
-	virtual void BeginPlay() override;
-	// <\AActor>
+  virtual void BeginPlay() override;
+  // <\AActor>
 
 	// <ABaseCharacter>
 	virtual void Attack() override;
@@ -98,7 +105,13 @@ protected:
 private:
 	void EquipWeapon(AWeapon* Weapon);
 	void Disarm();
-	void Arm(); 
+	void Arm();
+	void SetHUDHealth();
+
+	FORCEINLINE bool IsUnoccupied() { return ActionState == EActionState::EAS_Unoccupied; }
+
+	UPROPERTY()
+	USlashOverlay* SlashOverlay;
 };
 
 

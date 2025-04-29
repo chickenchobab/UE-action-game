@@ -16,6 +16,9 @@ class SLASH_API ASlashHUD : public AHUD
 {
 	GENERATED_BODY()
 
+public:
+	FORCEINLINE USlashOverlay* GetSlashOverlay() const { return SlashOverlay; }
+
 protected:
 	virtual void BeginPlay() override;
 	

@@ -132,9 +132,7 @@ void ABaseCharacter::StopAttackMontage()
 void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation)
 {
 	const FVector Forward = GetActorForwardVector();
-	// const FVector ImpactPointParallel(ImpactPoint.X, ImpactPoint.Y, GetActorLocation().Z);
 	const FVector HitterLocationParallel(HitterLocation.X, HitterLocation.Y, GetActorLocation().Z);
-	// const FVector ToHit = (ImpactPointParallel - GetActorLocation()).GetSafeNormal();
 	const FVector ToHitter = (HitterLocationParallel - GetActorLocation()).GetSafeNormal();
 
 	double Theta = FMath::Acos(FVector::DotProduct(Forward, ToHitter));

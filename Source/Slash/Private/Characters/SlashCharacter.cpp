@@ -19,8 +19,9 @@
 
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
-
-
+#include "HUD/SlashHUD.h"
+#include "HUD/SlashOverlay.h"
+#include "Components/AttributeComponent.h"
 
 ASlashCharacter::ASlashCharacter()
 {
@@ -72,6 +73,22 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 }
 
 
+float ASlashCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser)
+{
+	HandleDamage(DamageAmount);
+  SetHUDHealth();
+  return DamageAmount;
+}
+
+
+void ASlashCharacter::Jump()
+{
+	if (IsUnoccupied())
+	{
+		Super::Jump();
+	}
+}
+
 void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
@@ -89,6 +106,18 @@ void ASlashCharacter::BeginPlay()
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(SlashCharacterContext, 0);
+		}
+
+		if (ASlashHUD* SlashHUD = Cast<ASlashHUD>(PlayerController->GetHUD()))
+		{
+			SlashOverlay = SlashHUD->GetSlashOverlay();
+			if (SlashOverlay && Attributes)
+			{
+				SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
+				SlashOverlay->SetStaminaBarPercent(1.f);
+				SlashOverlay->SetGold(0);
+				SlashOverlay->SetSoul(0);
+			}
 		}
 	}
 
@@ -122,8 +151,6 @@ void ASlashCharacter::HandleDamage(float DamageAmount)
 {
 	Super::HandleDamage(DamageAmount);
 }
-
-
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
@@ -247,4 +274,12 @@ void ASlashCharacter::Arm()
 	PlayEquipMontage(FName("Arm"));
 	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 	ActionState = EActionState::EAS_EquippingWeapon;
+}
+
+void ASlashCharacter::SetHUDHealth()
+{
+  if (SlashOverlay && Attributes)
+  {
+    SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
+  }
 }
