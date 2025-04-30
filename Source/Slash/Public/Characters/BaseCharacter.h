@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/HitInterface.h"
+#include "Characters/CharacterTypes.h"
 #include "BaseCharacter.generated.h"
 
 class AWeapon;
@@ -22,6 +23,8 @@ public:
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	bool IsAlive();
 	bool IsOpposite(AActor* OtherActor);
+
+	FORCEINLINE EDeathPose GetDeathPose() { return DeathPose; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -32,8 +35,7 @@ protected:
 	virtual void OnAttackEnded();
 	virtual bool CanAttack();
 	virtual void HandleDamage(float DamageAmount);
-	virtual int32 PlayDeathMontage();
-
+	
 	void SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	
 	UFUNCTION(BlueprintCallable)
@@ -41,6 +43,7 @@ protected:
 	
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	int32 PlayAttackMontage();
+	int32 PlayDeathMontage();
 	void StopAttackMontage();
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
 
@@ -59,6 +62,9 @@ protected:
 	UAnimMontage* HitReactMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* DeathMontage;
+
+	UPROPERTY(BlueprintReadWrite)
+	EDeathPose DeathPose;
 
 	UPROPERTY(EditAnywhere)
 	TArray<FName> AttackMontageSections;

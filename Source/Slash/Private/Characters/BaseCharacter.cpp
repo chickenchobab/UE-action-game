@@ -63,7 +63,8 @@ void ABaseCharacter::Attack()
 
 void ABaseCharacter::Die()
 {
-
+	Tags.Add("Dead");
+	PlayDeathMontage();
 }
 
 void ABaseCharacter::OnAttackEnded()
@@ -86,7 +87,14 @@ void ABaseCharacter::HandleDamage(float DamageAmount)
 
 int32 ABaseCharacter::PlayDeathMontage()
 {
-	return PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+	int32 Selection = PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+	if (Selection < 0) return -1;
+	
+	EDeathPose Pose = static_cast<EDeathPose>(Selection);
+	if (Pose >= EDeathPose::EDP_MAX) return -1;
+
+	DeathPose = Pose; // It is used by animation blueprint
+	return Selection;
 }
 
 

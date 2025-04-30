@@ -41,8 +41,7 @@ AEnemy::AEnemy()
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	AIPerception->ConfigureSense(*SightConfig);
 	AIPerception->SetDominantSense(SightConfig->GetSenseImplementation());
-
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -110,24 +109,36 @@ void AEnemy::BeginPlay()
 	EnemyController = Cast<AAIController>(GetController());
 	AIPerception->OnPerceptionUpdated.AddDynamic(this, &AEnemy::PerceptionUpdated);
 
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->MaxWalkSpeed = PatrollingSpeed;
 	HideHealthBar();
-	MoveToTarget(PatrolTarget = ChoosePatrolTarget()); // Should move first so that a turnabout occurs.
 	SpawnDefaultWeapon();
+	MoveToTarget(PatrolTarget = ChoosePatrolTarget()); // Should move first so that a turnabout occurs.
 
 	Tags.Add(FName("Enemy"));
 }
 
 void AEnemy::Attack()
 {
+	Super::Attack();
+
+	if (CombatTarget && CombatTarget->ActorHasTag("Dead"))
+	{
+		LoseInterest();
+		StartPatrolling();
+		UE_LOG(LogTemp, Warning, TEXT("Player dead"));
+		return;
+	}
 	EnemyState = EEnemyState::EES_Engaged;
 	PlayAttackMontage();
 }
 
 void AEnemy::Die()
 {
+	Super::Die();
+
 	EnemyState = EEnemyState::EES_Dead;
 	HideHealthBar();
-	PlayDeathMontage();
 	SetLifeSpan(DeathLifeSpan);
 	SetCapsuleCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -155,19 +166,6 @@ void AEnemy::HandleDamage(float DamageAmount)
 		HealthBarComponent->SetHealthPercent(Attributes->GetHealthPercent());
 	}
 }
-
-int32 AEnemy::PlayDeathMontage()
-{
-	int32 Selection = Super::PlayDeathMontage();
-	if (Selection < 0) return -1;
-	
-	EDeathPose Pose = static_cast<EDeathPose>(Selection);
-	if (Pose >= EDeathPose::EDP_MAX) return -1;
-
-	DeathPose = Pose;
-	return Selection;
-}
-
 
 FVector AEnemy::GetTranslationWarpTarget()
 {
@@ -245,7 +243,7 @@ APawn* AEnemy::FindCombatTarget(const TArray<AActor*>& UpdatedActors)
 {
 	for (AActor* UpdatedActor : UpdatedActors)
 	{
-		if (IsOpposite(UpdatedActor))
+		if (IsOpposite(UpdatedActor) && !UpdatedActor->ActorHasTag("Dead"))
 		{
 			return Cast<APawn>(UpdatedActor);
 		}

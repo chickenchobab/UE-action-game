@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Characters/BaseCharacter.h"
 #include "Interfaces/HitInterface.h"
-#include "Characters/CharacterTypes.h"
 #include "Enemy.generated.h"
 
 class UHealthBarComponent;
@@ -43,7 +42,6 @@ protected:
 	virtual void OnAttackEnded() override;
 	virtual bool CanAttack() override;
 	virtual void HandleDamage(float DamageAmount) override;
-	virtual int32 PlayDeathMontage() override;
 	// <\ABaseCharacter>
 
 	UFUNCTION(BlueprintCallable)
@@ -53,9 +51,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
-
-	UPROPERTY(BlueprintReadWrite)
-	EDeathPose DeathPose;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Combat")
 	AActor* CombatTarget;
@@ -117,7 +112,7 @@ private:
 	float PatrolWaitMax = 10.f;
 	
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
-	float PatrollingSpeed = 125.f;
+	float PatrollingSpeed = 100.f;
 
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	double PatrolRadius = 200.f;

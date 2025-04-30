@@ -93,7 +93,10 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 {
 	Super::GetHit_Implementation(ImpactPoint, Hitter);
 
-	ActionState = EActionState::EAS_HitReacting;
+	if (IsAlive())
+	{
+		ActionState = EActionState::EAS_HitReacting;
+	}
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -135,6 +138,16 @@ void ASlashCharacter::Attack()
 		PlayAttackMontage();
 	}
 }
+
+
+void ASlashCharacter::Die()
+{
+	Super::Die();
+
+	ActionState = EActionState::EAS_Dead;
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 
 bool ASlashCharacter::CanAttack()
 {

@@ -20,18 +20,24 @@ public:
 	virtual void NativeUpdateAnimation(float DeltaTime) override;
 	
 protected:
-	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	class ASlashCharacter* SlashCharacter;
 
-	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	class UCharacterMovementComponent* SlashCharacterMovement;
 
-	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	float GroundSpeed;
 
-	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = Movement)
 	bool IsFalling;
 
-	UPROPERTY(BlueprintReadOnly, Category = "Movement | Character State", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintReadOnly, Category = "Character State")
 	ECharacterState CharacterState;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Action State")
+	EActionState ActionState;
+
+	UPROPERTY(BlueprintReadOnly)
+	EDeathPose DeathPose;
 };

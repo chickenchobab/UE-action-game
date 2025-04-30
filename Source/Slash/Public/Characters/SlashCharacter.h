@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Characters/BaseCharacter.h"
-#include "Characters/CharacterTypes.h"
 #include "SlashCharacter.generated.h"
 
 class UInputMappingContext;
@@ -34,6 +33,7 @@ public:
 
 	FORCEINLINE void SetOverlappingItem(AItem* Item) { OverlappingItem = Item; }
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
+	FORCEINLINE EActionState GetActionState() const { return ActionState; }
 
 protected:
 	// <AActor>
@@ -42,6 +42,7 @@ protected:
 
 	// <ABaseCharacter>
 	virtual void Attack() override;
+	virtual void Die() override;
 	virtual bool CanAttack() override;
 	virtual void OnAttackEnded() override;
 	virtual void HandleDamage(float DamageAmount) override;
@@ -49,7 +50,6 @@ protected:
 
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	// void Jump() override;
 	void EkeyPressed(const FInputActionValue& Value);
 	void LeftMouseClicked(const FInputActionValue& Value);
 	void Dodge(const FInputActionValue& Value);
