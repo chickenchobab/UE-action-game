@@ -189,6 +189,12 @@ void ASlashCharacter::OnAttackEnded()
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
+void ASlashCharacter::OnDodgeEnded()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+}
+
+
 void ASlashCharacter::HandleDamage(float DamageAmount)
 {
 	Super::HandleDamage(DamageAmount);
@@ -248,7 +254,9 @@ void ASlashCharacter::LeftMouseClicked(const FInputActionValue& Value)
 
 void ASlashCharacter::Dodge(const FInputActionValue& Value)
 {
-	
+	if (ActionState != EActionState::EAS_Unoccupied) return;
+	PlayDodgeMontage();
+	ActionState = EActionState::EAS_Dodging;
 }
 
 
@@ -308,14 +316,14 @@ void ASlashCharacter::Disarm()
 {
 	PlayEquipMontage(FName("Disarm"));
 	CharacterState = ECharacterState::ECS_Unequipped;
-	ActionState = EActionState::EAS_EquippingWeapon;
+	ActionState = EActionState::EAS_Equipping;
 }
 
 void ASlashCharacter::Arm()
 {
 	PlayEquipMontage(FName("Arm"));
 	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
-	ActionState = EActionState::EAS_EquippingWeapon;
+	ActionState = EActionState::EAS_Equipping;
 }
 
 void ASlashCharacter::SetHUDHealth()

@@ -53,6 +53,7 @@ protected:
 	virtual void Die() override;
 	virtual bool CanAttack() override;
 	virtual void OnAttackEnded() override;
+	virtual void OnDodgeEnded() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	// <\ABaseCharacter>
 

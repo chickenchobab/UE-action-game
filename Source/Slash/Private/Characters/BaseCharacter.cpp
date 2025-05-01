@@ -72,6 +72,11 @@ void ABaseCharacter::OnAttackEnded()
 	
 }
 
+void ABaseCharacter::OnDodgeEnded()
+{
+	
+}
+
 bool ABaseCharacter::CanAttack()
 {
 	return true;
@@ -83,18 +88,6 @@ void ABaseCharacter::HandleDamage(float DamageAmount)
 	{
 		Attributes->ReceiveDamage(DamageAmount);
 	}
-}
-
-int32 ABaseCharacter::PlayDeathMontage()
-{
-	int32 Selection = PlayRandomMontageSection(DeathMontage, DeathMontageSections);
-	if (Selection < 0) return -1;
-	
-	EDeathPose Pose = static_cast<EDeathPose>(Selection);
-	if (Pose >= EDeathPose::EDP_MAX) return -1;
-
-	DeathPose = Pose; // It is used by animation blueprint
-	return Selection;
 }
 
 
@@ -125,6 +118,23 @@ void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& Sect
 int32 ABaseCharacter::PlayAttackMontage()
 {
 	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
+}
+
+int32 ABaseCharacter::PlayDeathMontage()
+{
+	int32 Selection = PlayRandomMontageSection(DeathMontage, DeathMontageSections);
+	if (Selection < 0) return -1;
+	
+	EDeathPose Pose = static_cast<EDeathPose>(Selection);
+	if (Pose >= EDeathPose::EDP_MAX) return -1;
+
+	DeathPose = Pose; // It is used by animation blueprint
+	return Selection;
+}
+
+void ABaseCharacter::PlayDodgeMontage()
+{
+	PlayMontageSection(DodgeMontage, FName("Default"));
 }
 
 void ABaseCharacter::StopAttackMontage()

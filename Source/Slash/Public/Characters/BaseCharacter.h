@@ -33,6 +33,8 @@ protected:
 	virtual void Die();
 	UFUNCTION(BlueprintCallable)
 	virtual void OnAttackEnded();
+	UFUNCTION(BlueprintCallable)
+	virtual void OnDodgeEnded();
 	virtual bool CanAttack();
 	virtual void HandleDamage(float DamageAmount);
 	
@@ -44,6 +46,7 @@ protected:
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	int32 PlayAttackMontage();
 	int32 PlayDeathMontage();
+	void PlayDodgeMontage();
 	void StopAttackMontage();
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
 
@@ -62,6 +65,8 @@ protected:
 	UAnimMontage* HitReactMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* DeathMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* DodgeMontage;
 
 	UPROPERTY(BlueprintReadWrite)
 	EDeathPose DeathPose;
