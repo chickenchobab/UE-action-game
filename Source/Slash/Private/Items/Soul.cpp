@@ -6,6 +6,8 @@
 
 void ASoul::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+  if (!bAllowOverlapEvent) return;
+
   if (IPickupInterface* PickupInterface = Cast<IPickupInterface>(OtherActor))
   {
     PickupInterface->GetSoul(this);

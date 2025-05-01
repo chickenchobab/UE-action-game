@@ -24,18 +24,13 @@ class SLASH_API AItem : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AItem();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+
+	virtual void BeginPlay() override;
+
 	UFUNCTION()
 	virtual void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
@@ -56,10 +51,10 @@ protected:
 	 * Hovering Property
 	 */
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trig Parameters")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hovering Parameters")
 	float Amplitude = 5.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trig Parameters")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hovering Parameters")
 	float TimeConstant = 5.f;
 
 	UFUNCTION(BlueprintPure)
@@ -67,8 +62,6 @@ protected:
 
 	UFUNCTION(BlueprintPure)
 	float TransformedCos();
-
-	float RunningTime;
 
 	UPROPERTY(EditAnywhere)
 	UNiagaraComponent* ItemEffect;
@@ -78,5 +71,8 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	USoundBase* PickupSound;
+
+private:
+	float RunningTime;
 };
 

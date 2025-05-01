@@ -13,6 +13,7 @@ class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
 class AWeapon;
 class UAnimMontage;
+class ASoul;
 
 UCLASS()
 class SLASH_API AEnemy : public ABaseCharacter
@@ -38,8 +39,8 @@ protected:
 
 	// <ABaseCharacter>
 	virtual void Attack() override;
-	virtual void Die() override;
-	virtual void OnAttackEnded() override;
+  virtual void Die() override;
+  virtual void OnAttackEnded() override;
 	virtual bool CanAttack() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	// <\ABaseCharacter>
@@ -84,6 +85,8 @@ private:
 
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
+
+	void SpawnSoul();
 
 	/**
 	 * Navigation
@@ -143,4 +146,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float DeathLifeSpan = 5.f;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<ASoul> SoulClass;
 };

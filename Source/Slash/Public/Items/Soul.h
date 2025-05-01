@@ -16,6 +16,9 @@ class SLASH_API ASoul : public AItem
 
 public:
 	FORCEINLINE int32 GetSouls() const { return Souls; }
+	FORCEINLINE void SetSouls(int32 NumberOfSouls) { Souls = NumberOfSouls; }
+
+	FORCEINLINE void AllowOverlapEvent() {bAllowOverlapEvent = true;}
 	
 protected:
 	virtual void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
@@ -23,4 +26,6 @@ protected:
 private:
 	UPROPERTY(EditAnywhere)
 	int32 Souls;
+
+	bool bAllowOverlapEvent = false;
 };
