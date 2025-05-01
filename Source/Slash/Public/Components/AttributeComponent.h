@@ -12,27 +12,25 @@ class SLASH_API UAttributeComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
-	// Sets default values for this component's properties
+public:
 	UAttributeComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-
-
-public:
 	void ReceiveDamage(float Damage);
 
-	FORCEINLINE float GetHealthPercent() { return Health / MaxHealth; }
+	FORCEINLINE float GetHealthPercent() const { return Health / MaxHealth; }
 
 	UFUNCTION(BlueprintCallable)
-	bool IsAlive() { return Health > 0.f; }
+	bool IsAlive() const { return Health > 0.f; }
+
+	FORCEINLINE void AddGold(int32 AmountOfGold) { Gold += AmountOfGold; }
+	void AddSouls(int32 NumberOfSouls) { Souls += NumberOfSouls; }
+	FORCEINLINE int32 GetGold() const { return Gold; }
+	FORCEINLINE int32 GetSouls() const { return Souls; }
+
+protected:
+	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
@@ -40,7 +38,10 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Actor Attributes")
 	float MaxHealth;
+
+	UPROPERTY(VisibleAnywhere, Category = "Actor Attributes")
+	int32 Gold;
+
+	UPROPERTY(VisibleAnywhere, Category = "Actor Attributes")
+	int32 Souls;
 };
-
-
-

@@ -8,6 +8,8 @@
 
 class USphereComponent;
 class UNiagaraComponent;
+class UNiagaraSystem;
+class USoundBase;
 
 UENUM(BlueprintType)
 enum class EItemState : uint8
@@ -36,9 +38,11 @@ public:
 protected:
 	UFUNCTION()
 	virtual void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 	UFUNCTION()
 	virtual void OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	virtual void SpawnPickupSystem();
+	virtual void SpawnPickupSound();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent *ItemMesh;
@@ -64,9 +68,15 @@ protected:
 	UFUNCTION(BlueprintPure)
 	float TransformedCos();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Trig Parameters")
 	float RunningTime;
 
 	UPROPERTY(EditAnywhere)
-	UNiagaraComponent* EmbersEffect;
+	UNiagaraComponent* ItemEffect;
+
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* PickupEffect;
+
+	UPROPERTY(EditAnywhere)
+	USoundBase* PickupSound;
 };
+

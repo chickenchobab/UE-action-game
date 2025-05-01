@@ -21,7 +21,7 @@ public:
 	void SetHealthBarPercent(float Percent);
 	void SetStaminaBarPercent(float Percent);
 	void SetGold(int32 Gold);
-	void SetSoul(int32 Soul);
+	void SetSouls(int32 Soul);
 
 private:
 	UPROPERTY(meta = (BindWidget))

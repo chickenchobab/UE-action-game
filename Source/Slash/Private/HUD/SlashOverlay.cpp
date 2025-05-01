@@ -30,7 +30,7 @@ void USlashOverlay::SetGold(int32 Gold)
   }
 }
 
-void USlashOverlay::SetSoul(int32 Soul)
+void USlashOverlay::SetSouls(int32 Soul)
 {
 	if (SoulText)
   {

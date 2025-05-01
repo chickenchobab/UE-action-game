@@ -53,9 +53,9 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOw
       GetActorLocation()
     );
   }
-  if (EmbersEffect)
+  if (ItemEffect)
   {
-    EmbersEffect->Deactivate();
+    ItemEffect->Deactivate();
   }
 }
 

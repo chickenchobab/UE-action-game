@@ -19,6 +19,8 @@
 
 #include "Items/Item.h"
 #include "Items/Weapons/Weapon.h"
+#include "Items/Soul.h"
+#include "Items/Treasure.h"
 #include "HUD/SlashHUD.h"
 #include "HUD/SlashOverlay.h"
 #include "Components/AttributeComponent.h"
@@ -100,6 +102,33 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+
+void ASlashCharacter::SetOverlappingItem(AItem* Item)
+{
+	OverlappingItem = Item;
+}
+
+
+void ASlashCharacter::GetSoul(ASoul* Soul)
+{
+	if (Soul && Attributes && SlashOverlay)
+	{
+		Attributes->AddSouls(Soul->GetSouls());
+		SlashOverlay->SetSouls(Attributes->GetSouls());
+	}
+}
+
+
+void ASlashCharacter::GetGold(ATreasure* Treasure)
+{
+	if (Treasure && Attributes)
+	{
+		Attributes->AddGold(Treasure->GetGold());
+		SlashOverlay->SetGold(Attributes->GetGold());
+	}
+}
+
+
 void ASlashCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -119,7 +148,7 @@ void ASlashCharacter::BeginPlay()
 				SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
 				SlashOverlay->SetStaminaBarPercent(1.f);
 				SlashOverlay->SetGold(0);
-				SlashOverlay->SetSoul(0);
+				SlashOverlay->SetSouls(0);
 			}
 		}
 	}
