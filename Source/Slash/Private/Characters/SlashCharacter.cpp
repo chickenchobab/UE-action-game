@@ -27,7 +27,7 @@
 
 ASlashCharacter::ASlashCharacter()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -59,6 +59,17 @@ ASlashCharacter::ASlashCharacter()
 	Eyebrows->AttachmentName = FString("head");
 }
 
+
+void ASlashCharacter::Tick(float DeltaTime)
+{
+	if (Attributes && SlashOverlay)
+	{
+		Attributes->RegenStamina(DeltaTime);
+		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+	}
+}
+
+
 void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -78,7 +89,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 float ASlashCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser)
 {
 	HandleDamage(DamageAmount);
-  SetHUDHealth();
+  UpdateHealthBar();
   return DamageAmount;
 }
 
@@ -164,6 +175,7 @@ void ASlashCharacter::Attack()
 	if (CanAttack())
 	{
 		ActionState = EActionState::EAS_Attacking;
+		SetActorRotation(RecentInputRotation);
 		PlayAttackMontage();
 	}
 }
@@ -204,15 +216,19 @@ void ASlashCharacter::Move(const FInputActionValue& Value)
 {
 	if (Controller != nullptr && ActionState == EActionState::EAS_Unoccupied)
 	{
-		FVector2d MovementVector = Value.Get<FVector2d>();
+		FVector2d MovementVector = Value.Get<FVector2d>(); 
 
-		FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation = FRotator(0, Rotation.Yaw, 0);
+
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		const FVector Direction = ForwardDirection * MovementVector.Y + RightDirection * MovementVector.X;
+		RecentInputRotation = Direction.Rotation();
 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
+		// AddMovementInput(ForwardDirection, MovementVector.Y);
+		// AddMovementInput(RightDirection, MovementVector.X);
+		AddMovementInput(Direction, 1.f);
 	}
 }
 
@@ -254,11 +270,18 @@ void ASlashCharacter::LeftMouseClicked(const FInputActionValue& Value)
 
 void ASlashCharacter::Dodge(const FInputActionValue& Value)
 {
-	if (ActionState != EActionState::EAS_Unoccupied) return;
-	PlayDodgeMontage();
-	ActionState = EActionState::EAS_Dodging;
+	if (CanDodge())
+	{
+		SetActorRotation(RecentInputRotation);
+		PlayDodgeMontage();
+		ActionState = EActionState::EAS_Dodging;
+		if (Attributes && SlashOverlay)
+		{
+			Attributes->UseStamina(Attributes->GetDodgeCost());
+			SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+		}
+	}
 }
-
 
 void ASlashCharacter::PlayEquipMontage(const FName &SectionName)
 {
@@ -326,10 +349,21 @@ void ASlashCharacter::Arm()
 	ActionState = EActionState::EAS_Equipping;
 }
 
-void ASlashCharacter::SetHUDHealth()
+void ASlashCharacter::UpdateHealthBar()
 {
   if (SlashOverlay && Attributes)
   {
     SlashOverlay->SetHealthBarPercent(Attributes->GetHealthPercent());
   }
+}
+
+bool ASlashCharacter::CanDodge()
+{
+	if (!IsUnoccupied()) return false;
+	return Attributes && Attributes->GetStamina() >= Attributes->GetDodgeCost();
+}
+
+bool ASlashCharacter::HasEnoughStamina(float StaminaCost)
+{
+  return Attributes && Attributes->GetStamina() > StaminaCost;
 }

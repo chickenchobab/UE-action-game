@@ -26,6 +26,7 @@ class SLASH_API ASlashCharacter : public ABaseCharacter, public IPickupInterface
 
 public:
 	ASlashCharacter();
+	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
   virtual float TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser) override;
 	virtual void Jump() override;
@@ -61,9 +62,9 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void EkeyPressed(const FInputActionValue& Value);
 	void LeftMouseClicked(const FInputActionValue& Value);
-	void Dodge(const FInputActionValue& Value);
+  void Dodge(const FInputActionValue &Value);
 
-	void PlayEquipMontage(const FName &SectionName);
+  void PlayEquipMontage(const FName &SectionName);
 	bool CanDisarm();
 	bool CanArm();
 	UFUNCTION(BlueprintCallable)
@@ -115,12 +116,15 @@ private:
 	void EquipWeapon(AWeapon* Weapon);
 	void Disarm();
 	void Arm();
-	void SetHUDHealth();
-
+	void UpdateHealthBar();
+	bool CanDodge();
 	FORCEINLINE bool IsUnoccupied() { return ActionState == EActionState::EAS_Unoccupied; }
+	bool HasEnoughStamina(float StaminaCost);
 
 	UPROPERTY()
 	USlashOverlay* SlashOverlay;
+
+	FRotator RecentInputRotation = FRotator(0.f, 0.f, 0.f);
 };
 
 
