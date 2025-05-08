@@ -45,6 +45,7 @@ protected:
 	
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	int32 PlayAttackMontage();
+	int32 PlayDashAttackMontage();
 	int32 PlayDeathMontage();
 	void PlayDodgeMontage();
 	void StopAttackMontage();
@@ -52,6 +53,8 @@ protected:
 
 	void PlayHitSound(const FVector& ImpactPoint);
 	void SpawnHitParticles(const FVector& ImpactPoint);
+
+	bool IsFasterThan(float Speed);
 
 	UPROPERTY(VisibleAnywhere)
 	UAttributeComponent* Attributes;
@@ -61,6 +64,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* DashAttackMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* HitReactMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
@@ -73,6 +78,8 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TArray<FName> AttackMontageSections;
+	UPROPERTY(EditAnywhere)
+	TArray<FName> DashAttackMontageSections;
 	UPROPERTY(EditAnywhere)
 	TArray<FName> DeathMontageSections;
 

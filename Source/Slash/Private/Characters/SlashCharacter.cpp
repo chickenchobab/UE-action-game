@@ -11,9 +11,9 @@
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "GroomComponent.h"
 #include "Components/BoxComponent.h"
 
@@ -176,7 +176,15 @@ void ASlashCharacter::Attack()
 	{
 		ActionState = EActionState::EAS_Attacking;
 		SetActorRotation(RecentInputRotation);
-		PlayAttackMontage();
+
+		if (IsFasterThan(200.f))
+		{
+			PlayDashAttackMontage();
+		}
+		else
+		{
+			PlayAttackMontage();
+		}
 	}
 }
 
@@ -188,7 +196,6 @@ void ASlashCharacter::Die()
 	ActionState = EActionState::EAS_Dead;
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
-
 
 bool ASlashCharacter::CanAttack()
 {
@@ -361,9 +368,4 @@ bool ASlashCharacter::CanDodge()
 {
 	if (!IsUnoccupied()) return false;
 	return Attributes && Attributes->GetStamina() >= Attributes->GetDodgeCost();
-}
-
-bool ASlashCharacter::HasEnoughStamina(float StaminaCost)
-{
-  return Attributes && Attributes->GetStamina() > StaminaCost;
 }

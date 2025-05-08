@@ -130,8 +130,16 @@ void AEnemy::Attack()
 		UE_LOG(LogTemp, Warning, TEXT("Player dead"));
 		return;
 	}
+
 	EnemyState = EEnemyState::EES_Engaged;
-	PlayAttackMontage();
+	if (IsTargetInRange(CombatTarget, AttackRadius))
+	{
+		PlayAttackMontage();
+	}
+	else
+	{
+		PlayDashAttackMontage();
+	}
 }
 
 void AEnemy::Die()
@@ -155,7 +163,7 @@ void AEnemy::OnAttackEnded()
 
 bool AEnemy::CanAttack()
 {
-	return !IsAttacking() && !IsEngaged() && IsTargetInRange(CombatTarget, AttackRadius);
+	return !IsAttacking() && !IsEngaged() && IsTargetInRange(CombatTarget, DashAttackRadius);
 }
 
 void AEnemy::HandleDamage(float DamageAmount)
@@ -205,7 +213,7 @@ void AEnemy::CheckCombatTarget()
 		}
 		UE_LOG(LogTemp, Warning, TEXT("Lose Interest"));
   }
-	else if (!IsTargetInRange(CombatTarget, AttackRadius) && !IsChasing())
+	else if (!IsTargetInRange(CombatTarget, DashAttackRadius) && !IsChasing())
 	{
 		ClearAttackTimer();
 		if (!IsEngaged())

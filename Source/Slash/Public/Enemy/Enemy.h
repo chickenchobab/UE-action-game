@@ -134,7 +134,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	double CombatRadius = 700.f;
 	
-	double AttackRadius = 400.f;
+	double AttackRadius = 100.f;
+	double DashAttackRadius = 400.f;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float AttackTime = 1.f;

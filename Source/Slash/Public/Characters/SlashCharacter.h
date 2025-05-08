@@ -119,7 +119,6 @@ private:
 	void UpdateHealthBar();
 	bool CanDodge();
 	FORCEINLINE bool IsUnoccupied() { return ActionState == EActionState::EAS_Unoccupied; }
-	bool HasEnoughStamina(float StaminaCost);
 
 	UPROPERTY()
 	USlashOverlay* SlashOverlay;

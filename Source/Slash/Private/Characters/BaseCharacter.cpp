@@ -2,6 +2,7 @@
 
 
 #include "Characters/BaseCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Items/Weapons/Weapon.h"
 #include "Components/BoxComponent.h"
@@ -120,6 +121,13 @@ int32 ABaseCharacter::PlayAttackMontage()
 	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
 }
 
+
+int32 ABaseCharacter::PlayDashAttackMontage()
+{
+	return PlayRandomMontageSection(DashAttackMontage, DashAttackMontageSections);
+}
+
+
 int32 ABaseCharacter::PlayDeathMontage()
 {
 	int32 Selection = PlayRandomMontageSection(DeathMontage, DeathMontageSections);
@@ -201,6 +209,11 @@ void ABaseCharacter::SpawnHitParticles(const FVector& ImpactPoint)
 			ImpactPoint
 		);
 	}
+}
+
+bool ABaseCharacter::IsFasterThan(float Speed)
+{
+	return GetCharacterMovement() && (GetCharacterMovement()->Velocity).Size() >= Speed;
 }
 
 int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
