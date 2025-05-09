@@ -116,8 +116,13 @@ void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& Sect
 	}
 }
 
-int32 ABaseCharacter::PlayAttackMontage()
+int32 ABaseCharacter::PlayAttackMontage(bool bStartCombo)
 {
+	if (bStartCombo && !AttackMontageSections.IsEmpty())
+	{
+		PlayMontageSection(AttackMontage, AttackMontageSections[0]);
+		return 0;
+	}
 	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
 }
 
@@ -145,12 +150,12 @@ void ABaseCharacter::PlayDodgeMontage()
 	PlayMontageSection(DodgeMontage, FName("Default"));
 }
 
-void ABaseCharacter::StopAttackMontage()
+void ABaseCharacter::StopAttackMontage(float InBlendOutTime)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance)
 	{
-		AnimInstance->Montage_Stop(0.25f, AttackMontage);
+		AnimInstance->Montage_Stop(InBlendOutTime, AttackMontage);
 	}
 }
 

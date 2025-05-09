@@ -80,7 +80,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Look);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EkeyAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EkeyPressed);
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &ASlashCharacter::LeftMouseClicked);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ASlashCharacter::LeftMouseClicked);
 		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Dodge);
 	}
 }
@@ -174,17 +174,25 @@ void ASlashCharacter::Attack()
 
 	if (CanAttack())
 	{
-		ActionState = EActionState::EAS_Attacking;
 		SetActorRotation(RecentInputRotation);
-
+		
 		if (IsFasterThan(200.f))
 		{
+			ActionState = EActionState::EAS_DashAttacking;
 			PlayDashAttackMontage();
 		}
 		else
 		{
-			PlayAttackMontage();
+			ActionState = EActionState::EAS_Attacking;
+			PlayAttackMontage(true);
 		}
+	}
+	else if (IsInCombo())
+	{
+		++ComboCount;
+		UE_LOG(LogTemp, Warning, TEXT("in combo"));
+		GetWorldTimerManager().ClearTimer(ComboWindowTimer);
+		GetWorldTimerManager().SetTimer(ComboWindowTimer, this, &ASlashCharacter::ResetComboCount, ComboWindow);
 	}
 }
 
@@ -199,13 +207,28 @@ void ASlashCharacter::Die()
 
 bool ASlashCharacter::CanAttack()
 {
-	return ActionState == EActionState::EAS_Unoccupied && 
+	bool bMontageIsPlaying = false;
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance()) 
+	{	
+		bMontageIsPlaying = AnimInstance->Montage_IsPlaying(AttackMontage);
+	}
+
+	return !bMontageIsPlaying &&
+		ActionState == EActionState::EAS_Unoccupied && 
 		CharacterState != ECharacterState::ECS_Unequipped;
 }
 
 void ASlashCharacter::OnAttackEnded()
 {
 	ActionState = EActionState::EAS_Unoccupied;
+	if (ComboCount == 0)
+	{
+		StopAttackMontage(0.5f);
+	}
+	else
+	{
+		--ComboCount;
+	}
 }
 
 void ASlashCharacter::OnDodgeEnded()
@@ -286,7 +309,7 @@ void ASlashCharacter::Dodge(const FInputActionValue& Value)
 		{
 			Attributes->UseStamina(Attributes->GetDodgeCost());
 			SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
-		}
+		} 
 	}
 }
 
@@ -333,6 +356,11 @@ void ASlashCharacter::OnHitReactEnded()
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
+void ASlashCharacter::ResetComboCount()
+{
+	// Should be called when a combo end
+	ComboCount = 0;
+}
 
 void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
 {
@@ -368,4 +396,16 @@ bool ASlashCharacter::CanDodge()
 {
 	if (!IsUnoccupied()) return false;
 	return Attributes && Attributes->GetStamina() >= Attributes->GetDodgeCost();
+}
+
+
+bool ASlashCharacter::IsInCombo()
+{
+	if (!IsEquipped()) return false;
+	if (IsAttacking()) return true;
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance()) 
+	{	
+		return AnimInstance->Montage_IsPlaying(AttackMontage);
+	}
+	return false;
 }

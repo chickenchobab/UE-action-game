@@ -44,11 +44,11 @@ protected:
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
-	int32 PlayAttackMontage();
+	int32 PlayAttackMontage(bool bStartCombo = false);
 	int32 PlayDashAttackMontage();
 	int32 PlayDeathMontage();
 	void PlayDodgeMontage();
-	void StopAttackMontage();
+	void StopAttackMontage(float InBlendOutTime = 0.25f);
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
 
 	void PlayHitSound(const FVector& ImpactPoint);

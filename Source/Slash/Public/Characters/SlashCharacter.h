@@ -75,6 +75,8 @@ protected:
 	void OnEquipEnded();
 	UFUNCTION(BlueprintCallable)
 	void OnHitReactEnded();
+	UFUNCTION(BlueprintCallable)
+	void ResetComboCount();
 
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
@@ -118,10 +120,19 @@ private:
 	void Arm();
 	void UpdateHealthBar();
 	bool CanDodge();
+	FORCEINLINE bool IsEquipped() { return CharacterState != ECharacterState::ECS_Unequipped; }
 	FORCEINLINE bool IsUnoccupied() { return ActionState == EActionState::EAS_Unoccupied; }
+	FORCEINLINE bool IsAttacking() { return ActionState == EActionState::EAS_Attacking; }
+	bool IsInCombo();
 
 	UPROPERTY()
 	USlashOverlay* SlashOverlay;
+
+	FTimerHandle ComboWindowTimer;
+
+	float ComboWindow = 1.f;
+
+	int32 ComboCount = 0;
 
 	FRotator RecentInputRotation = FRotator(0.f, 0.f, 0.f);
 };
