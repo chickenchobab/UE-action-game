@@ -84,7 +84,6 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
   if (!IsOwnerOpposite(OtherActor)) 
   { 
     UE_LOG(LogTemp, Warning, TEXT("Box overlap : Not enemy(%s)->%s"), *OtherActor->GetName(), *OtherComp->GetName());
-    return;
   }
   else
   {
@@ -105,7 +104,6 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
     if (!IsOwnerOpposite(BoxHit.GetActor()))
     {
       UE_LOG(LogTemp, Warning, TEXT("No damage to ally"));
-      return;
     }
     UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
     ExecuteGetHit(BoxHit);

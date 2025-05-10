@@ -353,7 +353,7 @@ void AEnemy::ClearAttackTimer()
 
 void AEnemy::SpawnDefaultWeapon()
 {
-if (UWorld* World = GetWorld())
+	if (UWorld* World = GetWorld())
 	{
 		AWeapon* DefaultWeapon = World->SpawnActor<AWeapon>(WeaponClass);
 		DefaultWeapon->Equip(GetMesh(), FName("RightHandSocket"), this, this);
