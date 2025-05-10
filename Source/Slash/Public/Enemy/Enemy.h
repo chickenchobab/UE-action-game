@@ -7,12 +7,13 @@
 #include "Interfaces/HitInterface.h"
 #include "Enemy.generated.h"
 
-class UHealthBarComponent;
 class AAIController;
 class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
-class AWeapon;
 class UAnimMontage;
+class UMotionWarpingComponent;
+class UHealthBarComponent;
+class AWeapon;
 class ASoul;
 
 UCLASS()
@@ -45,23 +46,7 @@ protected:
 	virtual void HandleDamage(float DamageAmount) override;
 	// <\ABaseCharacter>
 
-	UFUNCTION(BlueprintCallable)
-	FVector GetTranslationWarpTarget();
-	UFUNCTION(BlueprintCallable)
-	FVector GetRotationWarpTarget();
-
-	UPROPERTY(BlueprintReadOnly)
-	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
-
-	UPROPERTY(BlueprintReadOnly, Category = "Combat")
-	AActor* CombatTarget;
-
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	float WarpTargetDistance = 75.f;
-	
-private:
-
-	void CheckCombatTarget();
+	virtual void CheckCombatTarget();
 	void CheckPatrolTarget();
 	void MoveToTarget(AActor* Target);
 	APawn* FindCombatTarget(const TArray<AActor*>& UpdatedActors);
@@ -87,6 +72,21 @@ private:
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
 
 	void SpawnSoul();
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetTranslationWarpTarget();
+	UFUNCTION(BlueprintCallable)
+	FVector GetRotationWarpTarget();
+
+	UPROPERTY(BlueprintReadOnly)
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Combat")
+	AActor* CombatTarget;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float WarpTargetDistance = 75.f;
+	
 
 	/**
 	 * Navigation
@@ -124,7 +124,7 @@ private:
 	/** 
 	 * Combat
 	 */
-	
+
 	UPROPERTY(VisibleAnywhere)
 	UHealthBarComponent* HealthBarComponent;
 
@@ -150,4 +150,12 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<ASoul> SoulClass;
+
+	
+	/**
+	 * Animation
+	 */
+
+	UPROPERTY(VisibleAnywhere)
+	UMotionWarpingComponent* MotionWarping;
 };

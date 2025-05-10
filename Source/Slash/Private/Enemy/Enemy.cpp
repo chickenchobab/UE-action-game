@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Animation/AnimMontage.h"
+#include "MotionWarpingComponent.h"
 #include "DrawDebugHelpers.h"
 
 #include "Components/AttributeComponent.h"
@@ -42,6 +43,8 @@ AEnemy::AEnemy()
 	SightConfig->DetectionByAffiliation.bDetectFriendlies = true;
 	AIPerception->ConfigureSense(*SightConfig);
 	AIPerception->SetDominantSense(SightConfig->GetSenseImplementation());
+
+	MotionWarping = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarping"));
 	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -113,7 +116,7 @@ void AEnemy::BeginPlay()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = PatrollingSpeed;
 	HideHealthBar();
-	SpawnDefaultWeapon();
+	
 	MoveToTarget(PatrolTarget = ChoosePatrolTarget()); // Should move first so that a turnabout occurs.
 
 	Tags.Add(FName("Enemy"));
@@ -129,16 +132,6 @@ void AEnemy::Attack()
 		StartPatrolling();
 		UE_LOG(LogTemp, Warning, TEXT("Player dead"));
 		return;
-	}
-
-	EnemyState = EEnemyState::EES_Engaged;
-	if (IsTargetInRange(CombatTarget, AttackRadius))
-	{
-		PlayAttackMontage();
-	}
-	else
-	{
-		PlayDashAttackMontage();
 	}
 }
 
@@ -163,7 +156,7 @@ void AEnemy::OnAttackEnded()
 
 bool AEnemy::CanAttack()
 {
-	return !IsAttacking() && !IsEngaged() && IsTargetInRange(CombatTarget, DashAttackRadius);
+	return !IsAttacking() && !IsEngaged();
 }
 
 void AEnemy::HandleDamage(float DamageAmount)
@@ -193,40 +186,14 @@ FVector AEnemy::GetTranslationWarpTarget()
 
 FVector AEnemy::GetRotationWarpTarget()
 {
-	if (CombatTarget)
-	{
-		return CombatTarget->GetActorLocation();
-	}
-	return FVector();
+	if (CombatTarget == nullptr) return FVector();
+	return CombatTarget->GetActorLocation();
 }
 
 
 void AEnemy::CheckCombatTarget()
 {
-  if (!IsTargetInRange(CombatTarget, CombatRadius))
-  {
-		ClearAttackTimer();
-    LoseInterest();
-		if (!IsEngaged())
-		{
-			StartPatrolling();
-		}
-		UE_LOG(LogTemp, Warning, TEXT("Lose Interest"));
-  }
-	else if (!IsTargetInRange(CombatTarget, DashAttackRadius) && !IsChasing())
-	{
-		ClearAttackTimer();
-		if (!IsEngaged())
-		{
-			ChaseTarget();
-		}
-		UE_LOG(LogTemp, Warning, TEXT("Chase Player"));
-	}
-	else if (CanAttack())
-	{
-		StartAttacking();	
-		UE_LOG(LogTemp, Warning, TEXT("Attack Player"));
-	}
+  
 }
 
 void AEnemy::CheckPatrolTarget()
@@ -389,7 +356,9 @@ void AEnemy::SpawnSoul()
 	UWorld* World = GetWorld();
 	if (World && SoulClass && Attributes)
 	{
+		// Why the soul spawned below
 		ASoul* SpawnedSoul = World->SpawnActor<ASoul>(SoulClass, GetActorLocation(), GetActorRotation());
+		// is destroyed before the if statement
 		if (SpawnedSoul)
 		{
 			SpawnedSoul->SetSouls(Attributes->GetSouls());
