@@ -131,7 +131,6 @@ void AEnemy::Attack()
 		LoseInterest();
 		StartPatrolling();
 		UE_LOG(LogTemp, Warning, TEXT("Player dead"));
-		return;
 	}
 }
 

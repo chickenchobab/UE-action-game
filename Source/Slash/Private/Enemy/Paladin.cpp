@@ -26,7 +26,8 @@ void APaladin::BeginPlay()
 void APaladin::Attack()
 {
 	Super::Attack();
-
+	if (!CombatTarget) return;
+	
 	EnemyState = EEnemyState::EES_Engaged;
 	if (IsTargetInRange(CombatTarget, AttackRadius))
 	{
