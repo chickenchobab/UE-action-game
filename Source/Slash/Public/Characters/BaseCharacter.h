@@ -23,8 +23,8 @@ public:
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	bool IsAlive();
 	bool IsOpposite(AActor* OtherActor);
-	FORCEINLINE virtual bool IsParrying() { return false; }
 	FORCEINLINE EDeathPose GetDeathPose() { return DeathPose; }
+	FORCEINLINE virtual bool IsParrying() { return false; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -54,8 +54,6 @@ protected:
 
 	void PlaySound(const FVector& ImpactPoint, USoundBase* PlayedSound);
 	void SpawnParticles(const FVector& ImpactPoint, UParticleSystem* SpawnedParticles);
-
-	bool IsFasterThan(float Speed);
 
 	UPROPERTY(VisibleAnywhere)
 	UAttributeComponent* Attributes;

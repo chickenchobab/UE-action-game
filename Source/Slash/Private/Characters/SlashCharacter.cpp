@@ -67,6 +67,15 @@ void ASlashCharacter::Tick(float DeltaTime)
 		Attributes->RegenStamina(DeltaTime);
 		SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
 	}
+
+	if (GetVelocity().Size() > 0.f)
+	{
+		MovingTime += DeltaTime;
+	}
+	else
+	{
+		MovingTime = 0.f;
+	}
 }
 
 
@@ -176,7 +185,7 @@ void ASlashCharacter::Attack()
 	{
 		SetActorRotation(RecentInputRotation);
 		
-		if (IsFasterThan(200.f))
+		if (MovingTime >= 3.f)
 		{
 			ActionState = EActionState::EAS_DashAttacking;
 			PlayDashAttackMontage();

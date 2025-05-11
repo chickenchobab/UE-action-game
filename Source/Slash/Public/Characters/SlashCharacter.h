@@ -128,13 +128,18 @@ private:
 	UPROPERTY()
 	USlashOverlay* SlashOverlay;
 
+
+	FRotator RecentInputRotation = FRotator(0.f, 0.f, 0.f);
+
+
 	FTimerHandle ComboWindowTimer;
 
 	float ComboWindow = 1.f;
 
 	int32 ComboCount = 0;
 
-	FRotator RecentInputRotation = FRotator(0.f, 0.f, 0.f);
+
+	float MovingTime = 0.f;
 };
 
 

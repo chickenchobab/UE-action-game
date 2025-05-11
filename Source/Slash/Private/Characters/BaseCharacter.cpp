@@ -32,7 +32,7 @@ void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* H
 		SpawnParticles(ImpactPoint, ParryParticles);
 		return;
 	}
-	
+
 	PlaySound(ImpactPoint, HitSound);
 	SpawnParticles(ImpactPoint, HitParticles);
 
@@ -231,11 +231,6 @@ void ABaseCharacter::SpawnParticles(const FVector& ImpactPoint, UParticleSystem*
 			ImpactPoint
 		);
 	}
-}
-
-bool ABaseCharacter::IsFasterThan(float Speed)
-{
-	return GetCharacterMovement() && (GetCharacterMovement()->Velocity).Size() >= Speed;
 }
 
 int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
