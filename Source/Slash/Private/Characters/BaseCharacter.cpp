@@ -84,7 +84,7 @@ void ABaseCharacter::Parry()
 	}
 }
 
-void ABaseCharacter::OnAttackEnded()
+void ABaseCharacter::AttackEnd()
 {
 	if (EquippedWeapon)
 	{
@@ -92,7 +92,7 @@ void ABaseCharacter::OnAttackEnded()
 	}
 }
 
-void ABaseCharacter::OnDodgeEnded()
+void ABaseCharacter::DodgeEnd()
 {
 	
 }

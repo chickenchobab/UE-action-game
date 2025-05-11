@@ -33,9 +33,9 @@ protected:
 	virtual void Die();
 	virtual void Parry();
 	UFUNCTION(BlueprintCallable)
-	virtual void OnAttackEnded();
+	virtual void AttackEnd();
 	UFUNCTION(BlueprintCallable)
-	virtual void OnDodgeEnded();
+	virtual void DodgeEnd();
 	virtual bool CanAttack();
 	virtual void HandleDamage(float DamageAmount);
 	

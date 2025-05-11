@@ -227,10 +227,10 @@ bool ASlashCharacter::CanAttack()
 		CharacterState != ECharacterState::ECS_Unequipped;
 }
 
-void ASlashCharacter::OnAttackEnded()
+void ASlashCharacter::AttackEnd()
 {
-	Super::OnAttackEnded();
-	
+	Super::AttackEnd();
+
 	ActionState = EActionState::EAS_Unoccupied;
 	if (ComboCount == 0)
 	{
@@ -242,7 +242,7 @@ void ASlashCharacter::OnAttackEnded()
 	}
 }
 
-void ASlashCharacter::OnDodgeEnded()
+void ASlashCharacter::DodgeEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }
@@ -357,12 +357,12 @@ void ASlashCharacter::AttachWeaponToHand()
 	}
 }
 
-void ASlashCharacter::OnEquipEnded()
+void ASlashCharacter::EquipEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
-void ASlashCharacter::OnHitReactEnded()
+void ASlashCharacter::HitReactEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
 }

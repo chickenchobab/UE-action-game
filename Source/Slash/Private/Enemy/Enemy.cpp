@@ -147,10 +147,10 @@ void AEnemy::Die()
 	SpawnSoul();
 }
 
-void AEnemy::OnAttackEnded()
+void AEnemy::AttackEnd()
 {
-	Super::OnAttackEnded();
-	
+	Super::AttackEnd();
+
 	EnemyState = EEnemyState::EES_None; 
 	CheckCombatTarget();
 }

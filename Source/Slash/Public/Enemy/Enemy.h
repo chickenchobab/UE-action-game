@@ -46,7 +46,7 @@ protected:
 	// <ABaseCharacter>
 	virtual void Attack() override;
   virtual void Die() override;
-  virtual void OnAttackEnded() override;
+  virtual void AttackEnd() override;
 	virtual bool CanAttack() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	// <\ABaseCharacter>
