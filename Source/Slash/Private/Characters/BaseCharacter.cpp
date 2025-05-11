@@ -86,7 +86,10 @@ void ABaseCharacter::Parry()
 
 void ABaseCharacter::OnAttackEnded()
 {
-	
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->SetBlocked(false);
+	}
 }
 
 void ABaseCharacter::OnDodgeEnded()

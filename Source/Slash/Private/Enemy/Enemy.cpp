@@ -149,6 +149,8 @@ void AEnemy::Die()
 
 void AEnemy::OnAttackEnded()
 {
+	Super::OnAttackEnded();
+	
 	EnemyState = EEnemyState::EES_None; 
 	CheckCombatTarget();
 }

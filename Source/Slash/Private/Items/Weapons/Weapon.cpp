@@ -105,8 +105,11 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
     {
       UE_LOG(LogTemp, Warning, TEXT("No damage to ally"));
     }
-    UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-    ExecuteGetHit(BoxHit);
+    if (!IsBlocked())
+    {
+      UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+      ExecuteGetHit(BoxHit);
+    }
     CreateFields(BoxHit.ImpactPoint);
   }
 }

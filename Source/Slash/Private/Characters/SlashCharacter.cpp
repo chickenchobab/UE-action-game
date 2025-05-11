@@ -229,6 +229,8 @@ bool ASlashCharacter::CanAttack()
 
 void ASlashCharacter::OnAttackEnded()
 {
+	Super::OnAttackEnded();
+	
 	ActionState = EActionState::EAS_Unoccupied;
 	if (ComboCount == 0)
 	{

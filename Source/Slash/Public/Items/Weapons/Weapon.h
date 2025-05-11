@@ -24,6 +24,10 @@ public:
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 	void SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	void ResetActorsToIgnore();
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetBlocked(bool bWeaponBlocked) { bBlocked = bWeaponBlocked; }
+	FORCEINLINE bool IsBlocked() { return bBlocked; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -59,4 +63,6 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float Damage = 20.f;
+
+	bool bBlocked = false;
 };
