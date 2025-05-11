@@ -3,7 +3,9 @@
 
 #include "Enemy/Paladin.h"
 #include "MotionWarpingComponent.h"
+#include "Animation/AnimMontage.h"
 
+#include "Characters/SlashCharacter.h"
 
 void APaladin::Tick(float DeltaTime)
 {
@@ -27,7 +29,7 @@ void APaladin::Attack()
 {
 	Super::Attack();
 	if (!CombatTarget) return;
-	
+
 	EnemyState = EEnemyState::EES_Engaged;
 	if (IsTargetInRange(CombatTarget, AttackRadius))
 	{
@@ -37,6 +39,12 @@ void APaladin::Attack()
 	{
 		PlayDashAttackMontage();
 	}
+}
+
+void APaladin::Parry()
+{
+	Super::Parry();
+	EnemyState = EEnemyState::EES_Parrying;
 }
 
 bool APaladin::CanAttack()
@@ -65,9 +73,43 @@ void APaladin::CheckCombatTarget()
 		}
 		UE_LOG(LogTemp, Warning, TEXT("Chase Player"));
 	}
-	else if (CanAttack())
+	else if (ShouldParry() && !IsParrying())
 	{
-		StartAttacking();	
+		ClearAttackTimer();
+		if (!IsEngaged())
+		{
+			Parry();
+		}
+		UE_LOG(LogTemp, Warning, TEXT("Parry attack"));
+	}
+	else if (CanAttack())
+	{	
+		StartAttacking(IsParrying() ? 0.1f : AttackTime);
 		UE_LOG(LogTemp, Warning, TEXT("Attack Player"));
 	}
+	else if (IsParrying())
+	{
+		StopParrying();
+		UE_LOG(LogTemp, Warning, TEXT("Stop parrying"));
+	}
+}
+
+bool APaladin::ShouldParry()
+{
+	if (ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(CombatTarget))
+	{
+		return IsTargetInRange(CombatTarget, AttackRadius) && SlashCharacter->IsAttacking();
+	}
+	return false;
+}
+
+void APaladin::StopParrying()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ParryMontage)
+	{
+		AnimInstance->Montage_Stop(0.5f, ParryMontage);
+	}
+	// Should call CheckCombatTarget?
+	EnemyState = EEnemyState::EES_None; 
 }

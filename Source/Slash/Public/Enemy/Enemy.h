@@ -32,6 +32,11 @@ public:
 
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 
+	FORCEINLINE bool IsChasing() { return EnemyState == EEnemyState::EES_Chasing; }
+	FORCEINLINE bool IsAttacking() { return EnemyState == EEnemyState::EES_Attacking; }
+	FORCEINLINE bool IsEngaged() { return EnemyState == EEnemyState::EES_Engaged; }
+	FORCEINLINE virtual bool IsParrying() override { return EnemyState == EEnemyState::EES_Parrying; }
+
 protected:
 
 	// <AActor>
@@ -59,14 +64,10 @@ protected:
 	void LoseInterest();
 	void StartPatrolling();
 	void ChaseTarget();
-	void StartAttacking();
+	void StartAttacking(float AttackDelay);
 	void ClearPatrolTimer();
 	void ClearAttackTimer();
 	void SpawnDefaultWeapon();
-
-	FORCEINLINE bool IsChasing() { return EnemyState == EEnemyState::EES_Chasing; }
-	FORCEINLINE bool IsAttacking() { return EnemyState == EEnemyState::EES_Attacking; }
-	FORCEINLINE bool IsEngaged() { return EnemyState == EEnemyState::EES_Engaged; }
 
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);

@@ -21,7 +21,11 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Attack() override;
+	virtual void Parry() override;
 	virtual bool CanAttack() override;
 	
 	virtual void CheckCombatTarget() override;
+
+	bool ShouldParry();
+	void StopParrying();
 };

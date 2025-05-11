@@ -43,6 +43,9 @@ public:
 
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
 	FORCEINLINE EActionState GetActionState() const { return ActionState; }
+	FORCEINLINE bool IsEquipped() { return CharacterState != ECharacterState::ECS_Unequipped; }
+	FORCEINLINE bool IsUnoccupied() { return ActionState == EActionState::EAS_Unoccupied; }
+	FORCEINLINE bool IsAttacking() { return ActionState == EActionState::EAS_Attacking; }
 
 protected:
 	// <AActor>
@@ -120,9 +123,6 @@ private:
 	void Arm();
 	void UpdateHealthBar();
 	bool CanDodge();
-	FORCEINLINE bool IsEquipped() { return CharacterState != ECharacterState::ECS_Unequipped; }
-	FORCEINLINE bool IsUnoccupied() { return ActionState == EActionState::EAS_Unoccupied; }
-	FORCEINLINE bool IsAttacking() { return ActionState == EActionState::EAS_Attacking; }
 	bool IsInCombo();
 
 	UPROPERTY()

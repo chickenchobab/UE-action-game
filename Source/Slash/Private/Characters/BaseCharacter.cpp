@@ -26,8 +26,15 @@ void ABaseCharacter::Tick(float DeltaTime)
 
 void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
-	PlayHitSound(ImpactPoint);
-	SpawnHitParticles(ImpactPoint);
+	if (IsParrying())
+	{
+		PlaySound(ImpactPoint, ParrySound);
+		SpawnParticles(ImpactPoint, ParryParticles);
+		return;
+	}
+	
+	PlaySound(ImpactPoint, HitSound);
+	SpawnParticles(ImpactPoint, HitParticles);
 
 	if (IsAlive())
 	{
@@ -51,7 +58,6 @@ bool ABaseCharacter::IsOpposite(AActor* OtherActor)
   return Tags[0] != OtherActor->Tags[0];
 }
 
-
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -66,6 +72,16 @@ void ABaseCharacter::Die()
 {
 	Tags.Add("Dead");
 	PlayDeathMontage();
+}
+
+void ABaseCharacter::Parry()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ParryMontage)
+	{
+		AnimInstance->Montage_Play(ParryMontage);
+		AnimInstance->Montage_Pause(ParryMontage);
+	}
 }
 
 void ABaseCharacter::OnAttackEnded()
@@ -192,25 +208,26 @@ void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint, const FVect
 	PlayMontageSection(HitReactMontage, Section);
 }
 
-void ABaseCharacter::PlayHitSound(const FVector& ImpactPoint)
+
+void ABaseCharacter::PlaySound(const FVector& ImpactPoint, USoundBase* PlayedSound)
 {
-	if (HitSound)
+	if (PlayedSound)
   {
     UGameplayStatics::PlaySoundAtLocation(
       this,
-      HitSound,
+      PlayedSound,
       ImpactPoint
     );
   }
 }
 
-void ABaseCharacter::SpawnHitParticles(const FVector& ImpactPoint)
+void ABaseCharacter::SpawnParticles(const FVector& ImpactPoint, UParticleSystem* SpawnedParticles)
 {
-	if (HitParticles)
+	if (SpawnedParticles)
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(
 			GetWorld(),
-			HitParticles,
+			SpawnedParticles,
 			ImpactPoint
 		);
 	}

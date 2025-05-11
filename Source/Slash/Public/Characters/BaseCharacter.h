@@ -23,7 +23,7 @@ public:
 	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
 	bool IsAlive();
 	bool IsOpposite(AActor* OtherActor);
-
+	FORCEINLINE virtual bool IsParrying() { return false; }
 	FORCEINLINE EDeathPose GetDeathPose() { return DeathPose; }
 	
 protected:
@@ -31,6 +31,7 @@ protected:
 
 	virtual void Attack();
 	virtual void Die();
+	virtual void Parry();
 	UFUNCTION(BlueprintCallable)
 	virtual void OnAttackEnded();
 	UFUNCTION(BlueprintCallable)
@@ -51,8 +52,8 @@ protected:
 	void StopAttackMontage(float InBlendOutTime = 0.25f);
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
 
-	void PlayHitSound(const FVector& ImpactPoint);
-	void SpawnHitParticles(const FVector& ImpactPoint);
+	void PlaySound(const FVector& ImpactPoint, USoundBase* PlayedSound);
+	void SpawnParticles(const FVector& ImpactPoint, UParticleSystem* SpawnedParticles);
 
 	bool IsFasterThan(float Speed);
 
@@ -72,6 +73,8 @@ protected:
 	UAnimMontage* DeathMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* DodgeMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* ParryMontage;
 
 	UPROPERTY(BlueprintReadWrite)
 	EDeathPose DeathPose;
@@ -88,9 +91,11 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Sounds)
 	USoundBase* HitSound;
-
 	UPROPERTY(EditAnywhere, Category = VisualEffects)
 	UParticleSystem* HitParticles;
+
+	UPROPERTY(EditAnywhere, Category = Sounds)
+	USoundBase* ParrySound;
+	UPROPERTY(EditAnywhere, Category = VisualEffects)
+	UParticleSystem* ParryParticles;
 };
-
-

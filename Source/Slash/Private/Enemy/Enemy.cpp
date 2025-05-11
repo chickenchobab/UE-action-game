@@ -96,7 +96,7 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 		GainInterest(Hitter);
 		if (IsTargetInRange(CombatTarget, AttackRadius))
 		{
-			StartAttacking();
+			StartAttacking(AttackTime);
 		}
 		else
 		{
@@ -168,6 +168,7 @@ void AEnemy::HandleDamage(float DamageAmount)
 		HealthBarComponent->SetHealthPercent(Attributes->GetHealthPercent());
 	}
 }
+
 
 FVector AEnemy::GetTranslationWarpTarget()
 {
@@ -301,10 +302,10 @@ void AEnemy::ChaseTarget()
 	MoveToTarget(CombatTarget);
 }
 
-void AEnemy::StartAttacking()
+void AEnemy::StartAttacking(float AttackDelay)
 {
 	EnemyState = EEnemyState::EES_Attacking;
-	GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemy::Attack, AttackTime);
+	GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemy::Attack, AttackDelay);
 }
 
 void AEnemy::ClearPatrolTimer()
