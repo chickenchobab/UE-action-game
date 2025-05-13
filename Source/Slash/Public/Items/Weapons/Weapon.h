@@ -19,8 +19,7 @@ class SLASH_API AWeapon : public AItem
 
 public:
 	AWeapon();
-
-	void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound = false);
+	virtual void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound = false);
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 	void SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	void ResetActorsToIgnore();
@@ -30,39 +29,25 @@ public:
 	FORCEINLINE bool IsBlocked() { return bBlocked; }
 	
 protected:
-	virtual void BeginPlay() override;
-	
 	UFUNCTION()
-  void OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
-	
+  virtual void OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
+	void ExecuteGetHit(const FHitResult &HitResult);
   UFUNCTION(BlueprintImplementableEvent)
 	void CreateFields(const FVector& FieldLocation);
-	
-private:
-	void BoxTrace(FHitResult& BoxHit);
-  void ExecuteGetHit(FHitResult &BoxHit);
 	bool IsOwnerOpposite(AActor* OtherActor);
 
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* WeaponBox;
-	
-	UPROPERTY(VisibleAnywhere)
-	USceneComponent* BoxTraceStart;
-	UPROPERTY(VisibleAnywhere)
-	USceneComponent* BoxTraceEnd;
-	
-	TArray<AActor*> ActorsToIgnore;
 
-	bool bShowDebugBox = false;
-
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	FVector BoxTraceExtent = FVector(5.f);
-
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	USoundBase *EquipSound;
-	
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float Damage = 20.f;
 
+	TArray<AActor*> ActorsToIgnore;
+	
+private:
 	bool bBlocked = false;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	USoundBase *EquipSound;
 };
+

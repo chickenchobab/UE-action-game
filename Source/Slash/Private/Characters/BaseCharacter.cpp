@@ -4,7 +4,7 @@
 #include "Characters/BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Items/Weapons/Weapon.h"
+#include "Items/Weapons/Armament.h"
 #include "Components/BoxComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -118,10 +118,10 @@ void ABaseCharacter::SetCapsuleCollisionEnabled(ECollisionEnabled::Type Collisio
 
 void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
-	if (EquippedWeapon)
+	if (AArmament* MeleeWeapon = Cast<AArmament>(EquippedWeapon))
 	{
-		EquippedWeapon->SetWeaponBoxCollisionEnabled(CollisionEnabled);
-		EquippedWeapon->ResetActorsToIgnore();
+		MeleeWeapon->SetWeaponBoxCollisionEnabled(CollisionEnabled);
+		MeleeWeapon->ResetActorsToIgnore();
 	}
 }
 

@@ -21,7 +21,6 @@ void APaladin::Tick(float DeltaTime)
 void APaladin::BeginPlay()
 {
 	Super::BeginPlay();
-	
 	SpawnDefaultWeapon();
 }
 
