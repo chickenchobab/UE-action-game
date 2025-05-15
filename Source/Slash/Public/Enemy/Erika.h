@@ -20,12 +20,13 @@ public:
 	AErika();
 	
 protected:
-	virtual void Attack() override;
-	virtual void Parry() override;
+  virtual void Attack() override;
+  virtual void Parry() override;
 	virtual bool CanAttack() override;
 	
 	virtual void CheckCombatTarget() override;
 	
+	void SpawnProjectile();
 	UFUNCTION(BlueprintCallable)
 	void SetFireTimer();
 	UFUNCTION(BlueprintCallable)

@@ -77,6 +77,7 @@ protected:
 	FVector GetRotationWarpTarget();
 	bool ShouldParry();
 	void StopParrying();
+	void FocusOnTarget();
 
 	UPROPERTY(BlueprintReadOnly)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;

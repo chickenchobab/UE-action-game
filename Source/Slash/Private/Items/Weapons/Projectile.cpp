@@ -25,7 +25,6 @@ void AProjectile::ActivateProjectile()
 {
   if (ProjectileMovement)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Activated! : %f"), ProjectileMovement->InitialSpeed);
     // if (GetOwner())
     // {
     //   FRotator OwnerRotation = GetOwner()->GetActorRotation();

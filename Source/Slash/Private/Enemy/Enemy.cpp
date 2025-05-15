@@ -335,18 +335,14 @@ void AEnemy::PerceptionUpdated(const TArray<AActor*>& UpdatedActors)
 {
 	if (EnemyState != EEnemyState::EES_None && EnemyState != EEnemyState::EES_Patrolling)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Actor perceived but not proper enemy state"));
 		return;
 	}
 
 	APawn* SeenPawn = FindCombatTarget(UpdatedActors);
 	if (!SeenPawn)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Actor perceived but No enemy"));
 		return;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Found pawn"));
 
 	// This function is called less frequently than frame.
 	ClearPatrolTimer();
@@ -388,4 +384,15 @@ void AEnemy::StopParrying()
 	}
 	// Should call CheckCombatTarget?
 	EnemyState = EEnemyState::EES_None; 
+}
+
+
+void AEnemy::FocusOnTarget()
+{
+	if (!CombatTarget) return;
+
+	FVector ToTarget = CombatTarget->GetActorLocation() - GetActorLocation();
+	ToTarget.Z = 0;
+	FRotator LookAtRotation = ToTarget.Rotation();
+	SetActorRotation(LookAtRotation);
 }

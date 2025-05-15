@@ -30,6 +30,7 @@ void APaladin::Attack()
 	EnemyState = EEnemyState::EES_Engaged;
 	if (IsTargetInRange(CombatTarget, AttackRadius))
 	{
+		FocusOnTarget();
 		PlayAttackMontage();
 	}
 	else

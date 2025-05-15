@@ -17,17 +17,9 @@ void AErika::Attack()
 	Super::Attack();
   if (!CombatTarget) return;
 
-  // UE_LOG(LogTemp, Warning, TEXT("Erika Attack"));
   EnemyState = EEnemyState::EES_Engaged;
-  if (UWorld* World = GetWorld())
-  {
-    AProjectile* Projectile = World->SpawnActor<AProjectile>(WeaponClass);
-    if (Projectile)
-    {
-      Projectile->Equip(GetMesh(), FName("RightHandSocket"), this, this);
-      EquippedWeapon = Cast<AWeapon>(Projectile);
-    }
-  }
+  SpawnProjectile();
+  FocusOnTarget();
   PlayAttackMontage();
 }
 
@@ -70,6 +62,18 @@ void AErika::CheckCombatTarget()
   }
 }
 
+void AErika::SpawnProjectile()
+{
+  if (UWorld *World = GetWorld())
+  {
+    AProjectile *Projectile = World->SpawnActor<AProjectile>(WeaponClass);
+    if (Projectile)
+    {
+      Projectile->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+      EquippedWeapon = Cast<AWeapon>(Projectile);
+    }
+  }
+}
 
 void AErika::SetFireTimer()
 {
@@ -81,7 +85,6 @@ void AErika::FireProjectile()
 {
   if (AProjectile* Projectile = Cast<AProjectile>(EquippedWeapon))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Fire!"));
     Projectile->DetachMeshFromSocket();
     Projectile->ActivateProjectile();
     EquippedWeapon = nullptr;
