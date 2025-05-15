@@ -68,16 +68,15 @@ protected:
 	void ClearPatrolTimer();
 	void ClearAttackTimer();
 	void SpawnDefaultWeapon();
-
 	UFUNCTION()
 	void PerceptionUpdated(const TArray<AActor*>& UpdatedActors);
-
 	void SpawnSoul();
-
 	UFUNCTION(BlueprintCallable)
 	FVector GetTranslationWarpTarget();
 	UFUNCTION(BlueprintCallable)
 	FVector GetRotationWarpTarget();
+	bool ShouldParry();
+	void StopParrying();
 
 	UPROPERTY(BlueprintReadOnly)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;

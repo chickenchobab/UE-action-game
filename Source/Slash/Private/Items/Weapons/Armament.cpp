@@ -15,13 +15,6 @@ AArmament::AArmament()
 }
 
 
-void AArmament::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound)
-{
-  Super::Equip(InParent, InSocketName, NewOwner, NewInstigator, bPlayEquipSound);
-
-  AttachMeshToSocket(InParent, InSocketName);
-}
-
 void AArmament::BeginPlay()
 {
   Super::BeginPlay();

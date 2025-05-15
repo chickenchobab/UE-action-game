@@ -19,8 +19,9 @@ class SLASH_API AWeapon : public AItem
 
 public:
 	AWeapon();
-	virtual void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound = false);
+	void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound = false);
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
+	void DetachMeshFromSocket();
 	void SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	void ResetActorsToIgnore();
 

@@ -4,27 +4,37 @@
 
 #include "CoreMinimal.h"
 #include "Enemy/Enemy.h"
-#include "Paladin.generated.h"
+#include "Erika.generated.h"
+
+class AProjectile;
 
 /**
  * 
  */
 UCLASS()
-class SLASH_API APaladin : public AEnemy
+class SLASH_API AErika : public AEnemy
 {
 	GENERATED_BODY()
 
 public:
-	virtual void Tick(float DeltaTime) override;
+	AErika();
 	
 protected:
-	virtual void BeginPlay() override;
-
 	virtual void Attack() override;
 	virtual void Parry() override;
 	virtual bool CanAttack() override;
 	
 	virtual void CheckCombatTarget() override;
-
 	
+	UFUNCTION(BlueprintCallable)
+	void SetFireTimer();
+	UFUNCTION(BlueprintCallable)
+	void FireProjectile();
+
+	FTimerHandle FireTimer;
+
+private:
+	FVector SocketLocation;
+	FRotator SocketRotation;
 };
+

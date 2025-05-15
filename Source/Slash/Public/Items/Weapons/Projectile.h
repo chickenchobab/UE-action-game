@@ -19,6 +19,7 @@ class SLASH_API AProjectile : public AWeapon
 
 public:
 	AProjectile();
+	void ActivateProjectile();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -29,7 +30,4 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UParticleSystemComponent* TrailParticles;
-
-private:
-	
 };

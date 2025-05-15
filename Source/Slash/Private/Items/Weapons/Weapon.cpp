@@ -25,6 +25,7 @@ void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOw
 {
   SetOwner(NewOwner);
   SetInstigator(NewInstigator);
+  AttachMeshToSocket(InParent, InSocketName);
 
   ItemState = EItemState::EIS_Equipped;
   ResetActorsToIgnore();
@@ -51,6 +52,13 @@ void AWeapon::AttachMeshToSocket(USceneComponent* InParent, const FName& InSocke
 {
 	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
   ItemMesh->AttachToComponent(InParent, TransformRules, InSocketName);
+}
+
+
+void AWeapon::DetachMeshFromSocket()
+{
+  FDetachmentTransformRules TransformRules(EDetachmentRule::KeepWorld, true);
+  ItemMesh->DetachFromComponent(TransformRules);
 }
 
 

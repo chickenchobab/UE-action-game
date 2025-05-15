@@ -16,7 +16,6 @@ class SLASH_API AArmament : public AWeapon
 
 public:
 	AArmament();
-	virtual void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound = false) override;
 
 protected:
 	virtual void BeginPlay();

@@ -18,6 +18,7 @@
 #include "HUD/HealthBarComponent.h"
 #include "Items/Weapons/Weapon.h"
 #include "Items/Soul.h"
+#include "Characters/SlashCharacter.h"
 
 
 AEnemy::AEnemy()
@@ -214,7 +215,7 @@ void AEnemy::MoveToTarget(AActor* Target)
 
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
-	MoveRequest.SetAcceptanceRadius(50.f);
+	MoveRequest.SetAcceptanceRadius(AttackRadius / 2);
 	EnemyController->MoveTo(MoveRequest);
 }
 
@@ -367,4 +368,24 @@ void AEnemy::SpawnSoul()
 			SpawnedSoul->AllowOverlapEvent();
 		}
 	}
+}
+
+bool AEnemy::ShouldParry()
+{
+	if (ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(CombatTarget))
+	{
+		return IsTargetInRange(CombatTarget, 100.f) && SlashCharacter->IsAttacking();
+	}
+	return false;
+}
+
+void AEnemy::StopParrying()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ParryMontage)
+	{
+		AnimInstance->Montage_Stop(0.5f, ParryMontage);
+	}
+	// Should call CheckCombatTarget?
+	EnemyState = EEnemyState::EES_None; 
 }
