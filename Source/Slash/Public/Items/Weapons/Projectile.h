@@ -22,8 +22,8 @@ public:
 	void ActivateProjectile(AActor* CombatTarget);
 	
 protected:
-	virtual void OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult) override;
-	void RotateTowardsTarget(AActor* CombatTarget);
+  virtual void OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult) override;
+  void RotateTowardsTarget(AActor* CombatTarget);
 
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;
@@ -31,3 +31,4 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UParticleSystemComponent* TrailParticles;
 };
+

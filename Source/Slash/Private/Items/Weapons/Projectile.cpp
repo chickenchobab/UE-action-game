@@ -47,9 +47,9 @@ void AProjectile::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor 
 
   UE_LOG(LogTemp, Warning, TEXT("Projectile overlaps"));
   UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-  ExecuteGetHit(SweepResult);  
+  ExecuteGetHit(SweepResult);
+  Destroy();
 }
-
 
 void AProjectile::RotateTowardsTarget(AActor* CombatTarget)
 {
