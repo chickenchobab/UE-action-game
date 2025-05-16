@@ -90,6 +90,7 @@ void AErika::FireProjectile()
     {
       Projectile->ActivateProjectile(CombatTarget);
     }
+    SetWeaponCollisionEnabled(ECollisionEnabled::QueryOnly);
     EquippedWeapon = nullptr;
   }
 }
