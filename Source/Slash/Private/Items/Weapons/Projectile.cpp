@@ -14,7 +14,6 @@ AProjectile::AProjectile()
   ProjectileMovement->ProjectileGravityScale = 0.1f;
   ProjectileMovement->InitialSpeed = 2000.f;
   ProjectileMovement->MaxSpeed = 2500.f;
-  // ProjectileMovement->Deactivate();
   
   TrailParticles = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Trail Particles"));
   TrailParticles->SetupAttachment(GetRootComponent());
@@ -34,18 +33,12 @@ void AProjectile::ActivateProjectile(AActor* CombatTarget)
 
 void AProjectile::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
 {
-  if (IsBlocked())
+  if (IsBlocked() && !IsOwnerOpposite(OtherActor))
   {
-    UE_LOG(LogTemp, Warning, TEXT("Blocked"));
-    return;
-  }
-  if (!IsOwnerOpposite(OtherActor))
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Not opposite"));
+    Destroy();
     return;
   }
 
-  UE_LOG(LogTemp, Warning, TEXT("Projectile overlaps"));
   UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
   ExecuteGetHit(SweepResult);
   Destroy();
