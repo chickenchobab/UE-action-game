@@ -30,6 +30,7 @@ public:
 	FORCEINLINE bool IsBlocked() { return bBlocked; }
 	
 protected:
+	virtual void BeginPlay() override;
 	UFUNCTION()
   virtual void OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
 	void ExecuteGetHit(const FHitResult &HitResult);
@@ -51,4 +52,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	USoundBase *EquipSound;
 };
+
 

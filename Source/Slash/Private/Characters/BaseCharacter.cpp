@@ -118,10 +118,10 @@ void ABaseCharacter::SetCapsuleCollisionEnabled(ECollisionEnabled::Type Collisio
 
 void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
-	if (AArmament* MeleeWeapon = Cast<AArmament>(EquippedWeapon))
+	if (EquippedWeapon)
 	{
-		MeleeWeapon->SetWeaponBoxCollisionEnabled(CollisionEnabled);
-		MeleeWeapon->ResetActorsToIgnore();
+		EquippedWeapon->SetWeaponBoxCollisionEnabled(CollisionEnabled);
+		EquippedWeapon->ResetActorsToIgnore();
 	}
 }
 
