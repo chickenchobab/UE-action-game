@@ -21,15 +21,11 @@ AProjectile::AProjectile()
 }
 
 
-void AProjectile::ActivateProjectile()
+void AProjectile::ActivateProjectile(AActor* CombatTarget)
 {
+  RotateTowardsTarget(CombatTarget);
   if (ProjectileMovement)
   {
-    // if (GetOwner())
-    // {
-    //   FRotator OwnerRotation = GetOwner()->GetActorRotation();
-    //   SetActorRotation(GetOwner()->GetActorRotation());
-    // }
     ProjectileMovement->SetVelocityInLocalSpace(FVector(0, 0, -1) * ProjectileMovement->InitialSpeed);
     ProjectileMovement->Activate();
   }
@@ -47,6 +43,19 @@ void AProjectile::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor 
   // if (IsBlocked() || !IsOwnerOpposite(OtherActor)) return;
 
   // UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-  // ExecuteGetHit(SweepResult);
+  // ExecuteGetHit(SweepResult);  
 }
 
+
+void AProjectile::RotateTowardsTarget(AActor* CombatTarget)
+{
+  if (CombatTarget == nullptr) return;
+
+  // Mesh-specific calculation
+  FVector RightVector = CombatTarget->GetActorUpVector();
+  FVector UpVector = -(CombatTarget->GetActorLocation() - GetActorLocation());
+  FVector ForwardVector = UpVector.Cross(RightVector);
+
+  FMatrix RotationMatrix(ForwardVector, RightVector, UpVector, FVector::Zero());
+  SetActorRotation(RotationMatrix.Rotator());
+}

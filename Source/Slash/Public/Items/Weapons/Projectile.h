@@ -19,11 +19,12 @@ class SLASH_API AProjectile : public AWeapon
 
 public:
 	AProjectile();
-	void ActivateProjectile();
+	void ActivateProjectile(AActor* CombatTarget);
 	
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult) override;
+	void RotateTowardsTarget(AActor* CombatTarget);
 
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;

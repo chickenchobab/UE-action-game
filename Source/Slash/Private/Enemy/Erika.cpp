@@ -86,7 +86,10 @@ void AErika::FireProjectile()
   if (AProjectile* Projectile = Cast<AProjectile>(EquippedWeapon))
   {
     Projectile->DetachMeshFromSocket();
-    Projectile->ActivateProjectile();
+    if (CombatTarget)
+    {
+      Projectile->ActivateProjectile(CombatTarget);
+    }
     EquippedWeapon = nullptr;
   }
 }
