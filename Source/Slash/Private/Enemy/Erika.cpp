@@ -18,14 +18,16 @@ void AErika::Attack()
   if (!CombatTarget) return;
 
   EnemyState = EEnemyState::EES_Engaged;
-  SpawnProjectile();
   FocusOnTarget();
-  PlayAttackMontage();
-}
-
-void AErika::Parry()
-{
-	
+	if (IsTargetInRange(CombatTarget, SpecialAttackRadius))
+	{
+    PlaySpecialAttackMontage();
+	}
+	else
+	{
+    SpawnProjectile();
+    PlayAttackMontage();
+	}
 }
 
 bool AErika::CanAttack()

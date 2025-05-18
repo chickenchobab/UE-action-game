@@ -131,7 +131,6 @@ void AEnemy::Attack()
 	{
 		LoseInterest();
 		StartPatrolling();
-		UE_LOG(LogTemp, Warning, TEXT("Player dead"));
 	}
 }
 
@@ -146,6 +145,13 @@ void AEnemy::Die()
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 	SpawnSoul();
+}
+
+void AEnemy::Parry()
+{
+	Super::Parry();
+	
+	EnemyState = EEnemyState::EES_Parrying;
 }
 
 void AEnemy::AttackEnd()

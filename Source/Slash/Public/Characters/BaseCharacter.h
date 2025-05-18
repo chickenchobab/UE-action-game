@@ -46,7 +46,7 @@ protected:
 	
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	int32 PlayAttackMontage(bool bStartCombo = false);
-	int32 PlayDashAttackMontage();
+	int32 PlaySpecialAttackMontage();
 	int32 PlayDeathMontage();
 	void PlayDodgeMontage();
 	void StopAttackMontage(float InBlendOutTime = 0.25f);
@@ -64,7 +64,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* DashAttackMontage;
+	UAnimMontage* SpecialAttackMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* HitReactMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
@@ -80,7 +80,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TArray<FName> AttackMontageSections;
 	UPROPERTY(EditAnywhere)
-	TArray<FName> DashAttackMontageSections;
+	TArray<FName> SpecialAttackMontageSections;
 	UPROPERTY(EditAnywhere)
 	TArray<FName> DeathMontageSections;
 

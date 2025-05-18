@@ -35,19 +35,13 @@ void APaladin::Attack()
 	}
 	else
 	{
-		PlayDashAttackMontage();
+		PlaySpecialAttackMontage();
 	}
-}
-
-void APaladin::Parry()
-{
-	Super::Parry();
-	EnemyState = EEnemyState::EES_Parrying;
 }
 
 bool APaladin::CanAttack()
 {
-	return Super::CanAttack() && IsTargetInRange(CombatTarget, DashAttackRadius);
+	return Super::CanAttack() && IsTargetInRange(CombatTarget, SpecialAttackRadius);
 }
 
 void APaladin::CheckCombatTarget()
@@ -62,7 +56,7 @@ void APaladin::CheckCombatTarget()
 		}
 		// UE_LOG(LogTemp, Warning, TEXT("Lose Interest"));
   }
-	else if (!IsTargetInRange(CombatTarget, DashAttackRadius) && !IsChasing())
+	else if (!IsTargetInRange(CombatTarget, SpecialAttackRadius) && !IsChasing())
 	{
 		ClearAttackTimer();
 		if (!IsEngaged())

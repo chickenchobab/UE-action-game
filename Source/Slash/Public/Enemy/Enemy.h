@@ -46,6 +46,7 @@ protected:
 	// <ABaseCharacter>
 	virtual void Attack() override;
   virtual void Die() override;
+	virtual void Parry() override;
   virtual void AttackEnd() override;
 	virtual bool CanAttack() override;
 	virtual void HandleDamage(float DamageAmount) override;
@@ -136,7 +137,7 @@ protected:
 	double CombatRadius = 700.f;
 	
 	double AttackRadius = 100.f;
-	double DashAttackRadius = 400.f;
+	double SpecialAttackRadius = 400.f;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float AttackTime = 1.f;
@@ -160,3 +161,4 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UMotionWarpingComponent* MotionWarping;
 };
+

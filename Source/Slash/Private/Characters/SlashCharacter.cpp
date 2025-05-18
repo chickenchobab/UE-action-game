@@ -188,7 +188,7 @@ void ASlashCharacter::Attack()
 		if (MovingTime >= 3.f)
 		{
 			ActionState = EActionState::EAS_DashAttacking;
-			PlayDashAttackMontage();
+			PlaySpecialAttackMontage();
 		}
 		else
 		{

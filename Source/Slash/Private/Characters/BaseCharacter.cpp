@@ -146,9 +146,9 @@ int32 ABaseCharacter::PlayAttackMontage(bool bStartCombo)
 }
 
 
-int32 ABaseCharacter::PlayDashAttackMontage()
+int32 ABaseCharacter::PlaySpecialAttackMontage()
 {
-	return PlayRandomMontageSection(DashAttackMontage, DashAttackMontageSections);
+	return PlayRandomMontageSection(SpecialAttackMontage, SpecialAttackMontageSections);
 }
 
 
