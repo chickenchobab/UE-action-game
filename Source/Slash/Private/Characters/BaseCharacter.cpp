@@ -21,7 +21,6 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
@@ -54,13 +53,21 @@ bool ABaseCharacter::IsAlive()
 
 bool ABaseCharacter::IsOpposite(AActor* OtherActor)
 {
-	if (Tags.IsEmpty() || OtherActor->Tags.IsEmpty()) return false;
+	if (Tags.IsEmpty() || !OtherActor || OtherActor->Tags.IsEmpty()) return false;
   return Tags[0] != OtherActor->Tags[0];
 }
 
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	for (int i = 0; i < BodyBoxes.Num(); ++i)
+	{
+		if (BodyBoxes[i])
+		{
+			BodyBoxes[i]->OnComponentBeginOverlap.AddDynamic(this, &ABaseCharacter::BodyBoxOverlap);
+		}
+	}
 }
 
 void ABaseCharacter::Attack()
@@ -90,6 +97,8 @@ void ABaseCharacter::AttackEnd()
 	{
 		EquippedWeapon->SetBlocked(false);
 	}
+	
+	SetBodyBlocked(false);
 }
 
 void ABaseCharacter::DodgeEnd()
@@ -110,10 +119,14 @@ void ABaseCharacter::HandleDamage(float DamageAmount)
 	}
 }
 
-
-void ABaseCharacter::BodyBoxOverlap()
+void ABaseCharacter::BodyBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
 {
-	
+	if (!IsBodyBlocked() && IsOpposite(OtherActor))
+	{
+		UGameplayStatics::ApplyDamage(OtherActor, BodyAttackDamage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+		ExecuteGetHit(SweepResult);
+		UE_LOG(LogTemp, Warning, TEXT("OtherActor(%s) and SweepResultActor(%s)"), *OtherActor->GetName(), *SweepResult.GetActor()->GetName());
+	}
 }
 
 
@@ -130,6 +143,19 @@ void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collision
 		EquippedWeapon->ResetActorsToIgnore();
 	}
 }
+
+
+void ABaseCharacter::SetBodyCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+{
+	for (int i = 0; i < BodyBoxes.Num(); ++i)
+	{
+		if (BodyBoxes[i])
+		{
+			BodyBoxes[i]->SetCollisionEnabled(CollisionEnabled);
+		}
+	}
+}
+
 
 void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& SectionName)
 {
@@ -216,6 +242,18 @@ void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint, const FVect
 
 	PlayMontageSection(HitReactMontage, Section);
 }
+
+
+
+void ABaseCharacter::ExecuteGetHit(const FHitResult &HitResult)
+{
+	if (IHitInterface* HitInterface = Cast<IHitInterface>(HitResult.GetActor()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("BaseCharacter ExecuteHit : %s"), *HitResult.GetActor()->GetName());
+		HitInterface->Execute_GetHit(HitResult.GetActor(), HitResult.ImpactPoint, this);
+	}
+}
+
 
 
 void ABaseCharacter::PlaySound(const FVector& ImpactPoint, USoundBase* PlayedSound)

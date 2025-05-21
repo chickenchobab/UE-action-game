@@ -21,11 +21,8 @@ public:
 	AErika();
 	
 protected:
-	virtual void BeginPlay() override;
-
   virtual void Attack() override;
 	virtual bool CanAttack() override;
-	virtual void BodyBoxOverlap() override;
 	
 	virtual void CheckCombatTarget() override;
 	

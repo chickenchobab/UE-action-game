@@ -15,16 +15,8 @@ AErika::AErika()
 
   CombatRadius = 1000.f;
   AttackRadius = 700.f;
-  SpecialAttackRadius = 50.f;
+  SpecialAttackRadius = 200.f;
 }
-
-
-
-void AErika::BeginPlay()
-{
-  Super::BeginPlay();
-}
-
 
 
 void AErika::Attack()
@@ -49,13 +41,6 @@ bool AErika::CanAttack()
 { 
 	return Super::CanAttack() && IsTargetInRange(CombatTarget, AttackRadius);
 }
-
-
-void AErika::BodyBoxOverlap()
-{
-
-}
-
 
 void AErika::CheckCombatTarget()
 {

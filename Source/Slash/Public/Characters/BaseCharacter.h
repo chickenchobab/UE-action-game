@@ -26,6 +26,9 @@ public:
 	bool IsOpposite(AActor* OtherActor);
 	FORCEINLINE EDeathPose GetDeathPose() { return DeathPose; }
 	FORCEINLINE virtual bool IsParrying() { return false; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetBodyBlocked(bool bCharacterBodyBlocked) { bBodyBlocked = bCharacterBodyBlocked; }
+	FORCEINLINE bool IsBodyBlocked() { return bBodyBlocked; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -39,19 +42,25 @@ protected:
 	virtual void DodgeEnd();
 	virtual bool CanAttack();
 	virtual void HandleDamage(float DamageAmount);
-	virtual void BodyBoxOverlap();
+	UFUNCTION()
+	virtual void BodyBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
 	
 	void SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+	UFUNCTION(BlueprintCallable)
+	void SetBodyCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	int32 PlayAttackMontage(bool bStartCombo = false);
 	int32 PlaySpecialAttackMontage();
 	int32 PlayDeathMontage();
+	
+	
 	void PlayDodgeMontage();
 	void StopAttackMontage(float InBlendOutTime = 0.25f);
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
+	void ExecuteGetHit(const FHitResult &HitResult);
 
 	void PlaySound(const FVector& ImpactPoint, USoundBase* PlayedSound);
 	void SpawnParticles(const FVector& ImpactPoint, UParticleSystem* SpawnedParticles);
@@ -61,8 +70,14 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
 	AWeapon* EquippedWeapon;
+
+
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
 	TArray<UBoxComponent*> BodyBoxes;
+
+	float BodyAttackDamage = 5.f;
+	
+	bool bBodyBlocked = false;
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;
