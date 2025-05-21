@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Items/Weapons/Projectile.h"
+#include "Items/Weapons/RangedWeapon.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-AProjectile::AProjectile()
+ARangedWeapon::ARangedWeapon()
 {
   ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Projectile Movement"));
   ProjectileMovement->bAutoActivate = false;
@@ -20,7 +20,7 @@ AProjectile::AProjectile()
 }
 
 
-void AProjectile::ActivateProjectile(AActor* CombatTarget)
+void ARangedWeapon::ActivateProjectile(AActor* CombatTarget)
 {
   RotateTowardsTarget(CombatTarget);
   if (ProjectileMovement)
@@ -31,20 +31,24 @@ void AProjectile::ActivateProjectile(AActor* CombatTarget)
 }
 
 
-void AProjectile::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
-{
-  if (IsBlocked() && !IsOwnerOpposite(OtherActor))
+void ARangedWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
+{ 
+  if (OtherActor)
   {
-    Destroy();
-    return;
+    UE_LOG(LogTemp, Warning, TEXT("Hit actor : %s"), *OtherActor->GetName());
   }
 
-  UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-  ExecuteGetHit(SweepResult);
+  if (GetOwner() && GetOwner() == OtherActor) return;
+
+  if (!IsBlocked() && IsOwnerOpposite(OtherActor))
+  {
+    UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+    ExecuteGetHit(SweepResult);
+  }
   Destroy();
 }
 
-void AProjectile::RotateTowardsTarget(AActor* CombatTarget)
+void ARangedWeapon::RotateTowardsTarget(AActor* CombatTarget)
 {
   if (CombatTarget == nullptr) return;
 

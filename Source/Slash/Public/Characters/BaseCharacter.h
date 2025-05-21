@@ -8,9 +8,10 @@
 #include "Characters/CharacterTypes.h"
 #include "BaseCharacter.generated.h"
 
-class AWeapon;
 class UAttributeComponent;
+class AWeapon;
 class UAnimMontage;
+class UBoxComponent;
 
 UCLASS()
 class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
@@ -38,9 +39,9 @@ protected:
 	virtual void DodgeEnd();
 	virtual bool CanAttack();
 	virtual void HandleDamage(float DamageAmount);
+	virtual void BodyBoxOverlap();
 	
 	void SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
-	
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	
@@ -60,6 +61,8 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
 	AWeapon* EquippedWeapon;
+	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
+	TArray<UBoxComponent*> BodyBoxes;
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* AttackMontage;

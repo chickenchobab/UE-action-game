@@ -2,14 +2,29 @@
 
 
 #include "Enemy/Erika.h"
-#include "Items/Weapons/Projectile.h"
+#include "Items/Weapons/RangedWeapon.h"
+#include "Components/BoxComponent.h"
 
 
 AErika::AErika()
 {
+  BodyBoxes.Add(CreateDefaultSubobject<UBoxComponent>(FName("Foot Box")));
+  BodyBoxes[0]->SetupAttachment(GetMesh(), FName("RightFootSocket"));
+  BodyBoxes[0]->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+  BodyBoxes[0]->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+
   CombatRadius = 1000.f;
   AttackRadius = 700.f;
+  SpecialAttackRadius = 50.f;
 }
+
+
+
+void AErika::BeginPlay()
+{
+  Super::BeginPlay();
+}
+
 
 
 void AErika::Attack()
@@ -34,6 +49,13 @@ bool AErika::CanAttack()
 { 
 	return Super::CanAttack() && IsTargetInRange(CombatTarget, AttackRadius);
 }
+
+
+void AErika::BodyBoxOverlap()
+{
+
+}
+
 
 void AErika::CheckCombatTarget()
 {
@@ -64,11 +86,12 @@ void AErika::CheckCombatTarget()
   }
 }
 
+
 void AErika::SpawnProjectile()
 {
   if (UWorld *World = GetWorld())
   {
-    AProjectile *Projectile = World->SpawnActor<AProjectile>(WeaponClass);
+    ARangedWeapon *Projectile = World->SpawnActor<ARangedWeapon>(WeaponClass);
     if (Projectile)
     {
       Projectile->Equip(GetMesh(), FName("RightHandSocket"), this, this);
@@ -85,7 +108,7 @@ void AErika::SetFireTimer()
 
 void AErika::FireProjectile()
 {
-  if (AProjectile* Projectile = Cast<AProjectile>(EquippedWeapon))
+  if (ARangedWeapon* Projectile = Cast<ARangedWeapon>(EquippedWeapon))
   {
     Projectile->DetachMeshFromSocket();
     if (CombatTarget)

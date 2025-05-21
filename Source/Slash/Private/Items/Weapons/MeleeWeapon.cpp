@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Items/Weapons/Armament.h"
+#include "Items/Weapons/MeleeWeapon.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
-AArmament::AArmament()
+AMeleeWeapon::AMeleeWeapon()
 {
   BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
   BoxTraceStart->SetupAttachment(GetRootComponent());
@@ -14,33 +14,15 @@ AArmament::AArmament()
   BoxTraceEnd->SetupAttachment(GetRootComponent());
 }
 
-void AArmament::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
-{
-  if (!IsOwnerOpposite(OtherActor)) 
-  { 
-    UE_LOG(LogTemp, Warning, TEXT("Box overlap : Not enemy(%s)->%s"), *OtherActor->GetName(), *OtherComp->GetName());
-  }
-  else
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Box overlap : Enemy(%s)->%s"), *OtherActor->GetName(), *OtherComp->GetName());
-  }
-  
+void AMeleeWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
+{ 
   FHitResult BoxHit;
   BoxTrace(BoxHit);
-
-  if (!BoxHit.GetActor())
-  {
-    UE_LOG(LogTemp, Warning, TEXT("No hit actor"));
-  }
 
   if (GetOwner() && BoxHit.GetActor())
   {
     UE_LOG(LogTemp, Warning, TEXT("Hit Actor(%s)->%s"), *BoxHit.GetActor()->GetName(), *BoxHit.GetComponent()->GetName());
-    if (!IsOwnerOpposite(BoxHit.GetActor()))
-    {
-      UE_LOG(LogTemp, Warning, TEXT("No damage to ally"));
-    }
-    if (!IsBlocked())
+    if (!IsBlocked() && IsOwnerOpposite(BoxHit.GetActor()))
     {
       UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
       ExecuteGetHit(BoxHit);
@@ -50,7 +32,7 @@ void AArmament::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *O
 }
 
 
-void AArmament::BoxTrace(FHitResult& BoxHit)
+void AMeleeWeapon::BoxTrace(FHitResult& BoxHit)
 {
   const FVector Start = BoxTraceStart->GetComponentLocation();
   const FVector End = BoxTraceEnd->GetComponentLocation();

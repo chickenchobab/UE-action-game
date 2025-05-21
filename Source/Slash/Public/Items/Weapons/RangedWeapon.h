@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Items/Weapons/Weapon.h"
-#include "Projectile.generated.h"
+#include "RangedWeapon.generated.h"
 
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
@@ -13,12 +13,12 @@ class UParticleSystemComponent;
  * 
  */
 UCLASS()
-class SLASH_API AProjectile : public AWeapon
+class SLASH_API ARangedWeapon : public AWeapon
 {
 	GENERATED_BODY()
 
 public:
-	AProjectile();
+	ARangedWeapon();
 	void ActivateProjectile(AActor* CombatTarget);
 	
 protected:

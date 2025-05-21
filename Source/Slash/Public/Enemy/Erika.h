@@ -6,7 +6,8 @@
 #include "Enemy/Enemy.h"
 #include "Erika.generated.h"
 
-class AProjectile;
+class ARangedWeapon;
+class UBoxComponent;
 
 /**
  * 
@@ -20,8 +21,11 @@ public:
 	AErika();
 	
 protected:
+	virtual void BeginPlay() override;
+
   virtual void Attack() override;
 	virtual bool CanAttack() override;
+	virtual void BodyBoxOverlap() override;
 	
 	virtual void CheckCombatTarget() override;
 	
@@ -30,6 +34,8 @@ protected:
 	void SetFireTimer();
 	UFUNCTION(BlueprintCallable)
 	void FireProjectile();
+
+	// enable foot collision
 
 	FTimerHandle FireTimer;
 

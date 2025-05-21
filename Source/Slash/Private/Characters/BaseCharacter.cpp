@@ -4,7 +4,7 @@
 #include "Characters/BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Items/Weapons/Armament.h"
+#include "Items/Weapons/MeleeWeapon.h"
 #include "Components/BoxComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -108,6 +108,12 @@ void ABaseCharacter::HandleDamage(float DamageAmount)
 	{
 		Attributes->ReceiveDamage(DamageAmount);
 	}
+}
+
+
+void ABaseCharacter::BodyBoxOverlap()
+{
+	
 }
 
 
