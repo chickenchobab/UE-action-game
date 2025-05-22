@@ -70,6 +70,7 @@ void APaladin::CheckCombatTarget()
 		ClearAttackTimer();
 		if (!IsEngaged())
 		{
+			FocusOnTarget();
 			Parry();
 		}
 		// UE_LOG(LogTemp, Warning, TEXT("Parry attack"));
