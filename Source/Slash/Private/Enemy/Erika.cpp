@@ -4,6 +4,7 @@
 #include "Enemy/Erika.h"
 #include "Items/Weapons/RangedWeapon.h"
 #include "Components/BoxComponent.h"
+#include "MotionWarpingComponent.h"
 
 
 AErika::AErika()
@@ -16,6 +17,17 @@ AErika::AErika()
   CombatRadius = 1000.f;
   AttackRadius = 700.f;
   SpecialAttackRadius = 200.f;
+}
+
+
+void AErika::Tick(float DeltaTime)
+{
+  Super::Tick(DeltaTime);
+  
+  if (MotionWarping)
+	{
+		MotionWarping->AddOrUpdateWarpTargetFromLocation(FName("RotationTarget"), GetRotationWarpTarget());
+	}
 }
 
 

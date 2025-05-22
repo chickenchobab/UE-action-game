@@ -19,6 +19,7 @@ class SLASH_API AErika : public AEnemy
 
 public:
 	AErika();
+	virtual void Tick(float DeltaTime) override;
 	
 protected:
   virtual void Attack() override;
