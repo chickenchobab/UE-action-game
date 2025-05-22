@@ -22,6 +22,7 @@ ARangedWeapon::ARangedWeapon()
 
 void ARangedWeapon::ActivateProjectile(AActor* CombatTarget)
 {
+  RotateTowardsTarget(CombatTarget);
   if (ProjectileMovement)
   {
     ProjectileMovement->SetVelocityInLocalSpace(FVector(0, 0, -1) * ProjectileMovement->InitialSpeed);
