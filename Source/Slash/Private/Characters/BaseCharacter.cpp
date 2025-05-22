@@ -124,7 +124,7 @@ void ABaseCharacter::BodyBoxOverlap(UPrimitiveComponent *OverlappedComponent, AA
 	if (!IsBodyBlocked() && IsOpposite(OtherActor))
 	{
 		UGameplayStatics::ApplyDamage(OtherActor, BodyAttackDamage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-		ExecuteGetHit(SweepResult);
+		ExecuteGetHit(OtherActor, SweepResult.ImpactPoint);
 		UE_LOG(LogTemp, Warning, TEXT("OtherActor(%s) and SweepResultActor(%s)"), *OtherActor->GetName(), *SweepResult.GetActor()->GetName());
 	}
 }
@@ -245,12 +245,11 @@ void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint, const FVect
 
 
 
-void ABaseCharacter::ExecuteGetHit(const FHitResult &HitResult)
+void ABaseCharacter::ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint)
 {
-	if (IHitInterface* HitInterface = Cast<IHitInterface>(HitResult.GetActor()))
+	if (IHitInterface* HitInterface = Cast<IHitInterface>(OtherActor))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("BaseCharacter ExecuteHit : %s"), *HitResult.GetActor()->GetName());
-		HitInterface->Execute_GetHit(HitResult.GetActor(), HitResult.ImpactPoint, this);
+		HitInterface->Execute_GetHit(OtherActor, ImpactPoint, this);
 	}
 }
 

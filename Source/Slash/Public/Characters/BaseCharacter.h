@@ -60,7 +60,7 @@ protected:
 	void PlayDodgeMontage();
 	void StopAttackMontage(float InBlendOutTime = 0.25f);
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
-	void ExecuteGetHit(const FHitResult &HitResult);
+	void ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint);
 
 	void PlaySound(const FVector& ImpactPoint, USoundBase* PlayedSound);
 	void SpawnParticles(const FVector& ImpactPoint, UParticleSystem* SpawnedParticles);

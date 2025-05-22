@@ -88,11 +88,11 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *Oth
 
 }
 
-void AWeapon::ExecuteGetHit(const FHitResult &BoxHit)
+void AWeapon::ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint)
 {
-  if (IHitInterface* HitInterface = Cast<IHitInterface>(BoxHit.GetActor()))
+  if (IHitInterface* HitInterface = Cast<IHitInterface>(OtherActor))
   {
-    HitInterface->Execute_GetHit(BoxHit.GetActor(), BoxHit.ImpactPoint, GetOwner());
+    HitInterface->Execute_GetHit(OtherActor, ImpactPoint, GetOwner());
   }
 }
 
