@@ -15,6 +15,7 @@ class SLASH_API APaladin : public AEnemy
 	GENERATED_BODY()
 
 public:
+	APaladin();
 	virtual void Tick(float DeltaTime) override;
 	
 protected:
@@ -25,5 +26,11 @@ protected:
 	
 	virtual void CheckCombatTarget() override;
 
-	
+private:
+	void SetupShield();
+	UFUNCTION()
+	void ShieldBeginOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* Shield;
 };

@@ -4,6 +4,17 @@
 #include "Enemy/Paladin.h"
 #include "MotionWarpingComponent.h"
 #include "Animation/AnimMontage.h"
+#include "Kismet/KismetSystemLibrary.h"
+
+#include "Items/Weapons/Weapon.h"
+
+APaladin::APaladin()
+{
+	Shield = CreateDefaultSubobject<UStaticMeshComponent>(FName("Shield"));
+	Shield->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+  Shield->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+  Shield->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
+}
 
 void APaladin::Tick(float DeltaTime)
 {
@@ -19,7 +30,9 @@ void APaladin::Tick(float DeltaTime)
 void APaladin::BeginPlay()
 {
 	Super::BeginPlay();
+
 	SpawnDefaultWeapon();
+	SetupShield();
 }
 
 void APaladin::Attack()
@@ -86,3 +99,28 @@ void APaladin::CheckCombatTarget()
 		// UE_LOG(LogTemp, Warning, TEXT("Stop parrying"));
 	}
 }
+
+void APaladin::SetupShield()
+{
+	if (Shield)
+	{
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		Shield->AttachToComponent(GetMesh(), TransformRules, FName("LeftHandSocket"));
+		Shield->OnComponentBeginOverlap.AddDynamic(this, &APaladin::ShieldBeginOverlap);
+	}
+}
+
+void APaladin::ShieldBeginOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
+{
+	// In case the weapon is a projectile
+	if (!UKismetSystemLibrary::IsValid(OtherActor)) return;
+	
+	if (AWeapon* Weapon = Cast<AWeapon>(OtherActor))
+	{ 
+		if (IsOpposite(Weapon->GetOwner()))
+		{
+			Weapon->SetBlocked(true);
+		}
+	}
+}
+
