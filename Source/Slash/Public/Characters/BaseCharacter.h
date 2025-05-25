@@ -10,6 +10,7 @@
 
 class UAttributeComponent;
 class AWeapon;
+class AMeleeWeapon;
 class UAnimMontage;
 class UBoxComponent;
 
@@ -26,13 +27,8 @@ public:
 	bool IsOpposite(AActor* OtherActor);
 	FORCEINLINE EDeathPose GetDeathPose() { return DeathPose; }
 	FORCEINLINE virtual bool IsParrying() { return false; }
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetBodyBlocked(bool bCharacterBodyBlocked) { bBodyBlocked = bCharacterBodyBlocked; }
-	FORCEINLINE bool IsBodyBlocked() { return bBodyBlocked; }
 	
 protected:
-	virtual void BeginPlay() override;
-
 	virtual void Attack();
 	virtual void Die();
 	virtual void Parry();
@@ -42,8 +38,6 @@ protected:
 	virtual void DodgeEnd();
 	virtual bool CanAttack();
 	virtual void HandleDamage(float DamageAmount);
-	UFUNCTION()
-	virtual void BodyBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
 	
 	void SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	UFUNCTION(BlueprintCallable)
@@ -56,7 +50,6 @@ protected:
 	int32 PlaySpecialAttackMontage();
 	int32 PlayDeathMontage();
 	
-	
 	void PlayDodgeMontage();
 	void StopAttackMontage(float InBlendOutTime = 0.25f);
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
@@ -65,15 +58,18 @@ protected:
 	void PlaySound(const FVector& ImpactPoint, USoundBase* PlayedSound);
 	void SpawnParticles(const FVector& ImpactPoint, UParticleSystem* SpawnedParticles);
 
+	void CreateBodyWeaponBox(FName BoxName, FName SocketName);
+	void SetupBodyWeapons(int32 BodyIndex, float Damage, FName SocketName);
+
 	UPROPERTY(VisibleAnywhere)
 	UAttributeComponent* Attributes;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
 	AWeapon* EquippedWeapon;
-
-
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
-	TArray<UBoxComponent*> BodyBoxes;
+	TArray<AWeapon*> BodyWeapons;
+	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
+	TArray<UBoxComponent*> BodyWeaponBoxes;
 
 	float BodyAttackDamage = 5.f;
 	

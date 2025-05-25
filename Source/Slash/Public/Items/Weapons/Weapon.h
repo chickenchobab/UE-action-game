@@ -24,7 +24,8 @@ public:
 	void DetachMeshFromSocket();
 	void SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	void ResetActorsToIgnore();
-
+	FORCEINLINE UBoxComponent* GetBox() { return WeaponBox; }
+	FORCEINLINE void SetDamage(float DamageAmount) {Damage = DamageAmount;}
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetBlocked(bool bWeaponBlocked) { bBlocked = bWeaponBlocked; }
 	FORCEINLINE bool IsBlocked() { return bBlocked; }
@@ -47,6 +48,8 @@ protected:
 	TArray<AActor*> ActorsToIgnore;
 	
 private:
+	bool IsActorIgnored(AActor* OtherActor);
+
 	bool bBlocked = false;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")

@@ -57,18 +57,6 @@ bool ABaseCharacter::IsOpposite(AActor* OtherActor)
   return Tags[0] != OtherActor->Tags[0];
 }
 
-void ABaseCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	for (int i = 0; i < BodyBoxes.Num(); ++i)
-	{
-		if (BodyBoxes[i])
-		{
-			BodyBoxes[i]->OnComponentBeginOverlap.AddDynamic(this, &ABaseCharacter::BodyBoxOverlap);
-		}
-	}
-}
 
 void ABaseCharacter::Attack()
 {
@@ -97,8 +85,13 @@ void ABaseCharacter::AttackEnd()
 	{
 		EquippedWeapon->SetBlocked(false);
 	}
-	
-	SetBodyBlocked(false);
+	for (int i = 0; i < BodyWeapons.Num(); ++i)
+	{
+		if (BodyWeapons[i])
+		{
+			BodyWeapons[i]->SetBlocked(false);
+		}
+	}
 }
 
 void ABaseCharacter::DodgeEnd()
@@ -116,16 +109,6 @@ void ABaseCharacter::HandleDamage(float DamageAmount)
 	if (Attributes)
 	{
 		Attributes->ReceiveDamage(DamageAmount);
-	}
-}
-
-void ABaseCharacter::BodyBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
-{
-	if (!IsBodyBlocked() && IsOpposite(OtherActor))
-	{
-		UGameplayStatics::ApplyDamage(OtherActor, BodyAttackDamage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-		ExecuteGetHit(OtherActor, SweepResult.ImpactPoint);
-		UE_LOG(LogTemp, Warning, TEXT("OtherActor(%s) and SweepResultActor(%s)"), *OtherActor->GetName(), *SweepResult.GetActor()->GetName());
 	}
 }
 
@@ -147,11 +130,12 @@ void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collision
 
 void ABaseCharacter::SetBodyCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
-	for (int i = 0; i < BodyBoxes.Num(); ++i)
+	for (int i = 0; i < BodyWeapons.Num(); ++i)
 	{
-		if (BodyBoxes[i])
+		if (BodyWeapons[i])
 		{
-			BodyBoxes[i]->SetCollisionEnabled(CollisionEnabled);
+			BodyWeapons[i]->SetWeaponBoxCollisionEnabled(CollisionEnabled);
+			BodyWeapons[i]->ResetActorsToIgnore();
 		}
 	}
 }
@@ -278,6 +262,32 @@ void ABaseCharacter::SpawnParticles(const FVector& ImpactPoint, UParticleSystem*
 		);
 	}
 }
+
+
+void ABaseCharacter::CreateBodyWeaponBox(FName BoxName, FName SocketName)
+{
+	BodyWeaponBoxes.Add(CreateDefaultSubobject<UBoxComponent>(BoxName));
+  BodyWeaponBoxes.Last()->SetupAttachment(GetMesh(), SocketName);
+  BodyWeaponBoxes.Last()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+
+
+void ABaseCharacter::SetupBodyWeapons(int32 BodyIndex, float Damage, FName SocketName)
+{
+	if (BodyIndex < BodyWeapons.Num() && BodyWeapons[BodyIndex]) 
+	{
+		BodyWeapons[BodyIndex]->Equip(GetMesh(), SocketName, this, this);
+		BodyWeapons[BodyIndex]->SetDamage(Damage);
+		BodyWeapons[BodyIndex]->GetBox()->SetVisibility(true);
+		if (BodyWeaponBoxes[BodyIndex])
+		{
+			BodyWeapons[BodyIndex]->GetBox()->SetBoxExtent(BodyWeaponBoxes[BodyIndex]->GetUnscaledBoxExtent());
+			BodyWeapons[BodyIndex]->GetBox()->SetWorldTransform(BodyWeaponBoxes[BodyIndex]->GetComponentTransform());
+		}
+	}
+}
+
 
 int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
 {

@@ -85,7 +85,18 @@ void AWeapon::BeginPlay()
 
 void AWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
 {
+  if (OtherActor)
+  {
+    UE_LOG(LogTemp, Warning, TEXT("Hit actor : %s"), *OtherActor->GetName());
+  }
+  if (GetOwner() && GetOwner() == OtherActor) return;
 
+  if (!IsBlocked() && !IsActorIgnored(OtherActor) && IsOwnerOpposite(OtherActor))
+  {
+    ActorsToIgnore.Add(OtherActor);
+    UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+    ExecuteGetHit(OtherActor, SweepResult.ImpactPoint);
+  }
 }
 
 void AWeapon::ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint)
@@ -101,6 +112,16 @@ bool AWeapon::IsOwnerOpposite(AActor* OtherActor)
   if (ABaseCharacter* OwnerCharacter = Cast<ABaseCharacter>(GetOwner()))
   {
     return OwnerCharacter->IsOpposite(OtherActor);
+  }
+  return false;
+}
+
+
+bool AWeapon::IsActorIgnored(AActor* OtherActor)
+{
+  for (AActor* Actor : ActorsToIgnore)
+  {
+    if (Actor == OtherActor) return true;
   }
   return false;
 }

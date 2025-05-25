@@ -3,20 +3,17 @@
 
 #include "Enemy/Erika.h"
 #include "Items/Weapons/RangedWeapon.h"
+#include "Items/Weapons/MeleeWeapon.h"
 #include "Components/BoxComponent.h"
 #include "MotionWarpingComponent.h"
 
 
 AErika::AErika()
 {
-  BodyBoxes.Add(CreateDefaultSubobject<UBoxComponent>(FName("Foot Box")));
-  BodyBoxes[0]->SetupAttachment(GetMesh(), FName("RightFootSocket"));
-  BodyBoxes[0]->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-  BodyBoxes[0]->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-
   CombatRadius = 1000.f;
   AttackRadius = 700.f;
   SpecialAttackRadius = 200.f;
+  CreateBodyWeaponBox(FName("Foot Box"), FName("RightFootSocket"));
 }
 
 
@@ -28,6 +25,23 @@ void AErika::Tick(float DeltaTime)
 	{
 		MotionWarping->AddOrUpdateWarpTargetFromLocation(FName("RotationTarget"), GetRotationWarpTarget());
 	}
+}
+
+
+void AErika::BeginPlay()
+{
+  Super::BeginPlay();
+
+  if (UWorld* World = GetWorld())
+  {
+    AWeapon* BodyWeapon = Cast<AWeapon>(World->SpawnActor(AWeapon::StaticClass()));
+    if (BodyWeapon)
+    {
+      UE_LOG(LogTemp, Warning, TEXT("Body weapon spawned"));
+    }
+    BodyWeapons.Add(BodyWeapon);
+  }
+  SetupBodyWeapons(0, 100.f, FName("RightFootSocket"));
 }
 
 
