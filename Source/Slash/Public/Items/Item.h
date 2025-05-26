@@ -27,6 +27,8 @@ public:
 	AItem();
 	virtual void Tick(float DeltaTime) override;
 
+	FORCEINLINE void AllowOverlapEvent() {bAllowOverlapEvent = true;}
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -72,6 +74,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	USoundBase* PickupSound;
 
+	bool bAllowOverlapEvent = false;
 private:
 	float RunningTime;
 };

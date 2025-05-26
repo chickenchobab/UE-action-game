@@ -50,7 +50,11 @@ void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 		SpawnLocation.Z += 75.f;
 
 		int32 Selection = FMath::RandRange(0, TreasureClasses.Num() - 1);
-		World->SpawnActor<ATreasure>(TreasureClasses[Selection], SpawnLocation, GetActorRotation());
+
+		if (ATreasure* SpawnedTreasure = World->SpawnActor<ATreasure>(TreasureClasses[Selection], SpawnLocation, GetActorRotation()))
+		{
+			SpawnedTreasure->AllowOverlapEvent();
+		}
 	}
 }
 

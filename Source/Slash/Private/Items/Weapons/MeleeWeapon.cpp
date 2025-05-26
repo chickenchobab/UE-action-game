@@ -22,9 +22,12 @@ void AMeleeWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor
   if (GetOwner() && BoxHit.GetActor())
   {
     UE_LOG(LogTemp, Warning, TEXT("Hit Actor(%s)->%s"), *BoxHit.GetActor()->GetName(), *BoxHit.GetComponent()->GetName());
-    if (!IsBlocked() && IsOwnerOpposite(BoxHit.GetActor()))
+    if (!IsBlocked())
     {
-      UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+      if (IsOwnerOpposite(BoxHit.GetActor()))
+      {
+        UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+      }
       ExecuteGetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
     }
     CreateFields(BoxHit.ImpactPoint);
