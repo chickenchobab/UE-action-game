@@ -91,9 +91,9 @@ void AErika::CheckCombatTarget()
 	}
   else if (IsTargetInRange(CombatTarget, AcceptanceRadius) && !IsTargetInRange(CombatTarget, SpecialAttackRadius) && !IsDetaching())
   {
-    ClearAttackTimer();
     if (!IsEngaged() && DetachFromTarget()) // Can step back
     {
+      ClearAttackTimer();
       UE_LOG(LogTemp, Warning, TEXT("Detaching"));
     }
     else if (CanAttack()) // Cannot but attack
