@@ -13,6 +13,7 @@
 #include "Animation/AnimMontage.h"
 #include "MotionWarpingComponent.h"
 #include "DrawDebugHelpers.h"
+#include "NavigationSystem.h"
 
 #include "Components/AttributeComponent.h"
 #include "HUD/HealthBarComponent.h"
@@ -221,7 +222,7 @@ void AEnemy::MoveToTarget(AActor* Target)
 
 	FAIMoveRequest MoveRequest;
 	MoveRequest.SetGoalActor(Target);
-	MoveRequest.SetAcceptanceRadius(AttackRadius / 2);
+	MoveRequest.SetAcceptanceRadius(AcceptanceRadius);
 	EnemyController->MoveTo(MoveRequest);
 }
 
@@ -300,6 +301,7 @@ void AEnemy::LoseInterest()
 void AEnemy::StartPatrolling()
 {
 	EnemyState = EEnemyState::EES_Patrolling;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = PatrollingSpeed;
 	MoveToTarget(PatrolTarget);
 }
@@ -307,6 +309,7 @@ void AEnemy::StartPatrolling()
 void AEnemy::ChaseTarget()
 {
 	EnemyState = EEnemyState::EES_Chasing;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
 	MoveToTarget(CombatTarget);
 }
@@ -403,4 +406,38 @@ void AEnemy::FocusOnTarget()
 	ToTarget.Z = 0;
 	FRotator LookAtRotation = ToTarget.Rotation();
 	SetActorRotation(LookAtRotation);
+}
+
+
+bool AEnemy::DetachFromTarget()
+{
+	if (!CombatTarget) return false;
+
+	float EscapeDistance = AttackRadius - (GetActorLocation() - CombatTarget->GetActorLocation()).Size();
+	FVector EscapeDirection = (GetActorLocation() - CombatTarget->GetActorLocation()).GetSafeNormal();
+	FVector EscapeLocation = GetActorLocation() + EscapeDistance * EscapeDirection;
+
+	UNavigationSystemV1* NavSys = UNavigationSystemV1::GetCurrent(GetWorld());
+	FNavLocation NavLocation;
+
+	if (EnemyController && NavSys && NavSys->ProjectPointToNavigation(EscapeLocation, NavLocation))
+	{
+    if (EnemyController->MoveToLocation(NavLocation.Location) == EPathFollowingRequestResult::RequestSuccessful)
+		{
+			EnemyState = EEnemyState::EES_Detaching;
+			GetCharacterMovement()->bOrientRotationToMovement = false;
+			// GetCharacterMovement()->MaxWalkSpeed = PatrollingSpeed;
+			FocusOnTarget();
+			return true;
+		}
+	}
+	return false;
+}
+
+
+void AEnemy::StopDetaching()
+{
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	FocusOnTarget();
+	EnemyState = EEnemyState::EES_None;
 }

@@ -6,11 +6,14 @@
 #include "Items/Weapons/MeleeWeapon.h"
 #include "Components/BoxComponent.h"
 #include "MotionWarpingComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Navigation/PathFollowingComponent.h"
 
 
 AErika::AErika()
 {
   CombatRadius = 1000.f;
+  AcceptanceRadius = 400.f;
   AttackRadius = 700.f;
   SpecialAttackRadius = 200.f;
   CreateBodyWeaponBox(FName("Foot Box"), FName("RightFootSocket"));
@@ -35,10 +38,6 @@ void AErika::BeginPlay()
   if (UWorld* World = GetWorld())
   {
     AWeapon* BodyWeapon = Cast<AWeapon>(World->SpawnActor(AWeapon::StaticClass()));
-    if (BodyWeapon)
-    {
-      UE_LOG(LogTemp, Warning, TEXT("Body weapon spawned"));
-    }
     BodyWeapons.Add(BodyWeapon);
   }
   SetupBodyWeapons(0, 100.f, FName("RightFootSocket"));
@@ -71,10 +70,8 @@ bool AErika::CanAttack()
 }
 
 
-
 void AErika::CheckCombatTarget()
 {
-  // UE_LOG(LogTemp, Warning, TEXT("Erika Chseck combat target"));
 	if (!IsTargetInRange(CombatTarget, CombatRadius))
   {
 		ClearAttackTimer();
@@ -83,7 +80,6 @@ void AErika::CheckCombatTarget()
 		{
 			StartPatrolling();
 		}
-		// UE_LOG(LogTemp, Warning, TEXT("Erika Lose Interest"));
   }
 	else if (!IsTargetInRange(CombatTarget, AttackRadius) && !IsChasing())
 	{
@@ -92,12 +88,24 @@ void AErika::CheckCombatTarget()
 		{
 			ChaseTarget();
 		}
-		// UE_LOG(LogTemp, Warning, TEXT("Erika Chase Player"));
 	}
+  else if (IsTargetInRange(CombatTarget, AcceptanceRadius) && !IsTargetInRange(CombatTarget, SpecialAttackRadius) && !IsDetaching())
+  {
+    ClearAttackTimer();
+    if (!IsEngaged() && DetachFromTarget()) // Can step back
+    {
+      UE_LOG(LogTemp, Warning, TEXT("Detaching"));
+    }
+    else if (CanAttack()) // Cannot but attack
+    {
+      StartAttacking(AttackTime);
+      UE_LOG(LogTemp, Warning, TEXT("Detaching Attack"));
+    }
+  }
   else if (CanAttack())
   {
-    // UE_LOG(LogTemp, Warning, TEXT("Erika Can attack"));
     StartAttacking(AttackTime);
+    UE_LOG(LogTemp, Warning, TEXT("Attack"));
   }
 }
 

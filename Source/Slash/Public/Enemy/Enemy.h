@@ -36,6 +36,7 @@ public:
 	FORCEINLINE bool IsAttacking() { return EnemyState == EEnemyState::EES_Attacking; }
 	FORCEINLINE bool IsEngaged() { return EnemyState == EEnemyState::EES_Engaged; }
 	FORCEINLINE virtual bool IsParrying() override { return EnemyState == EEnemyState::EES_Parrying; }
+	FORCEINLINE bool IsDetaching() { return EnemyState == EEnemyState::EES_Detaching; }
 
 protected:
 
@@ -79,6 +80,8 @@ protected:
 	bool ShouldParry();
 	void StopParrying();
 	void FocusOnTarget();
+	bool DetachFromTarget();
+	void StopDetaching();
 
 	UPROPERTY(BlueprintReadOnly)
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
@@ -135,6 +138,8 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	double CombatRadius = 700.f;
+
+	double AcceptanceRadius = 350.f;
 	
 	double AttackRadius = 100.f;
 	double SpecialAttackRadius = 400.f;
