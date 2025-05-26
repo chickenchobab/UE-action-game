@@ -135,6 +135,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float ChasingSpeed = 300.f;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float DetachingSpeed = 200.f;
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	double CombatRadius = 700.f;

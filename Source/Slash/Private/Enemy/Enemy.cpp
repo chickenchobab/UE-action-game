@@ -426,7 +426,7 @@ bool AEnemy::DetachFromTarget()
 		{
 			EnemyState = EEnemyState::EES_Detaching;
 			GetCharacterMovement()->bOrientRotationToMovement = false;
-			// GetCharacterMovement()->MaxWalkSpeed = PatrollingSpeed;
+			GetCharacterMovement()->MaxWalkSpeed = DetachingSpeed;
 			FocusOnTarget();
 			return true;
 		}
