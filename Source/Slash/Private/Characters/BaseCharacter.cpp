@@ -66,6 +66,11 @@ void ABaseCharacter::Attack()
 void ABaseCharacter::Die()
 {
 	Tags.Add("Dead");
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance)
+	{
+    AnimInstance->Montage_Stop(0.1f);
+	}
 	PlayDeathMontage();
 }
 
