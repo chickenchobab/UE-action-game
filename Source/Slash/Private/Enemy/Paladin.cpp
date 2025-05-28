@@ -78,7 +78,7 @@ void APaladin::CheckCombatTarget()
 		}
 		// UE_LOG(LogTemp, Warning, TEXT("Chase Player"));
 	}
-	else if (ShouldParry() && !IsParrying())
+	else if (IsTargetAttacking() && !IsParrying())
 	{
 		ClearAttackTimer();
 		if (!IsEngaged())

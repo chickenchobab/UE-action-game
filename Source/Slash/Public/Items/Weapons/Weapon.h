@@ -29,6 +29,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetBlocked(bool bWeaponBlocked) { bBlocked = bWeaponBlocked; }
 	FORCEINLINE bool IsBlocked() { return bBlocked; }
+	FORCEINLINE void SetPair(AWeapon* Weapon) { PairWeapon = Weapon; }
+	FORCEINLINE AWeapon* GetPair() { return PairWeapon; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -54,6 +56,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	USoundBase *EquipSound;
+
+	UPROPERTY(VisibleInstanceOnly)
+	AWeapon* PairWeapon;
 };
 
 

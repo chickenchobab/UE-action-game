@@ -77,7 +77,7 @@ protected:
 	FVector GetTranslationWarpTarget();
 	UFUNCTION(BlueprintCallable)
 	FVector GetRotationWarpTarget();
-	bool ShouldParry();
+	bool IsTargetAttacking();
 	void StopParrying();
 	void FocusOnTarget();
 	bool DetachFromTarget();
@@ -168,4 +168,3 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UMotionWarpingComponent* MotionWarping;
 };
-

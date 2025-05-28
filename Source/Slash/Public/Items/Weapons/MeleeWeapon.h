@@ -33,3 +33,4 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	FVector BoxTraceExtent = FVector(5.f);
 };
+

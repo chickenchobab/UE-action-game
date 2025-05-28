@@ -377,7 +377,7 @@ void AEnemy::SpawnSoul()
 	}
 }
 
-bool AEnemy::ShouldParry()
+bool AEnemy::IsTargetAttacking()
 {
 	if (ASlashCharacter* SlashCharacter = Cast<ASlashCharacter>(CombatTarget))
 	{
@@ -413,7 +413,7 @@ bool AEnemy::DetachFromTarget()
 {
 	if (!CombatTarget) return false;
 
-	float EscapeDistance = AttackRadius - (GetActorLocation() - CombatTarget->GetActorLocation()).Size();
+	float EscapeDistance = AcceptanceRadius - (GetActorLocation() - CombatTarget->GetActorLocation()).Size();
 	FVector EscapeDirection = (GetActorLocation() - CombatTarget->GetActorLocation()).GetSafeNormal();
 	FVector EscapeLocation = GetActorLocation() + EscapeDistance * EscapeDirection;
 

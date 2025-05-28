@@ -4,7 +4,7 @@
 #include "Characters/BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Items/Weapons/MeleeWeapon.h"
+#include "Items/Weapons/RangedWeapon.h"
 #include "Components/BoxComponent.h"
 #include "Components/AttributeComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -85,11 +85,11 @@ void ABaseCharacter::AttackEnd()
 	{
 		EquippedWeapon->SetBlocked(false);
 	}
-	for (int i = 0; i < BodyWeapons.Num(); ++i)
+	for (int i = 0; i < HandsAndFeet.Num(); ++i)
 	{
-		if (BodyWeapons[i])
+		if (HandsAndFeet[i])
 		{
-			BodyWeapons[i]->SetBlocked(false);
+			HandsAndFeet[i]->SetBlocked(false);
 		}
 	}
 }
@@ -113,14 +113,35 @@ void ABaseCharacter::HandleDamage(float DamageAmount)
 }
 
 
+
+void ABaseCharacter::SpawnProjectile()
+{
+	
+}
+
+void ABaseCharacter::FireProjectile()
+{
+	
+}
+
 void ABaseCharacter::SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
 	GetCapsuleComponent()->SetCollisionEnabled(CollisionEnabled);
 }
 
-void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
+void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled, bool bPairWeapon)
 {
-	if (EquippedWeapon)
+	if (EquippedWeapon == nullptr) return;
+
+	if (bPairWeapon)
+	{
+		if (AWeapon* PairWeapon = EquippedWeapon->GetPair())
+		{
+			PairWeapon->SetWeaponBoxCollisionEnabled(CollisionEnabled);
+			PairWeapon->ResetActorsToIgnore();
+		}
+	}
+	else 
 	{
 		EquippedWeapon->SetWeaponBoxCollisionEnabled(CollisionEnabled);
 		EquippedWeapon->ResetActorsToIgnore();
@@ -130,12 +151,12 @@ void ABaseCharacter::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collision
 
 void ABaseCharacter::SetBodyCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
-	for (int i = 0; i < BodyWeapons.Num(); ++i)
+	for (int i = 0; i < HandsAndFeet.Num(); ++i)
 	{
-		if (BodyWeapons[i])
+		if (HandsAndFeet[i])
 		{
-			BodyWeapons[i]->SetWeaponBoxCollisionEnabled(CollisionEnabled);
-			BodyWeapons[i]->ResetActorsToIgnore();
+			HandsAndFeet[i]->SetWeaponBoxCollisionEnabled(CollisionEnabled);
+			HandsAndFeet[i]->ResetActorsToIgnore();
 		}
 	}
 }
@@ -180,9 +201,9 @@ int32 ABaseCharacter::PlayDeathMontage()
 	return Selection;
 }
 
-void ABaseCharacter::PlayDodgeMontage()
+int32 ABaseCharacter::PlayDodgeMontage()
 {
-	PlayMontageSection(DodgeMontage, FName("Default"));
+	return PlayRandomMontageSection(DodgeMontage, DodgeMontageSections);
 }
 
 void ABaseCharacter::StopAttackMontage(float InBlendOutTime)
@@ -238,7 +259,6 @@ void ABaseCharacter::ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint)
 }
 
 
-
 void ABaseCharacter::PlaySound(const FVector& ImpactPoint, USoundBase* PlayedSound)
 {
 	if (PlayedSound)
@@ -264,26 +284,26 @@ void ABaseCharacter::SpawnParticles(const FVector& ImpactPoint, UParticleSystem*
 }
 
 
-void ABaseCharacter::CreateBodyWeaponBox(FName BoxName, FName SocketName)
+void ABaseCharacter::CreateHandFootBox(FName BoxName, FName SocketName)
 {
-	BodyWeaponBoxes.Add(CreateDefaultSubobject<UBoxComponent>(BoxName));
-  BodyWeaponBoxes.Last()->SetupAttachment(GetMesh(), SocketName);
-  BodyWeaponBoxes.Last()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	HandFootBoxes.Add(CreateDefaultSubobject<UBoxComponent>(BoxName));
+  HandFootBoxes.Last()->SetupAttachment(GetMesh(), SocketName);
+  HandFootBoxes.Last()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 
 
-void ABaseCharacter::SetupBodyWeapons(int32 BodyIndex, float Damage, FName SocketName)
+void ABaseCharacter::SetupHandFoot(int32 BodyIndex, float Damage, FName SocketName)
 {
-	if (BodyIndex < BodyWeapons.Num() && BodyWeapons[BodyIndex]) 
+	if (BodyIndex < HandsAndFeet.Num() && HandsAndFeet[BodyIndex]) 
 	{
-		BodyWeapons[BodyIndex]->Equip(GetMesh(), SocketName, this, this);
-		BodyWeapons[BodyIndex]->SetDamage(Damage);
-		BodyWeapons[BodyIndex]->GetBox()->SetVisibility(true);
-		if (BodyWeaponBoxes[BodyIndex])
+		HandsAndFeet[BodyIndex]->Equip(GetMesh(), SocketName, this, this);
+		HandsAndFeet[BodyIndex]->SetDamage(Damage);
+		HandsAndFeet[BodyIndex]->GetBox()->SetVisibility(true);
+		if (HandFootBoxes[BodyIndex])
 		{
-			BodyWeapons[BodyIndex]->GetBox()->SetBoxExtent(BodyWeaponBoxes[BodyIndex]->GetUnscaledBoxExtent());
-			BodyWeapons[BodyIndex]->GetBox()->SetWorldTransform(BodyWeaponBoxes[BodyIndex]->GetComponentTransform());
+			HandsAndFeet[BodyIndex]->GetBox()->SetBoxExtent(HandFootBoxes[BodyIndex]->GetUnscaledBoxExtent());
+			HandsAndFeet[BodyIndex]->GetBox()->SetWorldTransform(HandFootBoxes[BodyIndex]->GetComponentTransform());
 		}
 	}
 }

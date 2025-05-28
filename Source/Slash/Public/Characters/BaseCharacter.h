@@ -38,10 +38,13 @@ protected:
 	virtual void DodgeEnd();
 	virtual bool CanAttack();
 	virtual void HandleDamage(float DamageAmount);
+	virtual void SpawnProjectile();
+	UFUNCTION(BlueprintCallable)
+	virtual void FireProjectile();
 	
 	void SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
+	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnabled, bool bPairWeapon = false);
 	UFUNCTION(BlueprintCallable)
 	void SetBodyCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	
@@ -49,8 +52,7 @@ protected:
 	int32 PlayAttackMontage(bool bStartCombo = false);
 	int32 PlaySpecialAttackMontage();
 	int32 PlayDeathMontage();
-	
-	void PlayDodgeMontage();
+	int32 PlayDodgeMontage();
 	void StopAttackMontage(float InBlendOutTime = 0.25f);
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
 	void ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint);
@@ -58,8 +60,8 @@ protected:
 	void PlaySound(const FVector& ImpactPoint, USoundBase* PlayedSound);
 	void SpawnParticles(const FVector& ImpactPoint, UParticleSystem* SpawnedParticles);
 
-	void CreateBodyWeaponBox(FName BoxName, FName SocketName);
-	void SetupBodyWeapons(int32 BodyIndex, float Damage, FName SocketName);
+	void CreateHandFootBox(FName BoxName, FName SocketName);
+	void SetupHandFoot(int32 BodyIndex, float Damage, FName SocketName);
 
 	UPROPERTY(VisibleAnywhere)
 	UAttributeComponent* Attributes;
@@ -67,9 +69,9 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
 	AWeapon* EquippedWeapon;
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
-	TArray<AWeapon*> BodyWeapons;
+	TArray<AWeapon*> HandsAndFeet;
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
-	TArray<UBoxComponent*> BodyWeaponBoxes;
+	TArray<UBoxComponent*> HandFootBoxes;
 
 	float BodyAttackDamage = 5.f;
 	
@@ -97,6 +99,8 @@ protected:
 	TArray<FName> SpecialAttackMontageSections;
 	UPROPERTY(EditAnywhere)
 	TArray<FName> DeathMontageSections;
+	UPROPERTY(EditAnywhere)
+	TArray<FName> DodgeMontageSections;
 
 private:
 	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
