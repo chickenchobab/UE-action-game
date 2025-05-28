@@ -67,7 +67,6 @@ void APaladin::CheckCombatTarget()
 		{
 			StartPatrolling();
 		}
-		// UE_LOG(LogTemp, Warning, TEXT("Lose Interest"));
   }
 	else if (!IsTargetInRange(CombatTarget, SpecialAttackRadius) && !IsChasing())
 	{
@@ -76,7 +75,6 @@ void APaladin::CheckCombatTarget()
 		{
 			ChaseTarget();
 		}
-		// UE_LOG(LogTemp, Warning, TEXT("Chase Player"));
 	}
 	else if (IsTargetAttacking() && !IsParrying())
 	{
@@ -86,17 +84,14 @@ void APaladin::CheckCombatTarget()
 			FocusOnTarget();
 			Parry();
 		}
-		// UE_LOG(LogTemp, Warning, TEXT("Parry attack"));
 	}
 	else if (CanAttack())
 	{	
 		StartAttacking(IsParrying() ? 0.1f : AttackTime);
-		// UE_LOG(LogTemp, Warning, TEXT("Attack Player"));
 	}
 	else if (IsParrying())
 	{
 		StopParrying();
-		// UE_LOG(LogTemp, Warning, TEXT("Stop parrying"));
 	}
 }
 

@@ -44,8 +44,8 @@ void ARangedWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActo
     if (IsOwnerOpposite(OtherActor))
     {
       UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+      ExecuteGetHit(OtherActor, SweepResult.ImpactPoint);
     }
-    ExecuteGetHit(OtherActor, SweepResult.ImpactPoint);
   }
   
   Destroy();

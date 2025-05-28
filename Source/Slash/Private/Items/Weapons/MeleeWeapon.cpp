@@ -27,8 +27,8 @@ void AMeleeWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor
       if (IsOwnerOpposite(BoxHit.GetActor()))
       {
         UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+        ExecuteGetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
       }
-      ExecuteGetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
     }
     CreateFields(BoxHit.ImpactPoint);
   }

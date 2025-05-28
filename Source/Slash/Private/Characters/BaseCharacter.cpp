@@ -53,7 +53,8 @@ bool ABaseCharacter::IsAlive()
 
 bool ABaseCharacter::IsOpposite(AActor* OtherActor)
 {
-	if (Tags.IsEmpty() || !OtherActor || OtherActor->Tags.IsEmpty()) return false;
+	if (OtherActor == nullptr) return false;
+	if (Tags.IsEmpty() || OtherActor->Tags.IsEmpty()) return true;
   return Tags[0] != OtherActor->Tags[0];
 }
 
