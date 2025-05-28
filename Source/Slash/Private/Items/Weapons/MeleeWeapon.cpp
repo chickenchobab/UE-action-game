@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "Characters/BaseCharacter.h"
+
 AMeleeWeapon::AMeleeWeapon()
 {
   BoxTraceStart = CreateDefaultSubobject<USceneComponent>(TEXT("Box Trace Start"));
@@ -22,13 +24,10 @@ void AMeleeWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor
   if (GetOwner() && BoxHit.GetActor())
   {
     UE_LOG(LogTemp, Warning, TEXT("Hit Actor(%s)->%s"), *BoxHit.GetActor()->GetName(), *BoxHit.GetComponent()->GetName());
-    if (!IsBlocked())
+    if (IsOwnerOpposite(BoxHit.GetActor()))
     {
-      if (IsOwnerOpposite(BoxHit.GetActor()))
-      {
-        UGameplayStatics::ApplyDamage(BoxHit.GetActor(), Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-        ExecuteGetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
-      }
+      TryApplyDamage(BoxHit.GetActor());
+      ExecuteGetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
     }
     CreateFields(BoxHit.ImpactPoint);
   }

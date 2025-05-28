@@ -11,6 +11,7 @@
 #include "Characters/SlashCharacter.h"
 #include "Interfaces/HitInterface.h"
 
+
 AWeapon::AWeapon()
 {
 	WeaponBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Weapon Box"));
@@ -91,11 +92,23 @@ void AWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *Oth
   }
   if (GetOwner() && GetOwner() == OtherActor) return;
 
-  if (!IsBlocked() && !IsActorIgnored(OtherActor) && IsOwnerOpposite(OtherActor))
+  if (!IsActorIgnored(OtherActor) && IsOwnerOpposite(OtherActor))
   {
     ActorsToIgnore.Add(OtherActor);
-    UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+    TryApplyDamage(OtherActor);
     ExecuteGetHit(OtherActor, SweepResult.ImpactPoint);
+  }
+}
+
+
+void AWeapon::TryApplyDamage(AActor * OtherActor)
+{
+  if (ABaseCharacter* HitCharacter = Cast<ABaseCharacter>(OtherActor))
+  {
+    if (!HitCharacter->IsParrying() || !IsCharacterFacingWeapon(HitCharacter))
+    {
+      UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+    }
   }
 }
 
@@ -125,3 +138,15 @@ bool AWeapon::IsActorIgnored(AActor* OtherActor)
   }
   return false;
 }
+
+bool AWeapon::IsCharacterFacingWeapon(ABaseCharacter* HitCharacter)
+{
+  if (HitCharacter == nullptr) return false;
+
+  FVector CharacterForward = (HitCharacter->GetActorForwardVector()).GetSafeNormal();
+  FVector CharacterToWeapon = (GetActorLocation() - HitCharacter->GetActorLocation()).GetSafeNormal();
+  float FacingAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(CharacterForward, CharacterToWeapon)));
+
+  return FacingAngle <= 30.f;
+}
+

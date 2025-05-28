@@ -39,13 +39,10 @@ void ARangedWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActo
   }
   if (GetOwner() && GetOwner() == OtherActor) return;
 
-  if (!IsBlocked())
+  if (IsOwnerOpposite(OtherActor))
   {
-    if (IsOwnerOpposite(OtherActor))
-    {
-      UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
-      ExecuteGetHit(OtherActor, SweepResult.ImpactPoint);
-    }
+    TryApplyDamage(OtherActor);
+    ExecuteGetHit(OtherActor, SweepResult.ImpactPoint);
   }
   
   Destroy();

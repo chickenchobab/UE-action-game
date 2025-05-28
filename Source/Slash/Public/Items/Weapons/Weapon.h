@@ -8,6 +8,7 @@
 
 class USoundBase;
 class UBoxComponent;
+class ABaseCharacter;
 
 /**
  * 
@@ -36,7 +37,8 @@ protected:
 	virtual void BeginPlay() override;
 	UFUNCTION()
   virtual void OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
-	void ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint);
+  void TryApplyDamage(AActor *OtherActor);
+  void ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint);
   UFUNCTION(BlueprintImplementableEvent)
 	void CreateFields(const FVector& FieldLocation);
 	bool IsOwnerOpposite(AActor* OtherActor);
@@ -51,6 +53,7 @@ protected:
 	
 private:
 	bool IsActorIgnored(AActor* OtherActor);
+	bool IsCharacterFacingWeapon(ABaseCharacter* HitCharacter);
 
 	bool bBlocked = false;
 
