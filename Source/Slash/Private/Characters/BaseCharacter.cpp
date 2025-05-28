@@ -25,7 +25,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 
 void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
 {
-	if (IsParrying())
+	if (IsAlive() && IsParrying())
 	{
 		PlaySound(ImpactPoint, ParrySound);
 		SpawnParticles(ImpactPoint, ParryParticles);
