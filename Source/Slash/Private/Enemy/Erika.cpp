@@ -54,11 +54,13 @@ void AErika::Attack()
 	if (IsTargetInRange(CombatTarget, SpecialAttackRadius))
 	{
     PlaySpecialAttackMontage();
+    AttackTime = 0.01f; // Fire soon after kicking
 	}
 	else
 	{
     SpawnProjectile();
     PlayAttackMontage();
+    AttackTime = 1.f;
 	}
 }
 
