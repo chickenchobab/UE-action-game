@@ -24,6 +24,7 @@ protected:
 	virtual void BeginPlay() override;
 	
   virtual void Attack() override;
+	virtual void Dodge() override;
 	virtual void DodgeEnd() override;
 	virtual bool CanAttack() override;
 	virtual void SpawnProjectile() override;
@@ -39,6 +40,10 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<ARangedWeapon> ThrowingClass;
+
+private:
+	void EnableCollision();
+	void DisableCollision();
 };
 
 

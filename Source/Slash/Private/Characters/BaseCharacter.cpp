@@ -85,6 +85,11 @@ void ABaseCharacter::Parry()
 	}
 }
 
+void ABaseCharacter::Dodge()
+{
+	
+}
+
 void ABaseCharacter::AttackEnd()
 {
 	if (EquippedWeapon)

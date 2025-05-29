@@ -90,7 +90,7 @@ void ASlashCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Jump);
 		EnhancedInputComponent->BindAction(EkeyAction, ETriggerEvent::Triggered, this, &ASlashCharacter::EkeyPressed);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &ASlashCharacter::LeftMouseClicked);
-		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &ASlashCharacter::Dodge);
+		EnhancedInputComponent->BindAction(DodgeAction, ETriggerEvent::Triggered, this, &ASlashCharacter::RightMouseClicked);
 	}
 }
 
@@ -215,6 +215,25 @@ void ASlashCharacter::Die()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
+
+void ASlashCharacter::Dodge()
+{
+	Super::Dodge();
+	
+	if (CanDodge())
+	{
+		SetActorRotation(RecentInputRotation);
+		PlayDodgeMontage();
+		ActionState = EActionState::EAS_Dodging;
+		if (Attributes && SlashOverlay)
+		{
+			Attributes->UseStamina(Attributes->GetDodgeCost());
+			SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
+		} 
+	}
+}
+
+
 bool ASlashCharacter::CanAttack()
 {
 	bool bMontageIsPlaying = false;
@@ -310,19 +329,9 @@ void ASlashCharacter::LeftMouseClicked(const FInputActionValue& Value)
 	Attack();
 }
 
-void ASlashCharacter::Dodge(const FInputActionValue& Value)
+void ASlashCharacter::RightMouseClicked(const FInputActionValue& Value)
 {
-	if (CanDodge())
-	{
-		SetActorRotation(RecentInputRotation);
-		PlayDodgeMontage();
-		ActionState = EActionState::EAS_Dodging;
-		if (Attributes && SlashOverlay)
-		{
-			Attributes->UseStamina(Attributes->GetDodgeCost());
-			SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
-		} 
-	}
+	Dodge();
 }
 
 void ASlashCharacter::PlayEquipMontage(const FName &SectionName)

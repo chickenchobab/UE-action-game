@@ -55,6 +55,7 @@ protected:
 	// <ABaseCharacter>
 	virtual void Attack() override;
 	virtual void Die() override;
+	virtual void Dodge() override;
 	virtual bool CanAttack() override;
 	virtual void AttackEnd() override;
 	virtual void DodgeEnd() override;
@@ -65,7 +66,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 	void EkeyPressed(const FInputActionValue& Value);
 	void LeftMouseClicked(const FInputActionValue& Value);
-  void Dodge(const FInputActionValue &Value);
+  void RightMouseClicked(const FInputActionValue &Value);
 
   void PlayEquipMontage(const FName &SectionName);
 	bool CanDisarm();
@@ -128,16 +129,13 @@ private:
 	UPROPERTY()
 	USlashOverlay* SlashOverlay;
 
-
 	FRotator RecentInputRotation = FRotator(0.f, 0.f, 0.f);
-
 
 	FTimerHandle ComboWindowTimer;
 
 	float ComboWindow = 1.f;
 
 	int32 ComboCount = 0;
-
 
 	float MovingTime = 0.f;
 };

@@ -3,6 +3,7 @@
 
 #include "Enemy/Ninja.h"
 #include "MotionWarpingComponent.h"
+#include "Components/CapsuleComponent.h"
 
 #include "Items/Weapons/Weapon.h"
 #include "Items/Weapons/MeleeWeapon.h"
@@ -74,10 +75,22 @@ void ANinja::Attack()
 	AttackTime = 0.5f;
 }
 
+
+void ANinja::Dodge()
+{
+	Super::Dodge();
+
+	EnemyState = EEnemyState::EES_Engaged;
+	DisableCollision();
+	PlayDodgeMontage();
+}
+
+
 void ANinja::DodgeEnd()
 {
 	Super::DodgeEnd();
 	EnemyState = EEnemyState::EES_None;
+	EnableCollision();
 	AttackTime = 0.01f;
 	CheckCombatTarget();
 }
@@ -147,9 +160,9 @@ void ANinja::CheckCombatTarget()
   }
 	else if (IsTargetAttacking() && !IsEngaged())
 	{
-		// ClearAttackTimer();
-		// FocusOnTarget();
-		// PlayDodgeMontage();
+		ClearAttackTimer();
+		FocusOnTarget();
+		Dodge();
 		UE_LOG(LogTemp, Warning, TEXT("Dodge"));
 	}
 	else if (CanAttack())
@@ -177,3 +190,16 @@ void ANinja::SpawnDefaultWeapon()
 	}
 }
 
+void ANinja::EnableCollision()
+{
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Block);
+}
+
+void ANinja::DisableCollision()
+{
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
+}
