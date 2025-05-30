@@ -29,6 +29,7 @@ public:
 	FORCEINLINE void SetDamage(float DamageAmount) {Damage = DamageAmount;}
 	FORCEINLINE void SetPair(AWeapon* Weapon) { PairWeapon = Weapon; }
 	FORCEINLINE AWeapon* GetPair() { return PairWeapon; }
+	FORCEINLINE void EnableHitReaction(bool bEnabled) { bCauseHitReaction = bEnabled; }
 	
 protected:
 	virtual void BeginPlay() override;
@@ -52,7 +53,7 @@ private:
 	bool IsActorIgnored(AActor* OtherActor);
 	bool IsCharacterFacingWeapon(ABaseCharacter* HitCharacter);
 
-	bool bMakeHitReaction = true;
+	bool bCauseHitReaction = true;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	USoundBase *EquipSound;
