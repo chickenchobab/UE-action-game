@@ -27,6 +27,7 @@ void ANinja::Tick(float DeltaTime)
   
   if (MotionWarping)
 	{
+		MotionWarping->AddOrUpdateWarpTargetFromLocation(FName("LocationTarget"), GetTranslationWarpTarget());
 		MotionWarping->AddOrUpdateWarpTargetFromLocation(FName("RotationTarget"), GetRotationWarpTarget());
 	}
 }
