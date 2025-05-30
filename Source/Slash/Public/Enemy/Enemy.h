@@ -30,7 +30,7 @@ public:
 	virtual void Destroyed() override;
 	// <\AActor>
 
-	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, bool bReact) override;
 
 	FORCEINLINE bool IsChasing() { return EnemyState == EEnemyState::EES_Chasing; }
 	FORCEINLINE bool IsAttacking() { return EnemyState == EEnemyState::EES_Attacking; }

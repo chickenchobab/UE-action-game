@@ -111,9 +111,9 @@ void ASlashCharacter::Jump()
 	}
 }
 
-void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
+void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, bool bReact)
 {
-	Super::GetHit_Implementation(ImpactPoint, Hitter);
+	Super::GetHit_Implementation(ImpactPoint, Hitter, bReact);
 
 	if (IsAlive())
 	{

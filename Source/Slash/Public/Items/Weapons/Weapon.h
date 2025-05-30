@@ -27,9 +27,6 @@ public:
 	void ResetActorsToIgnore();
 	FORCEINLINE UBoxComponent* GetBox() { return WeaponBox; }
 	FORCEINLINE void SetDamage(float DamageAmount) {Damage = DamageAmount;}
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetBlocked(bool bWeaponBlocked) { bBlocked = bWeaponBlocked; }
-	FORCEINLINE bool IsBlocked() { return bBlocked; }
 	FORCEINLINE void SetPair(AWeapon* Weapon) { PairWeapon = Weapon; }
 	FORCEINLINE AWeapon* GetPair() { return PairWeapon; }
 	
@@ -55,7 +52,7 @@ private:
 	bool IsActorIgnored(AActor* OtherActor);
 	bool IsCharacterFacingWeapon(ABaseCharacter* HitCharacter);
 
-	bool bBlocked = false;
+	bool bMakeHitReaction = true;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	USoundBase *EquipSound;

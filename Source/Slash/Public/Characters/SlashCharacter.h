@@ -32,7 +32,7 @@ public:
 	virtual void Jump() override;
 
   // <IHitInterface>
-	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, bool bReact) override;
 	// <\IHitInterface>
 
 	// <IPickupInterface>

@@ -23,7 +23,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
+void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, bool bReact)
 {
 	if (IsAlive() && IsParrying())
 	{
@@ -37,7 +37,10 @@ void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* H
 
 	if (IsAlive())
 	{
-		DirectionalHitReact(ImpactPoint, Hitter->GetActorLocation());
+		if (bReact)
+		{
+			DirectionalHitReact(ImpactPoint, Hitter->GetActorLocation());
+		}
 	}
 	else
 	{
@@ -92,17 +95,7 @@ void ABaseCharacter::Dodge()
 
 void ABaseCharacter::AttackEnd()
 {
-	if (EquippedWeapon)
-	{
-		EquippedWeapon->SetBlocked(false);
-	}
-	for (int i = 0; i < HandsAndFeet.Num(); ++i)
-	{
-		if (HandsAndFeet[i])
-		{
-			HandsAndFeet[i]->SetBlocked(false);
-		}
-	}
+	
 }
 
 void ABaseCharacter::DodgeEnd()
@@ -257,16 +250,6 @@ void ABaseCharacter::DirectionalHitReact(const FVector& ImpactPoint, const FVect
 	}
 
 	PlayMontageSection(HitReactMontage, Section);
-}
-
-
-
-void ABaseCharacter::ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint)
-{
-	if (IHitInterface* HitInterface = Cast<IHitInterface>(OtherActor))
-	{
-		HitInterface->Execute_GetHit(OtherActor, ImpactPoint, this);
-	}
 }
 
 

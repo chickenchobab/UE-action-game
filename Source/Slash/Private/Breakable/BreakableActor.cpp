@@ -38,7 +38,7 @@ void ABreakableActor::Tick(float DeltaTime)
 
 }
 
-void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
+void ABreakableActor::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, bool bReact)
 {
 	if (bBroken) return;
 	bBroken = true;

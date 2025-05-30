@@ -101,21 +101,5 @@ void APaladin::SetupShield()
 	{
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Shield->AttachToComponent(GetMesh(), TransformRules, FName("LeftHandSocket"));
-		Shield->OnComponentBeginOverlap.AddDynamic(this, &APaladin::ShieldBeginOverlap);
 	}
 }
-
-void APaladin::ShieldBeginOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
-{
-	// In case the weapon is a projectile
-	if (!UKismetSystemLibrary::IsValid(OtherActor)) return;
-	
-	if (AWeapon* Weapon = Cast<AWeapon>(OtherActor))
-	{ 
-		if (IsOpposite(Weapon->GetOwner()))
-		{
-			Weapon->SetBlocked(true);
-		}
-	}
-}
-

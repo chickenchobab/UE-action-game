@@ -22,7 +22,7 @@ class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
 public:
 	ABaseCharacter();
 	virtual void Tick(float DeltaTime) override;
-	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter) override;
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, bool bReact) override;
 	bool IsAlive();
 	bool IsOpposite(AActor* OtherActor);
 	FORCEINLINE EDeathPose GetDeathPose() { return DeathPose; }
@@ -56,7 +56,6 @@ protected:
 	int32 PlayDodgeMontage();
 	void StopAttackMontage(float InBlendOutTime = 0.25f);
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
-	void ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint);
 
 	void PlaySound(const FVector& ImpactPoint, USoundBase* PlayedSound);
 	void SpawnParticles(const FVector& ImpactPoint, UParticleSystem* SpawnedParticles);

@@ -116,7 +116,7 @@ void AWeapon::ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint)
 {
   if (IHitInterface* HitInterface = Cast<IHitInterface>(OtherActor))
   {
-    HitInterface->Execute_GetHit(OtherActor, ImpactPoint, GetOwner());
+    HitInterface->Execute_GetHit(OtherActor, ImpactPoint, GetOwner(), bMakeHitReaction);
   }
 }
 

@@ -84,9 +84,9 @@ void AEnemy::Destroyed()
 }
 
 
-void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter)
+void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, bool bReact)
 {
-	Super::GetHit_Implementation(ImpactPoint, Hitter);
+	Super::GetHit_Implementation(ImpactPoint, Hitter, bReact);
 
 	ClearPatrolTimer();
 	ClearAttackTimer();
