@@ -89,10 +89,18 @@ void ANinja::Dodge()
 void ANinja::DodgeEnd()
 {
 	Super::DodgeEnd();
+	
 	EnemyState = EEnemyState::EES_None;
 	EnableCollision();
-	AttackTime = 0.01f;
-	CheckCombatTarget();
+	if (IsTargetInRange(CombatTarget, AttackRadius))
+	{
+		BackAttack();
+	}
+	else
+	{
+		AttackTime = 0.01f;
+		CheckCombatTarget();
+	}
 }
 
 
@@ -190,6 +198,26 @@ void ANinja::SpawnDefaultWeapon()
 	}
 }
 
+void ANinja::BackAttack()
+{
+	EnemyState = EEnemyState::EES_Engaged;
+	FocusOnTarget();
+	ReverseWeaponMesh();
+	PlayBackAttackMontage();
+}
+
+void ANinja::PlayBackAttackMontage()
+{
+	PlayMontageSection(BackAttackMontage, FName("Default"));
+}
+
+
+void ANinja::KickStart()
+{
+	RestoreWeaponMesh();
+}
+
+
 void ANinja::EnableCollision()
 {
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
@@ -202,4 +230,32 @@ void ANinja::DisableCollision()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
+}
+
+void ANinja::ReverseWeaponMesh()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->DetachMeshFromSocket();
+		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("RightHandSocketReversed"));
+		if (AWeapon* PairWeapon = EquippedWeapon->GetPair())
+		{
+			PairWeapon->DetachMeshFromSocket();
+			PairWeapon->AttachMeshToSocket(GetMesh(), FName("LeftHandSocketReversed"));
+		}
+	}
+}
+
+void ANinja::RestoreWeaponMesh()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->DetachMeshFromSocket();
+		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("RightHandSocket"));
+		if (AWeapon* PairWeapon = EquippedWeapon->GetPair())
+		{
+			PairWeapon->DetachMeshFromSocket();
+			PairWeapon->AttachMeshToSocket(GetMesh(), FName("LeftHandSocket"));
+		}
+	}
 }

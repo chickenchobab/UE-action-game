@@ -33,7 +33,11 @@ protected:
 	virtual void CheckCombatTarget() override;
 
 	void SpawnDefaultWeapon();
-
+	
+	void BackAttack();
+	void PlayBackAttackMontage();
+	UFUNCTION(BlueprintCallable)
+	void KickStart();
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Combat")
 	ARangedWeapon* Throwing;
@@ -41,9 +45,16 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<ARangedWeapon> ThrowingClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* BackAttackMontage;
+
 private:
 	void EnableCollision();
 	void DisableCollision();
+
+	// Asset-specific functions
+	void ReverseWeaponMesh();
+	void RestoreWeaponMesh();
 };
 
 
