@@ -51,6 +51,7 @@ protected:
 private:
 	void EnableCollision();
 	void DisableCollision();
+	void EnableWeaponHitReaction(bool bEnabled);
 
 	// Asset-specific functions
 	void ReverseWeaponMesh();

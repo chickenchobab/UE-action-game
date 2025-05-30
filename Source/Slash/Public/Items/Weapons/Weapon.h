@@ -26,7 +26,7 @@ public:
 	void SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	void ResetActorsToIgnore();
 	FORCEINLINE UBoxComponent* GetBox() { return WeaponBox; }
-	FORCEINLINE void SetDamage(float DamageAmount) {Damage = DamageAmount;}
+	FORCEINLINE void SetDamage(float DamageAmount) { Damage = DamageAmount; }
 	FORCEINLINE void SetPair(AWeapon* Weapon) { PairWeapon = Weapon; }
 	FORCEINLINE AWeapon* GetPair() { return PairWeapon; }
 	FORCEINLINE void EnableHitReaction(bool bEnabled) { bCauseHitReaction = bEnabled; }

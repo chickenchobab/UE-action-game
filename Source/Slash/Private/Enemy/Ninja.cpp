@@ -60,6 +60,7 @@ void ANinja::BeginPlay()
 void ANinja::Attack()
 {
 	Super::Attack();
+
 	if (!CombatTarget) return;
 
 	EnemyState = EEnemyState::EES_Engaged;
@@ -204,6 +205,7 @@ void ANinja::BackAttack()
 	EnemyState = EEnemyState::EES_Engaged;
 	FocusOnTarget();
 	ReverseWeaponMesh();
+	EnableWeaponHitReaction(false);
 	PlayBackAttackMontage();
 }
 
@@ -216,6 +218,7 @@ void ANinja::PlayBackAttackMontage()
 void ANinja::KickStart()
 {
 	RestoreWeaponMesh();
+	EnableWeaponHitReaction(true);
 }
 
 
@@ -232,6 +235,20 @@ void ANinja::DisableCollision()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldDynamic, ECollisionResponse::ECR_Ignore);
 }
+
+
+void ANinja::EnableWeaponHitReaction(bool bEnabled)
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->EnableHitReaction(bEnabled);
+		if (AWeapon* PairWeapon = EquippedWeapon->GetPair())
+		{
+			PairWeapon->EnableHitReaction(bEnabled);
+		}
+	}
+}
+
 
 void ANinja::ReverseWeaponMesh()
 {
