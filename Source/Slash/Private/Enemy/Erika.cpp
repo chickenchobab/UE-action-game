@@ -13,8 +13,8 @@ AErika::AErika()
 {
   CombatRadius = 1000.f;
   AcceptanceRadius = 400.f;
-  AttackRadius = 700.f;
-  SpecialAttackRadius = 200.f;
+  AttackRadius = 700.f; // Shoot an arrow
+  SpecialAttackRadius = 200.f; // Kick and dodge back
   
   CreateHandFootBox(FName("Foot Box"), FName("RightFootSocket"));
 }
