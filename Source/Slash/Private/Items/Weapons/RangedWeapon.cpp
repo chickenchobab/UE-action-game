@@ -22,10 +22,9 @@ ARangedWeapon::ARangedWeapon()
 
 void ARangedWeapon::ActivateProjectile(AActor* CombatTarget)
 {
-  RotateTowardsTarget(CombatTarget);
   if (ProjectileMovement)
   {
-    ProjectileMovement->SetVelocityInLocalSpace(FVector(0, 0, -1) * ProjectileMovement->InitialSpeed);
+    ProjectileMovement->SetVelocityInLocalSpace(HeadDirection * ProjectileMovement->InitialSpeed);
     ProjectileMovement->Activate();
   }
 }
@@ -46,17 +45,4 @@ void ARangedWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActo
   }
   
   Destroy();
-}
-
-void ARangedWeapon::RotateTowardsTarget(AActor* CombatTarget)
-{
-  if (CombatTarget == nullptr) return;
-
-  // Mesh-specific calculation
-  FVector RightVector = CombatTarget->GetActorUpVector();
-  FVector UpVector = -(CombatTarget->GetActorLocation() - GetActorLocation());
-  FVector ForwardVector = UpVector.Cross(RightVector);
-
-  FMatrix RotationMatrix(ForwardVector, RightVector, UpVector, FVector::Zero());
-  SetActorRotation(RotationMatrix.Rotator());
 }

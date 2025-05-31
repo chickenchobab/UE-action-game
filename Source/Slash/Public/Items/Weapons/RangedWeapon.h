@@ -20,15 +20,20 @@ class SLASH_API ARangedWeapon : public AWeapon
 public:
 	ARangedWeapon();
 	void ActivateProjectile(AActor* CombatTarget);
+
+	// Mesh-specific function
+	FORCEINLINE void SetHeadDirection(FVector Direction) { HeadDirection = Direction; }
 	
 protected:
   virtual void OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult) override;
-  void RotateTowardsTarget(AActor* CombatTarget);
 
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;
 
 	UPROPERTY(VisibleAnywhere)
 	UParticleSystemComponent* TrailParticles;
+
+private:
+	FVector HeadDirection;
 };
 

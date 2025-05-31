@@ -128,6 +128,13 @@ void ABaseCharacter::FireProjectile()
 	
 }
 
+
+void ABaseCharacter::RotateProjectile(ARangedWeapon* Projectile)
+{
+
+}
+
+
 void ABaseCharacter::SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled)
 {
 	GetCapsuleComponent()->SetCollisionEnabled(CollisionEnabled);

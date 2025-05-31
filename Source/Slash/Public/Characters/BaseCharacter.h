@@ -11,6 +11,7 @@
 class UAttributeComponent;
 class AWeapon;
 class AMeleeWeapon;
+class ARangedWeapon;
 class UAnimMontage;
 class UBoxComponent;
 
@@ -42,6 +43,8 @@ protected:
 	virtual void SpawnProjectile();
 	UFUNCTION(BlueprintCallable)
 	virtual void FireProjectile();
+	// Mesh-specific function
+	virtual void RotateProjectile(ARangedWeapon* Projectile);
 	
 	void SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	UFUNCTION(BlueprintCallable)

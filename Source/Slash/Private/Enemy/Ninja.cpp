@@ -118,6 +118,7 @@ void ANinja::SpawnProjectile()
     if (Throwing = World->SpawnActor<ARangedWeapon>(ThrowingClass))
 		{
 			Throwing->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+			Throwing->SetHeadDirection(FVector(0, 0, 1));
 		}
   }
 }
@@ -129,12 +130,27 @@ void ANinja::FireProjectile()
     Throwing->DetachMeshFromSocket();
     if (CombatTarget)
     {
+			RotateProjectile(Throwing);
       Throwing->ActivateProjectile(CombatTarget);
     }
-    SetWeaponCollisionEnabled(ECollisionEnabled::QueryOnly);
+		Throwing->SetWeaponBoxCollisionEnabled(ECollisionEnabled::QueryOnly);
     Throwing = nullptr;
   }
 }
+
+
+void ANinja::RotateProjectile(ARangedWeapon* Projectile)
+{
+	if (Projectile == nullptr || CombatTarget == nullptr) return;
+
+	FVector RightVector = CombatTarget->GetActorUpVector();
+	FVector UpVector = CombatTarget->GetActorLocation() - Projectile->GetActorLocation();
+	FVector ForwardVector = UpVector.Cross(RightVector);
+
+  FMatrix RotationMatrix(ForwardVector, RightVector, UpVector, FVector::Zero());
+  Projectile->SetActorRotation(RotationMatrix.Rotator());
+}
+
 
 void ANinja::CheckCombatTarget()
 {

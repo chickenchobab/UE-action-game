@@ -78,6 +78,7 @@ void AErika::SpawnProjectile()
     if (Projectile)
     {
       Projectile->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+      Projectile->SetHeadDirection(FVector(0, 0, -1));
       EquippedWeapon = Cast<AWeapon>(Projectile);
     }
   }
@@ -91,11 +92,25 @@ void AErika::FireProjectile()
     Projectile->DetachMeshFromSocket();
     if (CombatTarget)
     {
+      RotateProjectile(Projectile);
       Projectile->ActivateProjectile(CombatTarget);
     }
     SetWeaponCollisionEnabled(ECollisionEnabled::QueryOnly);
     EquippedWeapon = nullptr;
   }
+}
+
+
+void AErika::RotateProjectile(ARangedWeapon* Projectile)
+{
+  if (Projectile == nullptr || CombatTarget == nullptr) return;
+
+  FVector RightVector = CombatTarget->GetActorUpVector();
+  FVector UpVector = -(CombatTarget->GetActorLocation() - Projectile->GetActorLocation());
+  FVector ForwardVector = UpVector.Cross(RightVector);
+
+  FMatrix RotationMatrix(ForwardVector, RightVector, UpVector, FVector::Zero());
+  Projectile->SetActorRotation(RotationMatrix.Rotator());
 }
 
 

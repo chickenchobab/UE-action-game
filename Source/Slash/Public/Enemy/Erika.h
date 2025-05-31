@@ -28,6 +28,7 @@ protected:
 	virtual bool CanAttack() override;
 	virtual void SpawnProjectile() override;
 	virtual void FireProjectile() override;
+	virtual void RotateProjectile(ARangedWeapon* Projectile) override;
 	
 	virtual void CheckCombatTarget() override;
 	
