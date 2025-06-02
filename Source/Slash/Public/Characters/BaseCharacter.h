@@ -53,6 +53,7 @@ protected:
 	void SetBodyCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
+	void PlayMontage(UAnimMontage* Montage);
 	void StopMontage(float InBlendOutTime, UAnimMontage* Montage);
 	void PauseMontage(UAnimMontage* Montage);
 	void ResumeMontage(UAnimMontage* Montage);
@@ -122,3 +123,4 @@ private:
 	UPROPERTY(EditAnywhere, Category = VisualEffects)
 	UParticleSystem* ParryParticles;
 };
+
