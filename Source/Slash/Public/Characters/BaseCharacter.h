@@ -53,6 +53,10 @@ protected:
 	void SetBodyCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
+	void StopMontage(float InBlendOutTime, UAnimMontage* Montage);
+	void PauseMontage(UAnimMontage* Montage);
+	void ResumeMontage(UAnimMontage* Montage);
+
 	int32 PlayAttackMontage(bool bStartCombo = false);
 	int32 PlaySpecialAttackMontage();
 	int32 PlayDeathMontage();

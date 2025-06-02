@@ -183,6 +183,33 @@ void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& Sect
 	}
 }
 
+void ABaseCharacter::StopMontage(float InBlendOutTime, UAnimMontage* Montage)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && Montage)
+	{
+		AnimInstance->Montage_Stop(InBlendOutTime, Montage);
+	}
+}
+
+void ABaseCharacter::PauseMontage(UAnimMontage* Montage)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && Montage)
+	{
+		AnimInstance->Montage_Pause(Montage);
+	}
+}
+
+void ABaseCharacter::ResumeMontage(UAnimMontage* Montage)
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && Montage)
+	{
+		AnimInstance->Montage_Resume(Montage);
+	}
+}
+
 int32 ABaseCharacter::PlayAttackMontage(bool bStartCombo)
 {
 	if (bStartCombo && !AttackMontageSections.IsEmpty())
