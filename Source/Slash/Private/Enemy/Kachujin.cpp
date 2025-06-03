@@ -8,6 +8,7 @@
 #include "NiagaraComponent.h"
 #include "Components/BoxComponent.h"
 #include "AIController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AKachujin::AKachujin()
 {
@@ -170,6 +171,7 @@ void AKachujin::RushToTarget()
 	EnemyController->ReceiveMoveCompleted.RemoveDynamic(this, &AKachujin::MoveCompleted);
 	EnemyController->ReceiveMoveCompleted.AddDynamic(this, &AKachujin::MoveCompleted);
 	bMoveCompleted = false;
+	GetCharacterMovement()->MaxWalkSpeed = RushingSpeed;
 	MoveToTarget(CombatTarget);
 }
 
@@ -196,5 +198,6 @@ void AKachujin::MoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type
 
 	ResumeMontage(RushMontage);
 	bMoveCompleted = true;
+	GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
 	// EnemyController->ReceiveMoveCompleted.RemoveDynamic(this, &AKachujin::MoveCompleted);
 }

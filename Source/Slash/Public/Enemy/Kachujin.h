@@ -48,6 +48,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* RushMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float RushingSpeed = 500.f;
+
 private:
 	bool bMoveCompleted = false;
+	
 };
