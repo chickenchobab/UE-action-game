@@ -5,12 +5,15 @@
 #include "Items/Weapons/Weapon.h"
 #include "Items/Weapons/RangedWeapon.h"
 #include "MotionWarpingComponent.h"
+#include "NiagaraComponent.h"
+#include "Components/BoxComponent.h"
+#include "AIController.h"
 
 AKachujin::AKachujin()
 {
 	CombatRadius = 1000.f;
-  AcceptanceRadius = 400.f;
-  AttackRadius = 200.f; // Basically punches and kicks away sometimes
+  AcceptanceRadius = 100.f;
+  AttackRadius = 100.f; // Basically punches and kicks away sometimes
   SpecialAttackRadius = 700.f; // Fires an energy ball and rushes to the target if succeeded
 
   CreateHandFootBox(FName("Right Hand Box"), FName("RightHandSocket"));
@@ -98,7 +101,10 @@ void AKachujin::SpawnProjectile()
   {
     if (Throwing = World->SpawnActor<ARangedWeapon>(ThrowingClass))
 		{
-			Throwing->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+			UE_LOG(LogTemp, Warning, TEXT("Fire ball spawned"));
+			Throwing->Equip(GetMesh(), FName("RightHandSocket"), this, this, false, false);
+			Throwing->SetHeadDirection(FVector(1, 0, 0));
+			Throwing->GetBox()->OnComponentBeginOverlap.AddDynamic(this, &AKachujin::ProjectileHit);
 		}
   }
 }
@@ -144,3 +150,51 @@ void AKachujin::CheckCombatTarget()
 	}
 }
 
+
+void AKachujin::ProjectileHit(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
+{
+	if (OtherActor == nullptr || OtherActor == this) return;
+
+	if (OtherActor == CombatTarget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Rush start"));
+		RushToTarget();
+	}
+}
+
+
+void AKachujin::RushToTarget()
+{
+	EnemyState = EEnemyState::EES_Engaged;
+	PlayMontage(RushMontage);
+	EnemyController->ReceiveMoveCompleted.RemoveDynamic(this, &AKachujin::MoveCompleted);
+	EnemyController->ReceiveMoveCompleted.AddDynamic(this, &AKachujin::MoveCompleted);
+	bMoveCompleted = false;
+	MoveToTarget(CombatTarget);
+}
+
+
+void AKachujin::RushStart() // Kick motion starts
+{
+	// Move can be completed earlier than kick motion
+	if (bMoveCompleted) return;
+
+	PauseMontage(RushMontage);
+}
+
+
+void AKachujin::MoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result)
+{
+	if (Result == EPathFollowingResult::Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Move completed"));
+	}
+	else 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Move Failed"));
+	}
+
+	ResumeMontage(RushMontage);
+	bMoveCompleted = true;
+	// EnemyController->ReceiveMoveCompleted.RemoveDynamic(this, &AKachujin::MoveCompleted);
+}

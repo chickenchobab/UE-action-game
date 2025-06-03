@@ -20,6 +20,7 @@
 #include "Items/Weapons/Weapon.h"
 #include "Items/Soul.h"
 #include "Characters/SlashCharacter.h"
+#include "Items/Weapons/RangedWeapon.h"
 
 
 AEnemy::AEnemy()
@@ -177,6 +178,19 @@ void AEnemy::HandleDamage(float DamageAmount)
 		Attributes->ReceiveDamage(DamageAmount);
 		HealthBarComponent->SetHealthPercent(Attributes->GetHealthPercent());
 	}
+}
+
+
+void AEnemy::RotateProjectile(ARangedWeapon* Projectile)
+{
+	if (Projectile == nullptr || CombatTarget == nullptr) return;
+	
+	FVector ForwardVector = CombatTarget->GetActorLocation() - Projectile->GetActorLocation();
+	FVector UpVector = CombatTarget->GetActorUpVector();
+	FVector RightVector = ForwardVector.Cross(UpVector);
+
+  FMatrix RotationMatrix(ForwardVector, RightVector, UpVector, FVector::Zero());
+  Projectile->SetActorRotation(RotationMatrix.Rotator());
 }
 
 

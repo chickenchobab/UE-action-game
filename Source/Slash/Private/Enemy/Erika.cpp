@@ -147,6 +147,5 @@ void AErika::CheckCombatTarget()
   else if (CanAttack())
   {
     StartAttacking(AttackTime);
-    UE_LOG(LogTemp, Warning, TEXT("Attack"));
   }
 }

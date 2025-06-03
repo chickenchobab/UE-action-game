@@ -51,6 +51,7 @@ protected:
   virtual void AttackEnd() override;
 	virtual bool CanAttack() override;
 	virtual void HandleDamage(float DamageAmount) override;
+	virtual void RotateProjectile(ARangedWeapon* Projectile) override;
 	// <\ABaseCharacter>
 
 	virtual void CheckCombatTarget();

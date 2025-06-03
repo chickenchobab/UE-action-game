@@ -34,7 +34,7 @@ void ARangedWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActo
 { 
   if (OtherActor)
   {
-    UE_LOG(LogTemp, Warning, TEXT("Hit actor : %s"), *OtherActor->GetName());
+    // UE_LOG(LogTemp, Warning, TEXT("Hit actor : %s"), *OtherActor->GetName());
   }
   if (GetOwner() && GetOwner() == OtherActor) return;
 
