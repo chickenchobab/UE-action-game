@@ -23,7 +23,7 @@ class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
 public:
 	ABaseCharacter();
 	virtual void Tick(float DeltaTime) override;
-	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, bool bReact) override;
+	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, bool bReact);
 	bool IsAlive();
 	bool IsOpposite(AActor* OtherActor);
 	FORCEINLINE EDeathPose GetDeathPose() { return DeathPose; }

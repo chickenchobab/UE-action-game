@@ -46,6 +46,7 @@ public:
 	FORCEINLINE bool IsEquipped() { return CharacterState != ECharacterState::ECS_Unequipped; }
 	FORCEINLINE bool IsUnoccupied() { return ActionState == EActionState::EAS_Unoccupied; }
 	FORCEINLINE bool IsAttacking() { return ActionState == EActionState::EAS_Attacking; }
+	FORCEINLINE bool IsHitReacting() { return ActionState == EActionState::EAS_HitReacting; }
 
 protected:
 	// <AActor>
