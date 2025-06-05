@@ -80,6 +80,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void HitReactEnd();
 	UFUNCTION(BlueprintCallable)
+	void ComboEnd();
 	void ResetComboCount();
 
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;

@@ -251,9 +251,11 @@ void ASlashCharacter::AttackEnd()
 {
 	Super::AttackEnd();
 
-	ActionState = EActionState::EAS_Unoccupied;
+	SetActorRotation(RecentInputRotation);
+
 	if (ComboCount == 0)
 	{
+		ActionState = EActionState::EAS_Unoccupied;
 		StopAttackMontage(0.5f);
 	}
 	else
@@ -275,7 +277,7 @@ void ASlashCharacter::HandleDamage(float DamageAmount)
 
 void ASlashCharacter::Move(const FInputActionValue& Value)
 {
-	if (Controller != nullptr && ActionState == EActionState::EAS_Unoccupied)
+	if (Controller != nullptr)
 	{
 		FVector2d MovementVector = Value.Get<FVector2d>(); 
 
@@ -289,7 +291,10 @@ void ASlashCharacter::Move(const FInputActionValue& Value)
 
 		// AddMovementInput(ForwardDirection, MovementVector.Y);
 		// AddMovementInput(RightDirection, MovementVector.X);
-		AddMovementInput(Direction, 1.f);
+		if (IsUnoccupied())
+		{
+			AddMovementInput(Direction, 1.f);
+		}
 	}
 }
 
@@ -377,9 +382,17 @@ void ASlashCharacter::HitReactEnd()
 	ActionState = EActionState::EAS_Unoccupied;
 }
 
+
+void ASlashCharacter::ComboEnd()
+{
+	ActionState = EActionState::EAS_Unoccupied;
+	ResetComboCount();
+}
+
+
 void ASlashCharacter::ResetComboCount()
 {
-	// Should be called when a combo end
+	// Should be called when a combo ends of there is no input 
 	ComboCount = 0;
 }
 
