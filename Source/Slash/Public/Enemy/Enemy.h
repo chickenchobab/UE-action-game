@@ -57,6 +57,7 @@ protected:
 	virtual void CheckCombatTarget();
 	void CheckPatrolTarget();
 	void MoveToTarget(AActor* Target);
+	void MoveToTarget(AActor* Target, double Radius);
 	APawn* FindCombatTarget(const TArray<AActor*>& UpdatedActors);
 	bool IsTargetInRange(AActor* Target, double Radius);
 	void PatrolTimerFinished();

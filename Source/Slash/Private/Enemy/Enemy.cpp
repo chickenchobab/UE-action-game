@@ -240,6 +240,18 @@ void AEnemy::MoveToTarget(AActor* Target)
 	EnemyController->MoveTo(MoveRequest);
 }
 
+
+void AEnemy::MoveToTarget(AActor* Target, double Radius)
+{
+	if (!EnemyController || !Target) return;
+
+	FAIMoveRequest MoveRequest;
+	MoveRequest.SetGoalActor(Target);
+	MoveRequest.SetAcceptanceRadius(Radius);
+	EnemyController->MoveTo(MoveRequest);
+}
+
+
 APawn* AEnemy::FindCombatTarget(const TArray<AActor*>& UpdatedActors)
 {
 	for (AActor* UpdatedActor : UpdatedActors)

@@ -183,6 +183,19 @@ void ABaseCharacter::PlayMontageSection(UAnimMontage* Montage, const FName& Sect
 	}
 }
 
+int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
+{
+	if (!Montage) return -1;
+	if (SectionNames.Num() <= 0) return -1;
+
+	int32 MaxSectionIndex = SectionNames.Num() - 1;
+	int32 Selection = FMath::RandRange(0, MaxSectionIndex);
+
+	PlayMontageSection(Montage, SectionNames[Selection]);
+
+	return Selection;
+}
+
 void ABaseCharacter::PlayMontage(UAnimMontage* Montage)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -343,18 +356,4 @@ void ABaseCharacter::SetupHandFoot(int32 BodyIndex, float Damage, FName SocketNa
 			HandsAndFeet[BodyIndex]->GetBox()->SetWorldTransform(HandFootBoxes[BodyIndex]->GetComponentTransform());
 		}
 	}
-}
-
-
-int32 ABaseCharacter::PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames)
-{
-	if (!Montage) return -1;
-	if (SectionNames.Num() <= 0) return -1;
-
-	int32 MaxSectionIndex = SectionNames.Num() - 1;
-	int32 Selection = FMath::RandRange(0, MaxSectionIndex);
-
-	PlayMontageSection(Montage, SectionNames[Selection]);
-
-	return Selection;
 }

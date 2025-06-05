@@ -13,9 +13,10 @@
 AKachujin::AKachujin()
 {
 	CombatRadius = 1000.f;
-  AcceptanceRadius = 100.f;
+  AcceptanceRadius = 200.f;
   AttackRadius = 100.f; // Basically punches and kicks away sometimes
   SpecialAttackRadius = 700.f; // Fires an energy ball and rushes to the target if succeeded
+	GetCharacterMovement()->MaxAcceleration = 10000.f;
 
   CreateHandFootBox(FName("Right Hand Box"), FName("RightHandSocket"));
 	CreateHandFootBox(FName("Left Hand Box"), FName("LeftHandSocket"));
@@ -82,7 +83,7 @@ void AKachujin::Attack()
   FocusOnTarget();
 	if (IsTargetInRange(CombatTarget, AttackRadius))
 	{
-    PlayAttackMontage(); 
+    PunchOrKick();
 	}
 	else
 	{
@@ -131,6 +132,7 @@ void AKachujin::CheckCombatTarget()
   {
 		ClearAttackTimer();
     LoseInterest();
+		ResetCombo();
 		if (!IsEngaged())
 		{
 			StartPatrolling();
@@ -139,6 +141,7 @@ void AKachujin::CheckCombatTarget()
 	else if (!IsTargetInRange(CombatTarget, SpecialAttackRadius) && !IsChasing())
 	{
 		ClearAttackTimer();
+		ResetCombo();
 		if (!IsEngaged())
 		{
 			ChaseTarget();
@@ -172,7 +175,7 @@ void AKachujin::RushToTarget()
 	EnemyController->ReceiveMoveCompleted.AddDynamic(this, &AKachujin::MoveCompleted);
 	bMoveCompleted = false;
 	GetCharacterMovement()->MaxWalkSpeed = RushingSpeed;
-	MoveToTarget(CombatTarget);
+	MoveToTarget(CombatTarget, AttackRadius);
 }
 
 
@@ -198,6 +201,41 @@ void AKachujin::MoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type
 
 	ResumeMontage(RushMontage);
 	bMoveCompleted = true;
-	GetCharacterMovement()->MaxWalkSpeed = ChasingSpeed;
+	CheckCombatTarget();
 	// EnemyController->ReceiveMoveCompleted.RemoveDynamic(this, &AKachujin::MoveCompleted);
+}
+
+void AKachujin::PunchOrKick()
+{
+	if (bPunchComboStarted)
+	{
+		PlayRightPunchMontage();
+	}
+	else
+	{
+		int32 Selection = FMath::RandRange(0, 1);
+		Selection == 0 ? PlayLeftPunchMontage() : PlayKickMontage();
+	}
+}
+
+
+void AKachujin::PlayLeftPunchMontage()
+{
+	PlayRandomMontageSection(LeftPunchMontage, LeftPunchMontageSections);
+	bPunchComboStarted = true;
+	AttackTime = 0.01f;
+}
+
+
+void AKachujin::PlayRightPunchMontage()
+{
+	PlayRandomMontageSection(RightPunchMontage, RightPunchMontageSections);
+	bPunchComboStarted = false;
+	AttackTime = 0.5f;
+}
+
+
+void AKachujin::PlayKickMontage()
+{
+	PlayRandomMontageSection(KickMontage, KickMontageSections);
 }

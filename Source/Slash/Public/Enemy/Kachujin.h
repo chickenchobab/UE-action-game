@@ -39,6 +39,11 @@ protected:
 	UFUNCTION()
 	void MoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result);
 
+	void PunchOrKick();
+	void PlayLeftPunchMontage();
+	void PlayRightPunchMontage();
+	void PlayKickMontage();
+
 	UPROPERTY(VisibleInstanceOnly, Category = "Combat")
 	ARangedWeapon* Throwing;
 	
@@ -47,11 +52,31 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* RushMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* LeftPunchMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* RightPunchMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* KickMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* PowerKickMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	TArray<FName> LeftPunchMontageSections;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	TArray<FName> RightPunchMontageSections;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	TArray<FName> KickMontageSections;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	TArray<FName> PowerKickMontageSections;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	float RushingSpeed = 500.f;
+	float RushingSpeed = 1000.f;
 
 private:
+	FORCEINLINE void ResetCombo() { bPunchComboStarted = false; }
+
 	bool bMoveCompleted = false;
-	
+
+	bool bPunchComboStarted = false;
 };
