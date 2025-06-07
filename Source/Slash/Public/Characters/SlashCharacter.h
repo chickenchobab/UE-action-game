@@ -60,6 +60,7 @@ protected:
 	virtual bool CanAttack() override;
 	virtual void AttackEnd() override;
 	virtual void DodgeEnd() override;
+	virtual void HitReactEnd() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	// <\ABaseCharacter>
 
@@ -78,8 +79,6 @@ protected:
 	void AttachWeaponToHand();
 	UFUNCTION(BlueprintCallable)
 	void EquipEnd();
-	UFUNCTION(BlueprintCallable)
-	void HitReactEnd();
 	UFUNCTION(BlueprintCallable)
 	void ComboEnd();
 	void ResetComboCount();

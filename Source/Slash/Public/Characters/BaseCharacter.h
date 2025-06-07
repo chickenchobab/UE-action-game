@@ -38,6 +38,8 @@ protected:
 	virtual void AttackEnd();
 	UFUNCTION(BlueprintCallable)
 	virtual void DodgeEnd();
+	UFUNCTION(BlueprintCallable)
+	virtual void HitReactEnd();
 	virtual bool CanAttack();
 	virtual void HandleDamage(float DamageAmount);
 	virtual void SpawnProjectile();

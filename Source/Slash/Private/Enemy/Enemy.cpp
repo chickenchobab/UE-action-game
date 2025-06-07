@@ -93,18 +93,14 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, b
 	ClearAttackTimer();
 	StopAttackMontage();
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	
 	if (IsAlive())
 	{
+		if (bReact)
+		{
+			EnemyState = EEnemyState::EES_Engaged; // Hit reacting
+		}
 		GainInterest(Hitter);
-		if (IsTargetInRange(CombatTarget, AttackRadius))
-		{
-			StartAttacking(AttackTime);
-		}
-		else
-		{
-			ChaseTarget();
-		}
 	}
 }
 
@@ -163,6 +159,16 @@ void AEnemy::AttackEnd()
 	EnemyState = EEnemyState::EES_None; 
 	CheckCombatTarget();
 }
+
+
+void AEnemy::HitReactEnd()
+{
+	Super::HitReactEnd();
+
+	EnemyState = EEnemyState::EES_None;
+	CheckCombatTarget();
+}
+
 
 bool AEnemy::CanAttack()
 {

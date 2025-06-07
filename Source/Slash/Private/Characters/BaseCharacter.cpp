@@ -103,6 +103,12 @@ void ABaseCharacter::DodgeEnd()
 	
 }
 
+void ABaseCharacter::HitReactEnd()
+{
+
+}
+
+
 bool ABaseCharacter::CanAttack()
 {
 	return true;
@@ -269,7 +275,7 @@ int32 ABaseCharacter::PlayDodgeMontage()
 void ABaseCharacter::StopAttackMontage(float InBlendOutTime)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance)
+	if (AnimInstance && AttackMontage)
 	{
 		AnimInstance->Montage_Stop(InBlendOutTime, AttackMontage);
 	}

@@ -176,12 +176,10 @@ void ANinja::CheckCombatTarget()
     if (!IsEngaged() && DetachFromTarget()) // Can step back
     {
       ClearAttackTimer();
-      UE_LOG(LogTemp, Warning, TEXT("Detaching"));
     }
     else if (CanAttack()) // Cannot but attack
     {
       StartAttacking(AttackTime);
-      UE_LOG(LogTemp, Warning, TEXT("Detaching Attack"));
     }
   }
 	else if (IsTargetAttacking() && !IsEngaged())
@@ -189,12 +187,10 @@ void ANinja::CheckCombatTarget()
 		ClearAttackTimer();
 		FocusOnTarget();
 		Dodge();
-		UE_LOG(LogTemp, Warning, TEXT("Dodge"));
 	}
 	else if (CanAttack())
 	{	
 		StartAttacking(AttackTime);
-		UE_LOG(LogTemp, Warning, TEXT("Attack"));
 	}
 }
 

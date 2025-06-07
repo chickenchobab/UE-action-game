@@ -115,7 +115,7 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 {
 	Super::GetHit_Implementation(ImpactPoint, Hitter, bReact);
 
-	if (IsAlive())
+	if (IsAlive() && bReact)
 	{
 		ActionState = EActionState::EAS_HitReacting;
 	}

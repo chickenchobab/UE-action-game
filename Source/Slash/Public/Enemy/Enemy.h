@@ -49,6 +49,7 @@ protected:
   virtual void Die() override;
 	virtual void Parry() override;
   virtual void AttackEnd() override;
+	virtual void HitReactEnd() override;
 	virtual bool CanAttack() override;
 	virtual void HandleDamage(float DamageAmount) override;
 	virtual void RotateProjectile(ARangedWeapon* Projectile) override;
