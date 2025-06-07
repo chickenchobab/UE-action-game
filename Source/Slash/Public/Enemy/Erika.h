@@ -31,9 +31,16 @@ protected:
 	virtual void RotateProjectile(ARangedWeapon* Projectile) override;
 	
 	virtual void CheckCombatTarget() override;
-	
-private:
-	FVector SocketLocation;
-	FRotator SocketRotation;
-};
 
+	void ShootArrow();
+	void KickAndDodge();
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* ShootMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* KickAndDodgeMontage;
+
+private:
+	float ShootRadius = 700.f;
+	float KickRadius = 200.f;
+};

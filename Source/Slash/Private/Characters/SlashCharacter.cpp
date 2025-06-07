@@ -120,7 +120,6 @@ void ASlashCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* 
 		ActionState = EActionState::EAS_HitReacting;
 	}
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
-	StopAttackMontage();
 }
 
 
@@ -185,16 +184,15 @@ void ASlashCharacter::Attack()
 	if (CanAttack())
 	{
 		SetActorRotation(RecentInputRotation);
+		ActionState = EActionState::EAS_Attacking;
 		
-		if (MovingTime >= 3.f)
+		if (MovingTime < 2.f)
 		{
-			ActionState = EActionState::EAS_DashAttacking;
-			PlaySpecialAttackMontage();
+			StartComboAttack();
 		}
 		else
 		{
-			ActionState = EActionState::EAS_Attacking;
-			PlayAttackMontage(true);
+			DashAttack();
 		}
 	}
 	else if (IsInCombo())
@@ -236,13 +234,7 @@ void ASlashCharacter::Dodge()
 
 bool ASlashCharacter::CanAttack()
 {
-	bool bMontageIsPlaying = false;
-	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance()) 
-	{	
-		bMontageIsPlaying = AnimInstance->Montage_IsPlaying(AttackMontage);
-	}
-
-	return !bMontageIsPlaying &&
+	return !IsMontagePlaying(SwordAttackMontage) &&
 		ActionState == EActionState::EAS_Unoccupied && 
 		CharacterState != ECharacterState::ECS_Unequipped;
 }
@@ -256,7 +248,7 @@ void ASlashCharacter::AttackEnd()
 	if (ComboCount == 0)
 	{
 		ActionState = EActionState::EAS_Unoccupied;
-		StopAttackMontage(0.5f);
+		StopMontage(0.5f, SwordAttackMontage);
 	}
 	else
 	{
@@ -338,6 +330,21 @@ void ASlashCharacter::RightMouseClicked(const FInputActionValue& Value)
 {
 	Dodge();
 }
+
+void ASlashCharacter::StartComboAttack()
+{
+	if (!SwordAttackMontageSections.IsEmpty())
+	{
+		PlayMontageSection(SwordAttackMontage, SwordAttackMontageSections[0]);
+	}
+}
+
+
+void ASlashCharacter::DashAttack()
+{
+	PlayMontage(SwordDashAttackMontage);
+}
+
 
 void ASlashCharacter::PlayEquipMontage(const FName &SectionName)
 {
@@ -439,7 +446,7 @@ bool ASlashCharacter::IsInCombo()
 	if (IsAttacking()) return true;
 	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance()) 
 	{	
-		return AnimInstance->Montage_IsPlaying(AttackMontage);
+		return AnimInstance->Montage_IsPlaying(SwordAttackMontage);
 	}
 	return false;
 }

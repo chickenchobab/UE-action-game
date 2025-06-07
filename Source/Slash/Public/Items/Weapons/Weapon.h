@@ -20,7 +20,7 @@ class SLASH_API AWeapon : public AItem
 
 public:
 	AWeapon();
-	void Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound = false, bool bDeactivateItemEffect = true);
+	void Equip(USceneComponent* InParent, const FName& InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound = false, bool bDeactivateItemEffect = true);
 	void AttachMeshToSocket(USceneComponent* InParent, const FName& InSocketName);
 	void DetachMeshFromSocket();
 	void SetWeaponBoxCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);

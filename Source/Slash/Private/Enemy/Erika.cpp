@@ -13,8 +13,6 @@ AErika::AErika()
 {
   CombatRadius = 1000.f;
   AcceptanceRadius = 400.f;
-  AttackRadius = 700.f; // Shoot an arrow
-  SpecialAttackRadius = 200.f; // Kick and dodge back
   
   CreateHandFootBox(FName("Foot Box"), FName("RightFootSocket"));
 }
@@ -51,22 +49,19 @@ void AErika::Attack()
 
   EnemyState = EEnemyState::EES_Engaged;
   FocusOnTarget();
-	if (IsTargetInRange(CombatTarget, SpecialAttackRadius))
+	if (IsTargetInRange(CombatTarget, KickRadius))
 	{
-    PlaySpecialAttackMontage();
-    AttackTime = 0.01f; // Fire soon after kicking
+    KickAndDodge();
 	}
 	else
 	{
-    SpawnProjectile();
-    PlayAttackMontage();
-    AttackTime = 1.f;
+    ShootArrow();
 	}
 }
 
 bool AErika::CanAttack()
 { 
-	return Super::CanAttack() && IsTargetInRange(CombatTarget, AttackRadius);
+	return Super::CanAttack() && IsTargetInRange(CombatTarget, ShootRadius);
 }
 
 
@@ -125,7 +120,7 @@ void AErika::CheckCombatTarget()
 			StartPatrolling();
 		}
   }
-	else if (!IsTargetInRange(CombatTarget, AttackRadius) && !IsChasing())
+	else if (!IsTargetInRange(CombatTarget, ShootRadius) && !IsChasing())
 	{
 		ClearAttackTimer();
 		if (!IsEngaged())
@@ -133,7 +128,7 @@ void AErika::CheckCombatTarget()
 			ChaseTarget();
 		}
 	}
-  else if (IsTargetInRange(CombatTarget, AcceptanceRadius) && !IsTargetInRange(CombatTarget, SpecialAttackRadius) && !IsDetaching())
+  else if (IsTargetInRange(CombatTarget, AcceptanceRadius) && !IsTargetInRange(CombatTarget, KickRadius) && !IsDetaching())
   {
     if (!IsEngaged() && DetachFromTarget()) // Can step back
     {
@@ -148,4 +143,17 @@ void AErika::CheckCombatTarget()
   {
     StartAttacking(AttackTime);
   }
+}
+
+void AErika::ShootArrow()
+{
+  PlayMontage(ShootMontage);
+  SpawnProjectile();
+  AttackTime = 1.f;
+}
+
+void AErika::KickAndDodge()
+{
+	PlayMontage(KickAndDodgeMontage);
+  AttackTime = 0.01f; // Fire soon after kicking
 }

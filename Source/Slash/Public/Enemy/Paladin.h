@@ -26,9 +26,26 @@ protected:
 	
 	virtual void CheckCombatTarget() override;
 
+	void StandingAttack();
+	void DashAttack();
+
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* AttackMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* DashAttackMontage;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FName> AttackMontageSections;
+	UPROPERTY(EditAnywhere)
+	TArray<FName> DashAttackMontageSections;
+
 private:
 	void SetupShield();
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Shield;
+
+	float SwordRadius = 100.f;
+	float DashAttackRadius = 400.f;
 };
+

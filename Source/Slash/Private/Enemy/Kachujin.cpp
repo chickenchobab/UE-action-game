@@ -14,8 +14,6 @@ AKachujin::AKachujin()
 {
 	CombatRadius = 1000.f;
   AcceptanceRadius = 200.f;
-  AttackRadius = 100.f; // Basically punches and kicks away sometimes
-  SpecialAttackRadius = 700.f; // Fires an energy ball and rushes to the target if succeeded
 	GetCharacterMovement()->MaxAcceleration = 10000.f;
 
   CreateHandFootBox(FName("Right Hand Box"), FName("RightHandSocket"));
@@ -68,10 +66,10 @@ void AKachujin::BeginPlay()
 		}
   }
 
-  SetupHandFoot(0, 100.f, FName("RightHandSocket"));
-	SetupHandFoot(1, 100.f, FName("LeftHandSocket"));
-  SetupHandFoot(2, 100.f, FName("RightFootSocket"));
-	SetupHandFoot(3, 100.f, FName("LeftFootSocket"));
+  SetupHandFoot(0, 1.f, FName("RightHandSocket"));
+	SetupHandFoot(1, 1.f, FName("LeftHandSocket"));
+  SetupHandFoot(2, 1.f, FName("RightFootSocket"));
+	SetupHandFoot(3, 1.f, FName("LeftFootSocket"));
 }
 
 void AKachujin::Attack()
@@ -81,20 +79,19 @@ void AKachujin::Attack()
 
   EnemyState = EEnemyState::EES_Engaged;
   FocusOnTarget();
-	if (IsTargetInRange(CombatTarget, AttackRadius))
+	if (IsTargetInRange(CombatTarget, PunchKickRadius))
 	{
     PunchOrKick();
 	}
 	else
 	{
-    SpawnProjectile();
-    PlaySpecialAttackMontage();
+		FireEnergyWave();
 	}
 }
 
 bool AKachujin::CanAttack()
 {
-	return Super::CanAttack() && IsTargetInRange(CombatTarget, SpecialAttackRadius);
+	return Super::CanAttack() && IsTargetInRange(CombatTarget, EnergyWaveRadius);
 }
 
 void AKachujin::SpawnProjectile()
@@ -138,7 +135,7 @@ void AKachujin::CheckCombatTarget()
 			StartPatrolling();
 		}
   }
-	else if (!IsTargetInRange(CombatTarget, SpecialAttackRadius) && !IsChasing())
+	else if (!IsTargetInRange(CombatTarget, EnergyWaveRadius) && !IsChasing())
 	{
 		ClearAttackTimer();
 		ResetCombo();
@@ -175,7 +172,7 @@ void AKachujin::RushToTarget()
 	EnemyController->ReceiveMoveCompleted.AddDynamic(this, &AKachujin::MoveCompleted);
 	bMoveCompleted = false;
 	GetCharacterMovement()->MaxWalkSpeed = RushingSpeed;
-	MoveToTarget(CombatTarget, AttackRadius);
+	MoveToTarget(CombatTarget, PunchKickRadius);
 }
 
 
@@ -209,17 +206,17 @@ void AKachujin::PunchOrKick()
 {
 	if (bPunchComboStarted)
 	{
-		PlayRightPunchMontage();
+		PunchRight();
 	}
 	else
 	{
 		int32 Selection = FMath::RandRange(0, 1);
-		Selection == 0 ? PlayLeftPunchMontage() : PlayKickMontage();
+		Selection == 0 ? PunchLeft() : Kick();
 	}
 }
 
 
-void AKachujin::PlayLeftPunchMontage()
+void AKachujin::PunchLeft()
 {
 	PlayRandomMontageSection(LeftPunchMontage, LeftPunchMontageSections);
 	bPunchComboStarted = true;
@@ -227,7 +224,7 @@ void AKachujin::PlayLeftPunchMontage()
 }
 
 
-void AKachujin::PlayRightPunchMontage()
+void AKachujin::PunchRight()
 {
 	PlayRandomMontageSection(RightPunchMontage, RightPunchMontageSections);
 	bPunchComboStarted = false;
@@ -235,7 +232,14 @@ void AKachujin::PlayRightPunchMontage()
 }
 
 
-void AKachujin::PlayKickMontage()
+void AKachujin::Kick()
 {
 	PlayRandomMontageSection(KickMontage, KickMontageSections);
+}
+
+
+void AKachujin::FireEnergyWave()
+{
+	SpawnProjectile();
+	PlayMontage(ThrowMontage);
 }

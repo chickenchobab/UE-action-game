@@ -10,6 +10,9 @@
 
 APaladin::APaladin()
 {
+	CombatRadius = 700.f;
+	AcceptanceRadius = 350.f;
+	
 	Shield = CreateDefaultSubobject<UStaticMeshComponent>(FName("Shield"));
 	Shield->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
   Shield->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -41,20 +44,20 @@ void APaladin::Attack()
 	if (!CombatTarget) return;
 
 	EnemyState = EEnemyState::EES_Engaged;
-	if (IsTargetInRange(CombatTarget, AttackRadius))
+	FocusOnTarget();
+	if (IsTargetInRange(CombatTarget, SwordRadius))
 	{
-		FocusOnTarget();
-		PlayAttackMontage();
+		StandingAttack();
 	}
 	else
 	{
-		PlaySpecialAttackMontage();
+		DashAttack();
 	}
 }
 
 bool APaladin::CanAttack()
 {
-	return Super::CanAttack() && IsTargetInRange(CombatTarget, SpecialAttackRadius);
+	return Super::CanAttack() && IsTargetInRange(CombatTarget, DashAttackRadius);
 }
 
 void APaladin::CheckCombatTarget()
@@ -68,7 +71,7 @@ void APaladin::CheckCombatTarget()
 			StartPatrolling();
 		}
   }
-	else if (!IsTargetInRange(CombatTarget, SpecialAttackRadius) && !IsChasing())
+	else if (!IsTargetInRange(CombatTarget, DashAttackRadius) && !IsChasing())
 	{
 		ClearAttackTimer();
 		if (!IsEngaged())
@@ -93,6 +96,16 @@ void APaladin::CheckCombatTarget()
 	{
 		StopParrying();
 	}
+}
+
+void APaladin::StandingAttack()
+{
+	PlayRandomMontageSection(AttackMontage, AttackMontageSections);
+}
+
+void APaladin::DashAttack()
+{
+	PlayRandomMontageSection(DashAttackMontage, DashAttackMontageSections);
 }
 
 void APaladin::SetupShield()

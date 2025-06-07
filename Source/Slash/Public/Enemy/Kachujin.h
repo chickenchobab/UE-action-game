@@ -40,15 +40,10 @@ protected:
 	void MoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result);
 
 	void PunchOrKick();
-	void PlayLeftPunchMontage();
-	void PlayRightPunchMontage();
-	void PlayKickMontage();
-
-	UPROPERTY(VisibleInstanceOnly, Category = "Combat")
-	ARangedWeapon* Throwing;
-	
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	TSubclassOf<ARangedWeapon> ThrowingClass;
+	void PunchLeft();
+	void PunchRight();
+	void Kick();
+	void FireEnergyWave();
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* RushMontage;
@@ -60,6 +55,8 @@ protected:
 	UAnimMontage* KickMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* PowerKickMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* ThrowMontage;
 
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	TArray<FName> LeftPunchMontageSections;
@@ -79,4 +76,7 @@ private:
 	bool bMoveCompleted = false;
 
 	bool bPunchComboStarted = false;
+
+	float PunchKickRadius = 100.f;
+	float EnergyWaveRadius = 700.f;
 };

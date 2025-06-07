@@ -34,6 +34,7 @@ void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* H
 
 	PlaySound(ImpactPoint, HitSound);
 	SpawnParticles(ImpactPoint, HitParticles);
+	StopMontage(); // In case the character is attacking
 
 	if (IsAlive())
 	{
@@ -214,11 +215,12 @@ void ABaseCharacter::PlayMontage(UAnimMontage* Montage)
 void ABaseCharacter::StopMontage(float InBlendOutTime, UAnimMontage* Montage)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && Montage)
+	if (AnimInstance)
 	{
 		AnimInstance->Montage_Stop(InBlendOutTime, Montage);
 	}
 }
+
 
 void ABaseCharacter::PauseMontage(UAnimMontage* Montage)
 {
@@ -238,20 +240,15 @@ void ABaseCharacter::ResumeMontage(UAnimMontage* Montage)
 	}
 }
 
-int32 ABaseCharacter::PlayAttackMontage(bool bStartCombo)
+
+bool ABaseCharacter::IsMontagePlaying(UAnimMontage* Montage)
 {
-	if (bStartCombo && !AttackMontageSections.IsEmpty())
-	{
-		PlayMontageSection(AttackMontage, AttackMontageSections[0]);
-		return 0;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && Montage) 
+	{	
+		return AnimInstance->Montage_IsPlaying(Montage);
 	}
-	return PlayRandomMontageSection(AttackMontage, AttackMontageSections);
-}
-
-
-int32 ABaseCharacter::PlaySpecialAttackMontage()
-{
-	return PlayRandomMontageSection(SpecialAttackMontage, SpecialAttackMontageSections);
+	return false;
 }
 
 
@@ -270,15 +267,6 @@ int32 ABaseCharacter::PlayDeathMontage()
 int32 ABaseCharacter::PlayDodgeMontage()
 {
 	return PlayRandomMontageSection(DodgeMontage, DodgeMontageSections);
-}
-
-void ABaseCharacter::StopAttackMontage(float InBlendOutTime)
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && AttackMontage)
-	{
-		AnimInstance->Montage_Stop(InBlendOutTime, AttackMontage);
-	}
 }
 
 
@@ -340,7 +328,7 @@ void ABaseCharacter::SpawnParticles(const FVector& ImpactPoint, UParticleSystem*
 }
 
 
-void ABaseCharacter::CreateHandFootBox(FName BoxName, FName SocketName)
+void ABaseCharacter::CreateHandFootBox(const FName& BoxName, const FName& SocketName)
 {
 	HandFootBoxes.Add(CreateDefaultSubobject<UBoxComponent>(BoxName));
   HandFootBoxes.Last()->SetupAttachment(GetMesh(), SocketName);
@@ -349,7 +337,7 @@ void ABaseCharacter::CreateHandFootBox(FName BoxName, FName SocketName)
 
 
 
-void ABaseCharacter::SetupHandFoot(int32 BodyIndex, float Damage, FName SocketName)
+void ABaseCharacter::SetupHandFoot(int32 BodyIndex, float Damage, const FName& SocketName)
 {
 	if (BodyIndex < HandsAndFeet.Num() && HandsAndFeet[BodyIndex]) 
 	{

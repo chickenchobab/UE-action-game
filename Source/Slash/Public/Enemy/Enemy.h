@@ -142,12 +142,9 @@ protected:
 	float DetachingSpeed = 200.f;
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	double CombatRadius = 700.f;
+	double CombatRadius;
 
-	double AcceptanceRadius = 350.f;
-	
-	double AttackRadius = 100.f;
-	double SpecialAttackRadius = 400.f;
+	double AcceptanceRadius;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float AttackTime = 1.f;
@@ -156,6 +153,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<AWeapon> WeaponClass;
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<ARangedWeapon> ThrowingClass;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float DeathLifeSpan = 5.f;

@@ -22,7 +22,7 @@ AWeapon::AWeapon()
   WeaponBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 }
 
-void AWeapon::Equip(USceneComponent* InParent, FName InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound, bool bDeactivateItemEffect)
+void AWeapon::Equip(USceneComponent* InParent, const FName& InSocketName, AActor* NewOwner, APawn* NewInstigator, bool bPlayEquipSound, bool bDeactivateItemEffect)
 {
   SetOwner(NewOwner);
   SetInstigator(NewInstigator);

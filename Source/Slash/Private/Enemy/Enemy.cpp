@@ -91,7 +91,6 @@ void AEnemy::GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, b
 
 	ClearPatrolTimer();
 	ClearAttackTimer();
-	StopAttackMontage();
 	SetWeaponCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	if (IsAlive())

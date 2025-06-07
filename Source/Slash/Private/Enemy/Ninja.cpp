@@ -13,8 +13,6 @@ ANinja::ANinja()
 {
 	CombatRadius = 1000.f;
   AcceptanceRadius = 400.f;
-  AttackRadius = 200.f; // Use dual dagger
-  SpecialAttackRadius = 700.f; // Throw shuriken
 	AttackTime = 0.5f;
 
 	CreateHandFootBox(FName("Right Foot Box"), FName("RightFootSocket"));
@@ -65,14 +63,13 @@ void ANinja::Attack()
 
 	EnemyState = EEnemyState::EES_Engaged;
   FocusOnTarget();
-	if (IsTargetInRange(CombatTarget, AttackRadius))
+	if (IsTargetInRange(CombatTarget, DaggerRadius))
 	{
-		PlayAttackMontage();
+		DaggerAttack();
 	}
 	else
 	{
-		SpawnProjectile();
-		PlaySpecialAttackMontage();
+		ThrowShuriken();
 	}
 	AttackTime = 0.5f;
 }
@@ -94,7 +91,7 @@ void ANinja::DodgeEnd()
 	
 	EnemyState = EEnemyState::EES_None;
 	EnableCollision();
-	if (IsTargetInRange(CombatTarget, AttackRadius))
+	if (IsTargetInRange(CombatTarget, DaggerRadius))
 	{
 		BackAttack();
 	}
@@ -108,7 +105,7 @@ void ANinja::DodgeEnd()
 
 bool ANinja::CanAttack()
 {
-	return Super::CanAttack() && IsTargetInRange(CombatTarget, SpecialAttackRadius);
+	return Super::CanAttack() && IsTargetInRange(CombatTarget, ShurikenRadius);
 }
 
 void ANinja::SpawnProjectile()
@@ -163,7 +160,7 @@ void ANinja::CheckCombatTarget()
 			StartPatrolling();
 		}
   }
-	else if (!IsTargetInRange(CombatTarget, SpecialAttackRadius) && !IsChasing())
+	else if (!IsTargetInRange(CombatTarget, ShurikenRadius) && !IsChasing())
 	{
 		ClearAttackTimer();
 		if (!IsEngaged())
@@ -171,7 +168,7 @@ void ANinja::CheckCombatTarget()
 			ChaseTarget();
 		}
 	}
-	else if (IsTargetInRange(CombatTarget, AcceptanceRadius) && !IsTargetInRange(CombatTarget, AttackRadius) && !IsDetaching())
+	else if (IsTargetInRange(CombatTarget, AcceptanceRadius) && !IsTargetInRange(CombatTarget, DaggerRadius) && !IsDetaching())
   {
     if (!IsEngaged() && DetachFromTarget()) // Can step back
     {
@@ -212,27 +209,31 @@ void ANinja::SpawnDefaultWeapon()
 	}
 }
 
+void ANinja::DaggerAttack()
+{
+	PlayMontage(DaggerAttackMontage);
+}
+
+void ANinja::ThrowShuriken()
+{
+	SpawnProjectile();
+	PlayRandomMontageSection(ThrowMontage, ThrowMontageSections);
+}
+
 void ANinja::BackAttack()
 {
 	EnemyState = EEnemyState::EES_Engaged;
 	FocusOnTarget();
 	ReverseWeaponMesh();
 	EnableWeaponHitReaction(false);
-	PlayBackAttackMontage();
+	PlayMontage(BackAttackMontage);
 }
-
-void ANinja::PlayBackAttackMontage()
-{
-	PlayMontageSection(BackAttackMontage, FName("Default"));
-}
-
 
 void ANinja::KickStart()
 {
 	RestoreWeaponMesh();
 	EnableWeaponHitReaction(true);
 }
-
 
 void ANinja::EnableCollision()
 {

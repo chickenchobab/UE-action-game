@@ -57,41 +57,35 @@ protected:
 	void PlayMontageSection(UAnimMontage* Montage, const FName& SectionName);
 	int32 PlayRandomMontageSection(UAnimMontage* Montage, const TArray<FName>& SectionNames);
 	void PlayMontage(UAnimMontage* Montage);
-	void StopMontage(float InBlendOutTime, UAnimMontage* Montage);
+	void StopMontage(float InBlendOutTime = 0.25f, UAnimMontage* Montage = nullptr);
 	void PauseMontage(UAnimMontage* Montage);
 	void ResumeMontage(UAnimMontage* Montage);
+	bool IsMontagePlaying(UAnimMontage* Montage);
 	
-	int32 PlayAttackMontage(bool bStartCombo = false);
-	int32 PlaySpecialAttackMontage();
 	int32 PlayDeathMontage();
 	int32 PlayDodgeMontage();
-	void StopAttackMontage(float InBlendOutTime = 0.25f);
 	void DirectionalHitReact(const FVector& ImpactPoint, const FVector& HitterLocation);
 
 	void PlaySound(const FVector& ImpactPoint, USoundBase* PlayedSound);
 	void SpawnParticles(const FVector& ImpactPoint, UParticleSystem* SpawnedParticles);
 
-	void CreateHandFootBox(FName BoxName, FName SocketName);
-	void SetupHandFoot(int32 BodyIndex, float Damage, FName SocketName);
+	void CreateHandFootBox(const FName& BoxName, const FName& SocketName);
+	void SetupHandFoot(int32 BodyIndex, float Damage, const FName& SocketName);
 
 	UPROPERTY(VisibleAnywhere)
 	UAttributeComponent* Attributes;
 
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
 	AWeapon* EquippedWeapon;
+	UPROPERTY(VisibleInstanceOnly, Category = "Combat")
+	ARangedWeapon* Throwing;
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
 	TArray<AWeapon*> HandsAndFeet;
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
 	TArray<UBoxComponent*> HandFootBoxes;
 
 	float BodyAttackDamage = 5.f;
-	
-	bool bBodyBlocked = false;
 
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* AttackMontage;
-	UPROPERTY(EditDefaultsOnly, Category = Montages)
-	UAnimMontage* SpecialAttackMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* HitReactMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
@@ -104,10 +98,6 @@ protected:
 	UPROPERTY(BlueprintReadWrite)
 	EDeathPose DeathPose;
 
-	UPROPERTY(EditAnywhere)
-	TArray<FName> AttackMontageSections;
-	UPROPERTY(EditAnywhere)
-	TArray<FName> SpecialAttackMontageSections;
 	UPROPERTY(EditAnywhere)
 	TArray<FName> DeathMontageSections;
 	UPROPERTY(EditAnywhere)

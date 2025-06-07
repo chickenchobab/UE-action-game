@@ -35,21 +35,24 @@ protected:
 
 	void SpawnDefaultWeapon();
 	
+	void DaggerAttack();
+	void ThrowShuriken();
 	void BackAttack();
-	void PlayBackAttackMontage();
 	UFUNCTION(BlueprintCallable)
 	void KickStart();
 
-	UPROPERTY(VisibleInstanceOnly, Category = "Combat")
-	ARangedWeapon* Throwing;
-	
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	TSubclassOf<ARangedWeapon> ThrowingClass;
-
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* DaggerAttackMontage;
+	UPROPERTY(EditDefaultsOnly, Category = Montages)
+	UAnimMontage* ThrowMontage;
 	UPROPERTY(EditDefaultsOnly, Category = Montages)
 	UAnimMontage* BackAttackMontage;
 
+	UPROPERTY(EditAnywhere)
+	TArray<FName> ThrowMontageSections;
+
 private:
+	
 	void EnableCollision();
 	void DisableCollision();
 	void EnableWeaponHitReaction(bool bEnabled);
@@ -57,6 +60,10 @@ private:
 	// Asset-specific functions
 	void ReverseWeaponMesh();
 	void RestoreWeaponMesh();
+
+	float DaggerRadius = 200.f;
+	float ShurikenRadius = 700.f;
 };
+
 
 
