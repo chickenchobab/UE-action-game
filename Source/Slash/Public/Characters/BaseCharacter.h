@@ -104,6 +104,7 @@ protected:
 	TArray<FName> DodgeMontageSections;
 
 private:
+	void DestroyProjectile();
 
 	UPROPERTY(EditAnywhere, Category = Sounds)
 	USoundBase* HitSound;

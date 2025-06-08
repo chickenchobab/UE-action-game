@@ -32,6 +32,7 @@ void ABaseCharacter::GetHit_Implementation(const FVector& ImpactPoint, AActor* H
 		return;
 	}
 
+	DestroyProjectile();
 	PlaySound(ImpactPoint, HitSound);
 	SpawnParticles(ImpactPoint, HitParticles);
 	StopMontage(); // In case the character is attacking
@@ -349,5 +350,14 @@ void ABaseCharacter::SetupHandFoot(int32 BodyIndex, float Damage, const FName& S
 			HandsAndFeet[BodyIndex]->GetBox()->SetBoxExtent(HandFootBoxes[BodyIndex]->GetUnscaledBoxExtent());
 			HandsAndFeet[BodyIndex]->GetBox()->SetWorldTransform(HandFootBoxes[BodyIndex]->GetComponentTransform());
 		}
+	}
+}
+
+void ABaseCharacter::DestroyProjectile()
+{
+	if (Projectile)
+	{
+		Projectile->Destroy();
+		Projectile = nullptr;
 	}
 }
