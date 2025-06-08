@@ -186,13 +186,13 @@ void ASlashCharacter::Attack()
 		SetActorRotation(RecentInputRotation);
 		ActionState = EActionState::EAS_Attacking;
 		
-		if (MovingTime < 2.f)
+		if (MovingTime >= 2.f)
 		{
-			StartComboAttack();
+			DashAttack();
 		}
 		else
 		{
-			DashAttack();
+			StartComboAttack();
 		}
 	}
 	else if (IsInCombo())

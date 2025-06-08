@@ -23,8 +23,8 @@ class SLASH_API ABaseCharacter : public ACharacter, public IHitInterface
 public:
 	ABaseCharacter();
 	virtual void Tick(float DeltaTime) override;
-	virtual void GetHit_Implementation(const FVector& ImpactPoint, AActor* Hitter, bool bReact);
-	bool IsAlive();
+  virtual void GetHit_Implementation(const FVector &ImpactPoint, AActor *Hitter, bool bReact);
+  bool IsAlive();
 	bool IsOpposite(AActor* OtherActor);
 	FORCEINLINE EDeathPose GetDeathPose() { return DeathPose; }
 	FORCEINLINE virtual bool IsParrying() { return false; }
@@ -46,7 +46,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void FireProjectile();
 	// Mesh-specific function
-	virtual void RotateProjectile(ARangedWeapon* Projectile);
+	virtual void RotateProjectile();
 	
 	void SetCapsuleCollisionEnabled(ECollisionEnabled::Type CollisionEnabled);
 	UFUNCTION(BlueprintCallable)
@@ -77,8 +77,8 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
 	AWeapon* EquippedWeapon;
-	UPROPERTY(VisibleInstanceOnly, Category = "Combat")
-	ARangedWeapon* Throwing;
+	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
+	ARangedWeapon* Projectile;
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)
 	TArray<AWeapon*> HandsAndFeet;
 	UPROPERTY(VisibleInstanceOnly, Category = Weapon)

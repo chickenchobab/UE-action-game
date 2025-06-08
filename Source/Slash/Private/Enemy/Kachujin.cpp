@@ -98,28 +98,28 @@ void AKachujin::SpawnProjectile()
 {
 	if (UWorld *World = GetWorld())
   {
-    if (Throwing = World->SpawnActor<ARangedWeapon>(ThrowingClass))
+    if (Projectile = World->SpawnActor<ARangedWeapon>(ProjectileClass))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Fire ball spawned"));
-			Throwing->Equip(GetMesh(), FName("RightHandSocket"), this, this, false, false);
-			Throwing->SetHeadDirection(FVector(1, 0, 0));
-			Throwing->GetBox()->OnComponentBeginOverlap.AddDynamic(this, &AKachujin::ProjectileHit);
+			Projectile->Equip(GetMesh(), FName("RightHandSocket"), this, this, false, false);
+			Projectile->SetHeadDirection(FVector(1, 0, 0));
+			Projectile->GetBox()->OnComponentBeginOverlap.AddDynamic(this, &AKachujin::ProjectileHit);
 		}
   }
 }
 
 void AKachujin::FireProjectile()
 {
-	if (Throwing)
+	if (Projectile)
   {
-    Throwing->DetachMeshFromSocket();
+    Projectile->DetachMeshFromSocket();
     if (CombatTarget)
     {
-			RotateProjectile(Throwing);
-      Throwing->ActivateProjectile(CombatTarget);
+			RotateProjectile();
+      Projectile->ActivateProjectile(CombatTarget);
     }
-		Throwing->SetWeaponBoxCollisionEnabled(ECollisionEnabled::QueryOnly);
-    Throwing = nullptr;
+		Projectile->SetWeaponBoxCollisionEnabled(ECollisionEnabled::QueryOnly);
+    Projectile = nullptr;
   }
 }
 
@@ -176,7 +176,7 @@ void AKachujin::RushToTarget()
 }
 
 
-void AKachujin::RushStart() // Kick motion starts
+void AKachujin::RushStart() // Kick motion starts while rushing montage is playing
 {
 	// Move can be completed earlier than kick motion
 	if (bMoveCompleted) return;
@@ -199,7 +199,6 @@ void AKachujin::MoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type
 	ResumeMontage(RushMontage);
 	bMoveCompleted = true;
 	CheckCombatTarget();
-	// EnemyController->ReceiveMoveCompleted.RemoveDynamic(this, &AKachujin::MoveCompleted);
 }
 
 void AKachujin::PunchOrKick()

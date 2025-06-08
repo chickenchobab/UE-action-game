@@ -136,6 +136,7 @@ private:
 	void UpdateHealthBar();
 	bool CanDodge();
 	bool IsInCombo();
+	bool IsEnemyInRange(float Distance);
 
 	UPROPERTY()
 	USlashOverlay* SlashOverlay;

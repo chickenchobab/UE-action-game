@@ -69,7 +69,7 @@ void AErika::SpawnProjectile()
 {
   if (UWorld *World = GetWorld())
   {
-    ARangedWeapon *Projectile = World->SpawnActor<ARangedWeapon>(WeaponClass);
+    Projectile = World->SpawnActor<ARangedWeapon>(ProjectileClass);
     if (Projectile)
     {
       Projectile->Equip(GetMesh(), FName("RightHandSocket"), this, this);
@@ -82,12 +82,12 @@ void AErika::SpawnProjectile()
 
 void AErika::FireProjectile()
 {
-  if (ARangedWeapon* Projectile = Cast<ARangedWeapon>(EquippedWeapon))
+  if (Projectile)
   {
     Projectile->DetachMeshFromSocket();
     if (CombatTarget)
     {
-      RotateProjectile(Projectile);
+      RotateProjectile();
       Projectile->ActivateProjectile(CombatTarget);
     }
     SetWeaponCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -96,7 +96,7 @@ void AErika::FireProjectile()
 }
 
 
-void AErika::RotateProjectile(ARangedWeapon* Projectile)
+void AErika::RotateProjectile()
 {
   if (Projectile == nullptr || CombatTarget == nullptr) return;
 

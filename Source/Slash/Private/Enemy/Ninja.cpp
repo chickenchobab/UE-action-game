@@ -112,31 +112,31 @@ void ANinja::SpawnProjectile()
 {
 	if (UWorld *World = GetWorld())
   {
-    if (Throwing = World->SpawnActor<ARangedWeapon>(ThrowingClass))
+    if (Projectile = World->SpawnActor<ARangedWeapon>(ProjectileClass))
 		{
-			Throwing->Equip(GetMesh(), FName("RightHandSocket"), this, this);
-			Throwing->SetHeadDirection(FVector(0, 0, 1));
+			Projectile->Equip(GetMesh(), FName("RightHandSocket"), this, this);
+			Projectile->SetHeadDirection(FVector(0, 0, 1));
 		}
   }
 }
 
 void ANinja::FireProjectile()
 {
-	if (Throwing)
+	if (Projectile)
   {
-    Throwing->DetachMeshFromSocket();
+    Projectile->DetachMeshFromSocket();
     if (CombatTarget)
     {
-			RotateProjectile(Throwing);
-      Throwing->ActivateProjectile(CombatTarget);
+			RotateProjectile();
+      Projectile->ActivateProjectile(CombatTarget);
     }
-		Throwing->SetWeaponBoxCollisionEnabled(ECollisionEnabled::QueryOnly);
-    Throwing = nullptr;
+		Projectile->SetWeaponBoxCollisionEnabled(ECollisionEnabled::QueryOnly);
+    Projectile = nullptr;
   }
 }
 
 
-void ANinja::RotateProjectile(ARangedWeapon* Projectile)
+void ANinja::RotateProjectile()
 {
 	if (Projectile == nullptr || CombatTarget == nullptr) return;
 

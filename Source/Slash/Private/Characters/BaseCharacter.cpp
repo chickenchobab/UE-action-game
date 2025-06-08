@@ -137,7 +137,7 @@ void ABaseCharacter::FireProjectile()
 }
 
 
-void ABaseCharacter::RotateProjectile(ARangedWeapon* Projectile)
+void ABaseCharacter::RotateProjectile()
 {
 
 }

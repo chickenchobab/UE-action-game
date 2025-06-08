@@ -186,7 +186,7 @@ void AEnemy::HandleDamage(float DamageAmount)
 }
 
 
-void AEnemy::RotateProjectile(ARangedWeapon* Projectile)
+void AEnemy::RotateProjectile()
 {
 	if (Projectile == nullptr || CombatTarget == nullptr) return;
 	

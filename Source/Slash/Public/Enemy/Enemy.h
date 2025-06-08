@@ -52,7 +52,7 @@ protected:
 	virtual void HitReactEnd() override;
 	virtual bool CanAttack() override;
 	virtual void HandleDamage(float DamageAmount) override;
-	virtual void RotateProjectile(ARangedWeapon* Projectile) override;
+	virtual void RotateProjectile() override;
 	// <\ABaseCharacter>
 
 	virtual void CheckCombatTarget();
@@ -154,7 +154,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<AWeapon> WeaponClass;
 	UPROPERTY(EditAnywhere, Category = "Combat")
-	TSubclassOf<ARangedWeapon> ThrowingClass;
+	TSubclassOf<ARangedWeapon> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	float DeathLifeSpan = 5.f;
