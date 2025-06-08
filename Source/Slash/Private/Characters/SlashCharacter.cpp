@@ -435,7 +435,10 @@ void ASlashCharacter::UpdateHealthBar()
 
 bool ASlashCharacter::CanDodge()
 {
-	if (!IsUnoccupied() && !IsHitReacting()) return false;
+	if (!IsUnoccupied())
+	{
+		if (!IsHitReacting() && !IsAttacking()) return false;
+	}
 	return Attributes && Attributes->GetStamina() >= Attributes->GetDodgeCost();
 }
 
