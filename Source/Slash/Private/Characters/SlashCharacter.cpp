@@ -62,6 +62,8 @@ ASlashCharacter::ASlashCharacter()
 
 void ASlashCharacter::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
 	if (Attributes && SlashOverlay)
 	{
 		Attributes->RegenStamina(DeltaTime);
@@ -371,6 +373,7 @@ void ASlashCharacter::AttachWeaponToBack()
 {
 	if (EquippedWeapon)
 	{
+		CharacterState = ECharacterState::ECS_Unequipped;
 		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("SpineSocket"));
 	}
 }
@@ -379,6 +382,7 @@ void ASlashCharacter::AttachWeaponToHand()
 {
 	if (EquippedWeapon)
 	{
+		CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 		EquippedWeapon->AttachMeshToSocket(GetMesh(), FName("RightHandSocket"));
 	}
 }
@@ -418,14 +422,12 @@ void ASlashCharacter::EquipWeapon(AWeapon* Weapon)
 void ASlashCharacter::Disarm()
 {
 	PlayEquipMontage(FName("Disarm"));
-	CharacterState = ECharacterState::ECS_Unequipped;
 	ActionState = EActionState::EAS_Equipping;
 }
 
 void ASlashCharacter::Arm()
 {
 	PlayEquipMontage(FName("Arm"));
-	CharacterState = ECharacterState::ECS_EquippedOneHandedWeapon;
 	ActionState = EActionState::EAS_Equipping;
 }
 

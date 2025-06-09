@@ -41,7 +41,9 @@ public:
 	virtual void GetGold(ATreasure* Treasure) override;
 	// <\IPickupInterface>
 
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE ECharacterState GetCharacterState() const { return CharacterState; }
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE EActionState GetActionState() const { return ActionState; }
 	FORCEINLINE bool IsEquipped() { return CharacterState != ECharacterState::ECS_Unequipped; }
 	FORCEINLINE bool IsUnoccupied() { return ActionState == EActionState::EAS_Unoccupied; }
@@ -86,8 +88,6 @@ protected:
 	void ComboEnd();
 
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
-
-	UPROPERTY(BlueprintReadWrite)
 	EActionState ActionState = EActionState::EAS_Unoccupied;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
