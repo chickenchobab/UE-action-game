@@ -47,6 +47,7 @@ public:
 	FORCEINLINE bool IsUnoccupied() { return ActionState == EActionState::EAS_Unoccupied; }
 	FORCEINLINE bool IsAttacking() { return ActionState == EActionState::EAS_Attacking; }
 	FORCEINLINE bool IsHitReacting() { return ActionState == EActionState::EAS_HitReacting; }
+	FORCEINLINE bool IsDodging() { return ActionState == EActionState::EAS_Dodging; }
 
 protected:
 	// <AActor>
@@ -83,7 +84,6 @@ protected:
 	void EquipEnd();
 	UFUNCTION(BlueprintCallable)
 	void ComboEnd();
-	void ResetComboCount();
 
 	ECharacterState CharacterState = ECharacterState::ECS_Unequipped;
 
@@ -136,7 +136,9 @@ private:
 	void UpdateHealthBar();
 	bool CanDodge();
 	bool IsInCombo();
-	bool IsEnemyInRange(float Distance);
+	void ResetComboCount();
+	FORCEINLINE void ClearDodgeFlag() { bAfterDodge = false; }
+	bool ShouldDashAttack();
 
 	UPROPERTY()
 	USlashOverlay* SlashOverlay;
@@ -144,12 +146,14 @@ private:
 	FRotator RecentInputRotation = FRotator(0.f, 0.f, 0.f);
 
 	FTimerHandle ComboWindowTimer;
-
 	float ComboWindow = 1.f;
-
 	int32 ComboCount = 0;
 
 	float MovingTime = 0.f;
+
+	FTimerHandle DodgeFlagTimer;
+	float DodgeFlagTime = 0.5f;
+	bool bAfterDodge = false;
 };
 
 

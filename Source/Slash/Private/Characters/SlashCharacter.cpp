@@ -2,6 +2,14 @@
 
 
 #include "Characters/SlashCharacter.h"
+#include "Items/Item.h"
+#include "Items/Weapons/Weapon.h"
+#include "Items/Soul.h"
+#include "Items/Treasure.h"
+#include "HUD/SlashHUD.h"
+#include "HUD/SlashOverlay.h"
+#include "Components/AttributeComponent.h"
+
 #include "EnhancedInputSubsystems.h"
 // #include "InputMappingContext.h"
 // #include "InputAction.h"
@@ -10,20 +18,12 @@
 #include "Animation/AnimMontage.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
-
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GroomComponent.h"
 #include "Components/BoxComponent.h"
 
-#include "Items/Item.h"
-#include "Items/Weapons/Weapon.h"
-#include "Items/Soul.h"
-#include "Items/Treasure.h"
-#include "HUD/SlashHUD.h"
-#include "HUD/SlashOverlay.h"
-#include "Components/AttributeComponent.h"
 
 ASlashCharacter::ASlashCharacter()
 {
@@ -186,13 +186,13 @@ void ASlashCharacter::Attack()
 		SetActorRotation(RecentInputRotation);
 		ActionState = EActionState::EAS_Attacking;
 		
-		if (MovingTime >= 2.f)
+		if (ShouldDashAttack())
 		{
 			DashAttack();
 		}
 		else
 		{
-			StartComboAttack();
+			StartComboAttack(); 
 		}
 	}
 	else if (IsInCombo())
@@ -227,7 +227,7 @@ void ASlashCharacter::Dodge()
 		{
 			Attributes->UseStamina(Attributes->GetDodgeCost());
 			SlashOverlay->SetStaminaBarPercent(Attributes->GetStaminaPercent());
-		} 
+		}
 	}
 }
 
@@ -235,7 +235,7 @@ void ASlashCharacter::Dodge()
 bool ASlashCharacter::CanAttack()
 {
 	return !IsMontagePlaying(SwordAttackMontage) &&
-		ActionState == EActionState::EAS_Unoccupied && 
+		IsUnoccupied() && 
 		CharacterState != ECharacterState::ECS_Unequipped;
 }
 
@@ -245,6 +245,7 @@ void ASlashCharacter::AttackEnd()
 
 	SetActorRotation(RecentInputRotation);
 
+	// Decide whether to stop combo animation
 	if (ComboCount == 0)
 	{
 		ActionState = EActionState::EAS_Unoccupied;
@@ -259,6 +260,9 @@ void ASlashCharacter::AttackEnd()
 void ASlashCharacter::DodgeEnd()
 {
 	ActionState = EActionState::EAS_Unoccupied;
+	bAfterDodge = true;
+	GetWorldTimerManager().ClearTimer(DodgeFlagTimer);
+	GetWorldTimerManager().SetTimer(DodgeFlagTimer, this, &ASlashCharacter::ClearDodgeFlag, DodgeFlagTime);
 }
 
 
@@ -446,10 +450,11 @@ bool ASlashCharacter::CanDodge()
 bool ASlashCharacter::IsInCombo()
 {
 	if (!IsEquipped()) return false;
-	if (IsAttacking()) return true;
-	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance()) 
-	{	
-		return AnimInstance->Montage_IsPlaying(SwordAttackMontage);
-	}
-	return false;
+	return (IsAttacking() || IsMontagePlaying(SwordAttackMontage));
+}
+
+
+bool ASlashCharacter::ShouldDashAttack()
+{
+	return MovingTime >= 2.f || bAfterDodge;
 }
