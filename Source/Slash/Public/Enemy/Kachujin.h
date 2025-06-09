@@ -71,11 +71,13 @@ protected:
 	float RushingSpeed = 1000.f;
 
 private:
-	FORCEINLINE void ResetCombo() { bPunchComboStarted = false; }
+	FORCEINLINE void ResetCombo() { bInPunchCombo = false; }
 
 	bool bMoveCompleted = false;
 
-	bool bPunchComboStarted = false;
+	bool bInPunchCombo = false;
+	FTimerHandle PunchComboWindowTimer;
+	float PunchComboWindow = 1.f;
 
 	float PunchKickRadius = 100.f;
 	float EnergyWaveRadius = 700.f;

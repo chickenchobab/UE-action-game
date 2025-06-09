@@ -203,7 +203,7 @@ void AKachujin::MoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type
 
 void AKachujin::PunchOrKick()
 {
-	if (bPunchComboStarted)
+	if (bInPunchCombo)
 	{
 		PunchRight();
 	}
@@ -218,7 +218,9 @@ void AKachujin::PunchOrKick()
 void AKachujin::PunchLeft()
 {
 	PlayRandomMontageSection(LeftPunchMontage, LeftPunchMontageSections);
-	bPunchComboStarted = true;
+	bInPunchCombo = true;
+	GetWorldTimerManager().ClearTimer(PunchComboWindowTimer);
+	GetWorldTimerManager().SetTimer(PunchComboWindowTimer, this, &AKachujin::ResetCombo, PunchComboWindow);
 	AttackTime = 0.01f;
 }
 
@@ -226,7 +228,7 @@ void AKachujin::PunchLeft()
 void AKachujin::PunchRight()
 {
 	PlayRandomMontageSection(RightPunchMontage, RightPunchMontageSections);
-	bPunchComboStarted = false;
+	bInPunchCombo = false;
 	AttackTime = 0.5f;
 }
 
@@ -239,6 +241,7 @@ void AKachujin::Kick()
 
 void AKachujin::FireEnergyWave()
 {
+	bInPunchCombo = false;
 	SpawnProjectile();
 	PlayMontage(ThrowMontage);
 }
