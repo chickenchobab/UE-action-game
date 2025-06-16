@@ -146,7 +146,8 @@ bool AWeapon::IsCharacterFacingWeapon(ABaseCharacter* HitCharacter)
 
   FVector CharacterForward = (HitCharacter->GetActorForwardVector()).GetSafeNormal();
   FVector CharacterToWeapon = (GetActorLocation() - HitCharacter->GetActorLocation()).GetSafeNormal();
-  float FacingAngle = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(CharacterForward, CharacterToWeapon)));
+  double DotResult = FVector::DotProduct(CharacterForward, CharacterToWeapon);
+  float FacingAngle = FMath::RadiansToDegrees(FMath::Acos(DotResult));
 
   return FacingAngle <= 30.f;
 }
