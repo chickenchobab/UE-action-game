@@ -86,37 +86,38 @@ void AWeapon::BeginPlay()
 
 void AWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
 {
-  if (OtherActor)
-  {
-    UE_LOG(LogTemp, Warning, TEXT("Hit actor : %s"), *OtherActor->GetName());
-  }
+  // if (OtherActor)
+  // {
+  //   UE_LOG(LogTemp, Warning, TEXT("Hit actor : %s"), *OtherActor->GetName());
+  // }
   if (GetOwner() && GetOwner() == OtherActor) return;
 
   if (!IsActorIgnored(OtherActor) && IsOwnerOpposite(OtherActor))
   {
     ActorsToIgnore.Add(OtherActor);
-    TryApplyDamage(OtherActor);
-    ExecuteGetHit(OtherActor, SweepResult.ImpactPoint);
+    ExecuteGetHit(OtherActor, SweepResult.ImpactPoint, TryApplyDamage(OtherActor));
   }
 }
 
 
-void AWeapon::TryApplyDamage(AActor * OtherActor)
+bool AWeapon::TryApplyDamage(AActor * OtherActor)
 {
   if (ABaseCharacter* HitCharacter = Cast<ABaseCharacter>(OtherActor))
   {
     if (!HitCharacter->IsParrying() || !IsCharacterFacingWeapon(HitCharacter))
     {
       UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigator()->GetController(), this, UDamageType::StaticClass());
+      return true;
     }
   }
+  return false;
 }
 
-void AWeapon::ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint)
+void AWeapon::ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint, bool bApplyDamage)
 {
   if (IHitInterface* HitInterface = Cast<IHitInterface>(OtherActor))
   {
-    HitInterface->Execute_GetHit(OtherActor, ImpactPoint, GetOwner(), bCauseHitReaction);
+    HitInterface->Execute_GetHit(OtherActor, ImpactPoint, GetOwner(), bCauseHitReaction && bApplyDamage);
   }
 }
 

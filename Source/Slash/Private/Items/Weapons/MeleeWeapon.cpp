@@ -23,11 +23,10 @@ void AMeleeWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor
 
   if (GetOwner() && BoxHit.GetActor())
   {
-    UE_LOG(LogTemp, Warning, TEXT("Hit Actor(%s)->%s"), *BoxHit.GetActor()->GetName(), *BoxHit.GetComponent()->GetName());
+    // UE_LOG(LogTemp, Warning, TEXT("Hit Actor(%s)->%s"), *BoxHit.GetActor()->GetName(), *BoxHit.GetComponent()->GetName());
     if (IsOwnerOpposite(BoxHit.GetActor()))
     {
-      TryApplyDamage(BoxHit.GetActor());
-      ExecuteGetHit(BoxHit.GetActor(), BoxHit.ImpactPoint);
+      ExecuteGetHit(BoxHit.GetActor(), BoxHit.ImpactPoint, TryApplyDamage(BoxHit.GetActor()));
     }
     CreateFields(BoxHit.ImpactPoint);
   }

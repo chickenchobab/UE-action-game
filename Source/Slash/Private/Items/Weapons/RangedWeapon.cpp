@@ -40,8 +40,7 @@ void ARangedWeapon::OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActo
 
   if (IsOwnerOpposite(OtherActor))
   {
-    TryApplyDamage(OtherActor);
-    ExecuteGetHit(OtherActor, SweepResult.ImpactPoint);
+    ExecuteGetHit(OtherActor, SweepResult.ImpactPoint, TryApplyDamage(OtherActor));
   }
   
   Destroy();

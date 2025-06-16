@@ -35,8 +35,8 @@ protected:
 	virtual void BeginPlay() override;
 	UFUNCTION()
   virtual void OnBoxOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
-  void TryApplyDamage(AActor *OtherActor);
-  void ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint);
+  bool TryApplyDamage(AActor *OtherActor);
+  void ExecuteGetHit(AActor* OtherActor, FVector ImpactPoint, bool bDamageApplied);
   UFUNCTION(BlueprintImplementableEvent)
 	void CreateFields(const FVector& FieldLocation);
 	bool IsOwnerOpposite(AActor* OtherActor);
