@@ -419,12 +419,7 @@ bool AEnemy::IsTargetAttacking()
 
 void AEnemy::StopParrying()
 {
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && ParryMontage)
-	{
-		AnimInstance->Montage_Stop(0.5f, ParryMontage);
-	}
-	// Should call CheckCombatTarget?
+	StopMontage(0.5f, ParryMontage);
 	EnemyState = EEnemyState::EES_None; 
 }
 

@@ -216,7 +216,7 @@ void ABaseCharacter::PlayMontage(UAnimMontage* Montage)
 void ABaseCharacter::StopMontage(float InBlendOutTime, UAnimMontage* Montage)
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance)
+	if (AnimInstance && Montage)
 	{
 		AnimInstance->Montage_Stop(InBlendOutTime, Montage);
 	}
